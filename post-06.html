@@ -43,17 +43,36 @@ footer.sitefoot{text-align:center;color:#aaa;font-size:.82rem;padding:30px 0}
 footer.sitefoot a{color:#999;text-decoration:underline}
 .backlink{display:inline-block;margin-top:30px;color:#888;font-size:.9rem}
 @media (max-width:760px){.layout{flex-direction:column}.sidebar{position:static;height:auto;width:100%}main.content{padding:24px 18px 60px}}
+
+.stats-box{margin-top:22px;padding:16px 14px;background:#1c1b26;border-radius:10px;font-size:.82rem}
+.stats-row{display:flex;justify-content:space-between;padding:5px 0;color:#cfcfd6}
+.stats-row b{color:#fff;font-weight:700}
+.stats-pop{margin-top:10px;padding-top:10px;border-top:1px solid #2c2b3a}
+.stats-pop-title{color:#8a8a95;font-size:.72rem;margin-bottom:6px}
+.stats-pop ol{margin:0;padding-left:18px;color:#cfcfd6}
+.stats-pop li{margin-bottom:5px;line-height:1.4;font-size:.82rem}
+.stats-pop a{color:#cfcfd6}
+.stats-pop a:hover{color:#fff}
+.post-views{margin-top:1.6em;padding-top:1em;border-top:1px solid var(--line);color:var(--sub);font-size:.88rem}
 </style></head><body>
 <div class="layout">
 <aside class="sidebar">
 <a class="logo" href="index.html">exomu<span>'s home</span></a>
 <div class="tagline">매일 새로 쌓는 개인 아카이브</div>
 <nav><a class="" href="category-movie.html">영화와 사상</a><a class="" href="category-art.html">미술과 사상</a><a class="" href="category-books.html">도서와 사상</a><a class="active" href="category-psych.html">심리학용어사전</a><a class="" href="category-econ.html">쉬운 경제학</a><a class="" href="category-knowhow.html">노하우</a></nav>
+<div class="stats-box">
+<div class="stats-row"><span>누적 방문자</span><b id="stat-total">–</b></div>
+<div class="stats-row"><span>오늘 방문자</span><b id="stat-today">–</b></div>
+<div class="stats-pop">
+<div class="stats-pop-title">인기 게시물</div>
+<ol id="stat-popular"><li>불러오는 중…</li></ol>
+</div>
+</div>
 </aside>
 <main class="content">
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3169773352082499" data-ad-slot="6448432776" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-<article class="post">
+<article class="post" data-post-id="06">
 <span class="pc-cat" style="background:#8040a8">심리학용어사전</span>
 <h1>인지부조화: 마음이 스스로에게 하는 거짓말</h1>
 <div class="meta">2026.07.26 · 심리학용어사전 001</div>
@@ -72,6 +91,40 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 <h3>알아두면 쓸모 있는 이유</h3>
 <p>인지부조화를 아는 것 자체가 유용한 방어막이 된다. 어떤 결정을 내린 뒤 갑자기 그 결정에 대한 확신이 지나치게 강해지는 순간, 그것이 결정이 정말 옳아서인지 아니면 단지 마음이 불편함을 없애려고 이야기를 지어내는 중인지 스스로 물어볼 수 있기 때문이다. 특히 큰돈이나 시간을 이미 들인 선택일수록 이 자기 합리화의 유혹은 강해진다. 결정을 내리기 전에 판단하고, 내린 뒤에는 그 판단이 사후 정당화로 굳어지고 있지 않은지 가끔 점검하는 습관이 필요한 이유다.</p>
 <div class="tags"><span class="tag">#인지부조화</span><span class="tag">#심리학용어</span><span class="tag">#레온페스팅거</span><span class="tag">#심리학실험</span><span class="tag">#자기합리화</span><span class="tag">#행동심리학</span><span class="tag">#매몰비용</span><span class="tag">#심리학용어사전</span><span class="tag">#인간행동</span><span class="tag">#의사결정</span></div>
+<div class="post-views">조회수 <b id="post-view-count">–</b></div>
 <a class="backlink" href="index.html">&larr; 목록으로</a>
 </article>
-</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer></body></html>
+</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer><script>
+(function(){
+var NS="exomuart", API="https://abacus.jasoncameron.dev";
+function hit(k){return fetch(API+"/hit/"+NS+"/"+k).then(function(r){return r.json()}).then(function(j){return j.value||0})}
+function get(k){return fetch(API+"/get/"+NS+"/"+k).then(function(r){return r.ok?r.json():{value:0}}).then(function(j){return j.value||0}).catch(function(){return 0})}
+function todayKey(){
+ var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Seoul"}));
+ var y=d.getFullYear(),m=("0"+(d.getMonth()+1)).slice(-2),day=("0"+d.getDate()).slice(-2);
+ return "day-"+y+m+day;
+}
+var tk=todayKey(), flag="exomu_v_"+tk;
+if(!localStorage.getItem(flag)){
+ hit("total-visits"); hit(tk); localStorage.setItem(flag,"1");
+}
+var totalEl=document.getElementById("stat-total"), todayEl=document.getElementById("stat-today");
+if(totalEl) get("total-visits").then(function(v){totalEl.textContent=v.toLocaleString()});
+if(todayEl) get(tk).then(function(v){todayEl.textContent=v.toLocaleString()});
+var popEl=document.getElementById("stat-popular");
+if(popEl){
+ fetch("posts.json").then(function(r){return r.json()}).then(function(posts){
+  return Promise.all(posts.map(function(p){return get("post-"+p.id).then(function(v){return {id:p.id,title:p.title,views:v}})}));
+ }).then(function(list){
+  list.sort(function(a,b){return b.views-a.views});
+  popEl.innerHTML = list.slice(0,5).map(function(p){return '<li><a href="post-'+p.id+'.html">'+p.title+'</a></li>'}).join("");
+ }).catch(function(){popEl.innerHTML='<li>통계를 불러올 수 없습니다</li>'});
+}
+var art=document.querySelector("article.post[data-post-id]");
+var vEl=document.getElementById("post-view-count");
+if(art&&vEl){
+ hit("post-"+art.getAttribute("data-post-id")).then(function(v){vEl.textContent=v.toLocaleString()});
+}
+})();
+</script>
+</body></html>

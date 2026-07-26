@@ -15,7 +15,6 @@ a{color:inherit;text-decoration:none}
 .sidebar nav a{display:block;padding:11px 14px;margin-bottom:4px;border-radius:8px;color:#cfcfd6;font-size:.95rem;font-weight:600}
 .sidebar nav a:hover{background:#232230;color:#fff}
 .sidebar nav a.active{background:#2c2a3d;color:#fff}
-.sidebar .cat-desc{font-size:.72rem;color:#77778a;padding:0 14px 10px;margin-top:-6px}
 main.content{flex:1;min-width:0;padding:36px 44px 80px;max-width:900px}
 .hero{padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:26px}
 .hero h1{font-size:1.6rem;margin:0 0 6px}
@@ -42,19 +41,53 @@ article.post p{margin:0 0 1.1em}
 footer.sitefoot{text-align:center;color:#aaa;font-size:.82rem;padding:30px 0}
 footer.sitefoot a{color:#999;text-decoration:underline}
 .backlink{display:inline-block;margin-top:30px;color:#888;font-size:.9rem}
+.catsec h2{font-size:1.3rem;margin:38px 0 14px;padding-left:13px}
 @media (max-width:760px){.layout{flex-direction:column}.sidebar{position:static;height:auto;width:100%}main.content{padding:24px 18px 60px}}
+
+.stats-box{margin-top:22px;padding:16px 14px;background:#1c1b26;border-radius:10px;font-size:.82rem}
+.stats-row{display:flex;justify-content:space-between;padding:5px 0;color:#cfcfd6}
+.stats-row b{color:#fff;font-weight:700}
+.stats-pop{margin-top:10px;padding-top:10px;border-top:1px solid #2c2b3a}
+.stats-pop-title{color:#8a8a95;font-size:.72rem;margin-bottom:6px}
+.stats-pop ol{margin:0;padding-left:18px;color:#cfcfd6}
+.stats-pop li{margin-bottom:5px;line-height:1.4;font-size:.82rem}
+.stats-pop a{color:#cfcfd6}
+.stats-pop a:hover{color:#fff}
+.post-views{margin-top:1.6em;padding-top:1em;border-top:1px solid var(--line);color:var(--sub);font-size:.88rem}
 </style></head><body>
 <div class="layout">
 <aside class="sidebar">
 <a class="logo" href="index.html">exomu<span>'s home</span></a>
 <div class="tagline">매일 새로 쌓는 개인 아카이브</div>
-<nav><a class="active" href="category-movie.html">영화와 사상</a><a class="" href="category-art.html">미술과 사상</a><a class="" href="category-books.html">도서와 사상</a><a class="" href="category-psych.html">심리학용어사전</a><a class="" href="category-econ.html">쉬운 경제학</a><a class="" href="category-knowhow.html">노하우</a></nav>
+<nav>
+<a href="category-movie.html" class="active">영화와 사상 (2)</a>
+<a href="category-art.html">미술과 사상 (2)</a>
+<a href="category-books.html">도서와 사상 (1)</a>
+<a href="category-psych.html">심리학용어사전 (2)</a>
+<a href="category-econ.html">쉬운 경제학 (3)</a>
+<a href="category-knowhow.html">노하우 (2)</a>
+</nav>
+<div class="stats-box">
+<div class="stats-row"><span>누적 방문자</span><b id="stat-total">–</b></div>
+<div class="stats-row"><span>오늘 방문자</span><b id="stat-today">–</b></div>
+<div class="stats-pop">
+<div class="stats-pop-title">인기 게시물</div>
+<ol id="stat-popular"><li>불러오는 중…</li></ol>
+</div>
+</div>
 </aside>
 <main class="content">
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3169773352082499" data-ad-slot="6448432776" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-<div class="hero"><h1>영화와 사상</h1><p>영화가 던지는 질문을 사상사와 함께 읽습니다.</p></div>
+<div class="hero"><h1>영화와 사상</h1><p>영화를 실마리 삼아 시간·정체성·자유를 사유하는 1인칭 에세이</p></div>
 <div class="grid">
+<a class="pcard" href="post-09.html">
+<img src="09_img1.png" alt="『블레이드 러너』의 복제인간은 기억으로 인간이 되는가">
+<div class="pc-body">
+<span class="pc-cat" style="background:#4a3b78">영화와 사상</span>
+<h3>『블레이드 러너』의 복제인간은 기억으로 인간이 되는가</h3>
+<div class="pc-date">2026-07-26 22:11</div>
+</div></a>
 <a class="pcard" href="post-03.html">
 <img src="03_card.png" alt="놀란의 '오디세이', 3천 년 된 이야기를 왜 지금 IMAX로 찍었나">
 <div class="pc-body">
@@ -63,4 +96,37 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 <div class="pc-date">2026.07.26</div>
 </div></a>
 </div>
-</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer></body></html>
+</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer><script>
+(function(){
+var NS="exomuart", API="https://abacus.jasoncameron.dev";
+function hit(k){return fetch(API+"/hit/"+NS+"/"+k).then(function(r){return r.json()}).then(function(j){return j.value||0})}
+function get(k){return fetch(API+"/get/"+NS+"/"+k).then(function(r){return r.ok?r.json():{value:0}}).then(function(j){return j.value||0}).catch(function(){return 0})}
+function todayKey(){
+ var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Seoul"}));
+ var y=d.getFullYear(),m=("0"+(d.getMonth()+1)).slice(-2),day=("0"+d.getDate()).slice(-2);
+ return "day-"+y+m+day;
+}
+var tk=todayKey(), flag="exomu_v_"+tk;
+if(!localStorage.getItem(flag)){
+ hit("total-visits"); hit(tk); localStorage.setItem(flag,"1");
+}
+var totalEl=document.getElementById("stat-total"), todayEl=document.getElementById("stat-today");
+if(totalEl) get("total-visits").then(function(v){totalEl.textContent=v.toLocaleString()});
+if(todayEl) get(tk).then(function(v){todayEl.textContent=v.toLocaleString()});
+var popEl=document.getElementById("stat-popular");
+if(popEl){
+ fetch("posts.json").then(function(r){return r.json()}).then(function(posts){
+  return Promise.all(posts.map(function(p){return get("post-"+p.id).then(function(v){return {id:p.id,title:p.title,views:v}})}));
+ }).then(function(list){
+  list.sort(function(a,b){return b.views-a.views});
+  popEl.innerHTML = list.slice(0,5).map(function(p){return '<li><a href="post-'+p.id+'.html">'+p.title+'</a></li>'}).join("");
+ }).catch(function(){popEl.innerHTML='<li>통계를 불러올 수 없습니다</li>'});
+}
+var art=document.querySelector("article.post[data-post-id]");
+var vEl=document.getElementById("post-view-count");
+if(art&&vEl){
+ hit("post-"+art.getAttribute("data-post-id")).then(function(v){vEl.textContent=v.toLocaleString()});
+}
+})();
+</script>
+</body></html>

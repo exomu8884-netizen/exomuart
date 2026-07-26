@@ -43,17 +43,36 @@ footer.sitefoot{text-align:center;color:#aaa;font-size:.82rem;padding:30px 0}
 footer.sitefoot a{color:#999;text-decoration:underline}
 .backlink{display:inline-block;margin-top:30px;color:#888;font-size:.9rem}
 @media (max-width:760px){.layout{flex-direction:column}.sidebar{position:static;height:auto;width:100%}main.content{padding:24px 18px 60px}}
+
+.stats-box{margin-top:22px;padding:16px 14px;background:#1c1b26;border-radius:10px;font-size:.82rem}
+.stats-row{display:flex;justify-content:space-between;padding:5px 0;color:#cfcfd6}
+.stats-row b{color:#fff;font-weight:700}
+.stats-pop{margin-top:10px;padding-top:10px;border-top:1px solid #2c2b3a}
+.stats-pop-title{color:#8a8a95;font-size:.72rem;margin-bottom:6px}
+.stats-pop ol{margin:0;padding-left:18px;color:#cfcfd6}
+.stats-pop li{margin-bottom:5px;line-height:1.4;font-size:.82rem}
+.stats-pop a{color:#cfcfd6}
+.stats-pop a:hover{color:#fff}
+.post-views{margin-top:1.6em;padding-top:1em;border-top:1px solid var(--line);color:var(--sub);font-size:.88rem}
 </style></head><body>
 <div class="layout">
 <aside class="sidebar">
 <a class="logo" href="index.html">exomu<span>'s home</span></a>
 <div class="tagline">매일 새로 쌓는 개인 아카이브</div>
 <nav><a class="" href="category-movie.html">영화와 사상</a><a class="" href="category-art.html">미술과 사상</a><a class="active" href="category-books.html">도서와 사상</a><a class="" href="category-psych.html">심리학용어사전</a><a class="" href="category-econ.html">쉬운 경제학</a><a class="" href="category-knowhow.html">노하우</a></nav>
+<div class="stats-box">
+<div class="stats-row"><span>누적 방문자</span><b id="stat-total">–</b></div>
+<div class="stats-row"><span>오늘 방문자</span><b id="stat-today">–</b></div>
+<div class="stats-pop">
+<div class="stats-pop-title">인기 게시물</div>
+<ol id="stat-popular"><li>불러오는 중…</li></ol>
+</div>
+</div>
 </aside>
 <main class="content">
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3169773352082499" data-ad-slot="6448432776" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-<article class="post">
+<article class="post" data-post-id="07">
 <span class="pc-cat" style="background:#2f5d4f">도서와 사상</span>
 <h1>사피엔스, 낯선 사람과 협력하게 만든 상상의 힘</h1>
 <div class="meta">2026.07.26 · 유발 하라리 『사피엔스』를 다시 읽으며</div>
@@ -71,6 +90,40 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 <h3>다시 지갑을 열며</h3>
 <p>이제 커피값을 치르며 지갑을 열 때, 나는 예전과는 조금 다른 감각으로 그 종이를 본다. 그것은 단순한 지불 수단이 아니라, 한 번도 만난 적 없는 수십억 명이 매일 갱신하고 있는 거대한 합의의 조각이다. 이 합의가 어떻게 시작되었고 왜 유지되는지를 아는 것은, 그저 흥미로운 역사 상식이 아니라 지금 우리가 속한 사회의 제도들을 조금 더 겸손하게, 그리고 조금 더 진지하게 대하게 만드는 일이라고 생각한다.</p>
 <div class="tags"><span class="tag">#사피엔스</span><span class="tag">#유발하라리</span><span class="tag">#상상된질서</span><span class="tag">#인문학도서</span><span class="tag">#도서리뷰</span><span class="tag">#협력의역사</span><span class="tag">#화폐의기원</span><span class="tag">#국가란무엇인가</span><span class="tag">#인류사</span><span class="tag">#사상</span></div>
+<div class="post-views">조회수 <b id="post-view-count">–</b></div>
 <a class="backlink" href="index.html">&larr; 목록으로</a>
 </article>
-</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer></body></html>
+</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer><script>
+(function(){
+var NS="exomuart", API="https://abacus.jasoncameron.dev";
+function hit(k){return fetch(API+"/hit/"+NS+"/"+k).then(function(r){return r.json()}).then(function(j){return j.value||0})}
+function get(k){return fetch(API+"/get/"+NS+"/"+k).then(function(r){return r.ok?r.json():{value:0}}).then(function(j){return j.value||0}).catch(function(){return 0})}
+function todayKey(){
+ var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Seoul"}));
+ var y=d.getFullYear(),m=("0"+(d.getMonth()+1)).slice(-2),day=("0"+d.getDate()).slice(-2);
+ return "day-"+y+m+day;
+}
+var tk=todayKey(), flag="exomu_v_"+tk;
+if(!localStorage.getItem(flag)){
+ hit("total-visits"); hit(tk); localStorage.setItem(flag,"1");
+}
+var totalEl=document.getElementById("stat-total"), todayEl=document.getElementById("stat-today");
+if(totalEl) get("total-visits").then(function(v){totalEl.textContent=v.toLocaleString()});
+if(todayEl) get(tk).then(function(v){todayEl.textContent=v.toLocaleString()});
+var popEl=document.getElementById("stat-popular");
+if(popEl){
+ fetch("posts.json").then(function(r){return r.json()}).then(function(posts){
+  return Promise.all(posts.map(function(p){return get("post-"+p.id).then(function(v){return {id:p.id,title:p.title,views:v}})}));
+ }).then(function(list){
+  list.sort(function(a,b){return b.views-a.views});
+  popEl.innerHTML = list.slice(0,5).map(function(p){return '<li><a href="post-'+p.id+'.html">'+p.title+'</a></li>'}).join("");
+ }).catch(function(){popEl.innerHTML='<li>통계를 불러올 수 없습니다</li>'});
+}
+var art=document.querySelector("article.post[data-post-id]");
+var vEl=document.getElementById("post-view-count");
+if(art&&vEl){
+ hit("post-"+art.getAttribute("data-post-id")).then(function(v){vEl.textContent=v.toLocaleString()});
+}
+})();
+</script>
+</body></html>
