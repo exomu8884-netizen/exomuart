@@ -15,7 +15,6 @@ a{color:inherit;text-decoration:none}
 .sidebar nav a{display:block;padding:11px 14px;margin-bottom:4px;border-radius:8px;color:#cfcfd6;font-size:.95rem;font-weight:600}
 .sidebar nav a:hover{background:#232230;color:#fff}
 .sidebar nav a.active{background:#2c2a3d;color:#fff}
-.sidebar .cat-desc{font-size:.72rem;color:#77778a;padding:0 14px 10px;margin-top:-6px}
 main.content{flex:1;min-width:0;padding:36px 44px 80px;max-width:900px}
 .hero{padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:26px}
 .hero h1{font-size:1.6rem;margin:0 0 6px}
@@ -42,8 +41,6 @@ article.post p{margin:0 0 1.1em}
 footer.sitefoot{text-align:center;color:#aaa;font-size:.82rem;padding:30px 0}
 footer.sitefoot a{color:#999;text-decoration:underline}
 .backlink{display:inline-block;margin-top:30px;color:#888;font-size:.9rem}
-@media (max-width:760px){.layout{flex-direction:column}.sidebar{position:static;height:auto;width:100%}main.content{padding:24px 18px 60px}}
-
 .stats-box{margin-top:22px;padding:16px 14px;background:#1c1b26;border-radius:10px;font-size:.82rem}
 .stats-row{display:flex;justify-content:space-between;padding:5px 0;color:#cfcfd6}
 .stats-row b{color:#fff;font-weight:700}
@@ -54,12 +51,20 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 .stats-pop a{color:#cfcfd6}
 .stats-pop a:hover{color:#fff}
 .post-views{margin-top:1.6em;padding-top:1em;border-top:1px solid var(--line);color:var(--sub);font-size:.88rem}
+@media (max-width:760px){.layout{flex-direction:column}.sidebar{position:static;height:auto;width:100%}main.content{padding:24px 18px 60px}}
 </style></head><body>
 <div class="layout">
 <aside class="sidebar">
 <a class="logo" href="index.html">exomu<span>'s home</span></a>
 <div class="tagline">매일 새로 쌓는 개인 아카이브</div>
-<nav><a class="" href="category-movie.html">영화와 사상</a><a class="" href="category-art.html">미술과 사상</a><a class="active" href="category-books.html">도서와 사상</a><a class="" href="category-psych.html">심리학용어사전</a><a class="" href="category-econ.html">쉬운 경제학</a><a class="" href="category-knowhow.html">노하우</a></nav>
+<nav>
+<a href="category-movie.html">영화와 사상 (3)</a>
+<a href="category-art.html">미술과 사상 (3)</a>
+<a href="category-books.html" class="active">도서와 사상 (2)</a>
+<a href="category-psych.html">심리학용어사전 (3)</a>
+<a href="category-econ.html">쉬운 경제학 (4)</a>
+<a href="category-knowhow.html">노하우 (2)</a>
+</nav>
 <div class="stats-box">
 <div class="stats-row"><span>누적 방문자</span><b id="stat-total">–</b></div>
 <div class="stats-row"><span>오늘 방문자</span><b id="stat-today">–</b></div>
@@ -72,8 +77,15 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 <main class="content">
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3169773352082499" data-ad-slot="6448432776" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-<div class="hero"><h1>도서와 사상</h1><p>책 한 권이 던지는 질문을 함께 따라갑니다.</p></div>
+<div class="hero"><h1>도서와 사상</h1><p>책을 다시 읽으며 우리 삶의 질문으로 확장하는 독서 에세이</p></div>
 <div class="grid">
+<a class="pcard" href="post-17.html">
+<img src="17_img1.png" alt="카뮈 『시지프 신화』 — 무의미한 반복 앞에서 왜 사는가">
+<div class="pc-body">
+<span class="pc-cat" style="background:#2f5d4f">도서와 사상</span>
+<h3>카뮈 『시지프 신화』 — 무의미한 반복 앞에서 왜 사는가</h3>
+<div class="pc-date">2026-07-27 07:29</div>
+</div></a>
 <a class="pcard" href="post-07.html">
 <img src="07_card.png" alt="사피엔스, 낯선 사람과 협력하게 만든 상상의 힘">
 <div class="pc-body">
@@ -82,7 +94,8 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 <div class="pc-date">2026.07.26</div>
 </div></a>
 </div>
-</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer><script>
+</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer>
+<script>
 (function(){
 var NS="exomuart", API="https://abacus.jasoncameron.dev";
 function hit(k){return fetch(API+"/hit/"+NS+"/"+k).then(function(r){return r.json()}).then(function(j){return j.value||0})}
