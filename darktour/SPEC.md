@@ -334,6 +334,8 @@ API 를 다시 돌려도 글이 날아가지 않고, 매칭 실패해도 앱이 
 | `assets/style.css`, `assets/app.js` | 공용. 빌드 도구 없음, vanilla JS |
 
 지도는 **Leaflet + OpenStreetMap** (키 불필요, 무료).
+Leaflet 은 CDN 이 아니라 `assets/leaflet/` 에 직접 넣는다 (npm 배포본 1.9.4, BSD-2-Clause).
+사이트가 외부 호스트의 가용성에 의존하지 않게 하기 위해서다 — 타일 서버만 외부에 남는다.
 
 ### 「이 테마 여행은 ○○에서도 가능합니다」
 
@@ -381,7 +383,8 @@ darktour/
 ├── about.html
 ├── assets/
 │   ├── style.css
-│   └── app.js
+│   ├── app.js
+│   └── leaflet/                  Leaflet 1.9.4 직접 포함 (CDN 미사용)
 ├── data/
 │   ├── regions.json
 │   ├── lenses.json
