@@ -48,9 +48,9 @@
     return;
   }
 
-  Promise.all([DT.findPlace(areaCode, id), DT.loadLenses(), DT.loadTour()])
+  Promise.all([DT.findPlace(areaCode, id), DT.loadLenses(), DT.loadTour(), DT.loadGrandculture()])
     .then(function (r) {
-      var place = r[0], lensData = r[1], tourAll = r[2] || {};
+      var place = r[0], lensData = r[1], tourAll = r[2] || {}, gc = r[3];
       if (!place) {
         $('body').innerHTML = '<div class="empty"><b>해당 장소를 찾지 못했습니다.</b>코스에서 다시 들어와 주세요.</div>';
         return;
@@ -62,7 +62,10 @@
 
       /* 머리 */
       html += '<div class="place-hero">';
-      html += '<div class="badges">' + DT.badges(lensData, place.lenses) + '</div>';
+      var ev = DT.evidence(place.evidence);
+      html += '<div class="badges">' + DT.badges(lensData, place.lenses) +
+        (ev ? '<span class="badge badge-ev" data-ev="' + DT.esc(place.evidence) + '" title="' +
+          DT.esc(ev.note) + '">' + DT.esc(ev.label) + '</span>' : '') + '</div>';
       html += '<h1 class="page">' + DT.esc(place.name) + '</h1>';
       html += '<p class="lede">' + DT.esc(place.sigungu || '') + ' · ' + DT.esc(place.era || '') + '</p>';
       html += '<div class="voices"><span>이 자리에서 지워진 사람</span>' + DT.esc(place.voices || '') + '</div>';
@@ -118,11 +121,35 @@
       }
       html += '</div>';
 
+      /* 출처 — 모든 글에 반드시 붙는다 */
+      html += '<div class="sources"><h4>' + (ev ? DT.esc(ev.label) : '출처') + '</h4>';
+      if (ev) html += '<p class="ev-note">' + DT.esc(ev.note) + '</p>';
+      if ((place.sources || []).length) {
+        html += '<ul>';
+        place.sources.forEach(function (s) {
+          var u = DT.sourceURL(s);
+          var label = '<span class="src-type">' + DT.esc(s.type) + '</span>' + DT.esc(s.label);
+          html += '<li>' + (u
+            ? '<a target="_blank" rel="noopener" href="' + DT.esc(u) + '">' + label + '</a>'
+            : label) + '</li>';
+        });
+        html += '</ul>';
+      } else {
+        html += '<p class="ev-note">출처가 기록되지 않았습니다. 제보해 주세요.</p>';
+      }
+      if (place.sourceNote) html += '<p class="src-note">' + DT.esc(place.sourceNote) + '</p>';
+      html += '</div>';
+
       /* 링크 */
       html += '<div class="btn-row">';
       if (place.encyQuery) {
         html += '<a class="btn btn-primary" target="_blank" rel="noopener" href="' +
           DT.encyURL(place.encyQuery) + '">한국민족문화대백과사전에서 «' + DT.esc(place.encyQuery) + '» 찾기</a>';
+      }
+      var gcURL = DT.grandcultureURL(gc, areaCode, place.sigungu);
+      if (gcURL) {
+        html += '<a class="btn" target="_blank" rel="noopener" href="' + DT.esc(gcURL) + '">디지털' +
+          DT.esc(place.sigungu.replace(/(시|군|구)$/, '')) + '문화대전</a>';
       }
       var kakao = DT.kakaoURL(place);
       if (kakao) html += '<a class="btn" target="_blank" rel="noopener" href="' + kakao + '">카카오맵에서 열기</a>';

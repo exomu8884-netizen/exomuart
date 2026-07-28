@@ -29,6 +29,7 @@
   DT.loadRegions = function () { return DT.get('regions.json'); };
   DT.loadCoverage = function () { return DT.get('coverage.json'); };
   DT.loadTour = function () { return DT.get('tour.json'); };
+  DT.loadGrandculture = function () { return DT.get('grandculture.json'); };
 
   DT.loadCache = function (areaCode, lens) {
     return DT.get('cache/' + areaCode + '__' + lens + '.json');
@@ -55,6 +56,33 @@
     if (place.lat == null || place.lng == null) return null;
     return 'https://map.kakao.com/link/map/' +
       encodeURIComponent(place.name) + ',' + place.lat + ',' + place.lng;
+  };
+
+  /**
+   * 디지털○○문화대전 주소. 서비스 중인 시군구만 슬러그가 등록되어 있고,
+   * 없으면 null 을 돌려 링크를 아예 만들지 않는다 (죽은 링크 방지).
+   */
+  DT.grandcultureURL = function (gc, areaCode, sigungu) {
+    if (!gc || !gc.verified) return null;
+    var slug = gc.verified[areaCode + '|' + sigungu];
+    if (!slug) return null;
+    return gc.urlPattern.replace(/\{slug\}/g, slug);
+  };
+
+  /* ---------- 근거와 출처 ---------- */
+
+  var EVIDENCE = {
+    record: { label: '사료 기록', note: '문헌·법령·판례 등 문서로 남은 사실에 근거합니다.' },
+    site: { label: '유물·유적', note: '남아 있는 건물이나 유물 자체가 근거입니다.' },
+    oral: { label: '구술·증언', note: '당사자와 관계자의 증언에 근거합니다. 세부는 증언마다 다를 수 있습니다.' },
+    legend: { label: '전해지는 이야기', note: '설화·구전입니다. 사실이 아닐 수 있으나, 이 지역이 무엇을 기억하려 했는지는 사실입니다.' }
+  };
+  DT.evidence = function (id) { return EVIDENCE[id] || null; };
+
+  DT.sourceURL = function (src) {
+    if (src.url) return src.url;
+    if (src.encyQuery) return DT.encyURL(src.encyQuery);
+    return null;
   };
 
   /* ---------- 렌즈 ---------- */

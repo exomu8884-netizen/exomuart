@@ -222,6 +222,35 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
 .lensnote[data-lens="youth"] h4 { color: var(--youth); }
 .lensnote p { margin: 0; font-size: .93rem; color: var(--ink-2); }
 
+/* ---------- 근거 배지 ---------- */
+
+.badge-ev { color: var(--ink-3); border-style: dashed; cursor: help; }
+.badge-ev[data-ev="legend"] { color: #b79a68; }
+.badge-ev[data-ev="oral"] { color: #8fa0b8; }
+.badge-ev[data-ev="site"] { color: #8fae95; }
+
+/* ---------- 출처 ---------- */
+
+.sources {
+  margin: 26px 0; padding: 18px 20px;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.sources h4 { margin: 0 0 4px; font-size: .84rem; letter-spacing: .04em; color: var(--ink-2); }
+.sources .ev-note { margin: 0 0 12px; font-size: .82rem; color: var(--ink-3); }
+.sources ul { margin: 0; padding: 0; list-style: none; }
+.sources li { font-size: .87rem; color: var(--ink-2); padding: 5px 0; border-top: 1px solid var(--line); }
+.sources li:first-child { border-top: 0; }
+.sources li a { color: var(--ink-2); text-decoration: none; }
+.sources li a:hover { color: var(--accent); }
+.sources .src-type {
+  display: inline-block; min-width: 40px; margin-right: 10px;
+  font-size: .72rem; color: var(--ink-3); letter-spacing: .04em;
+}
+.sources .src-note {
+  margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--line);
+  font-size: .82rem; color: var(--ink-3); line-height: 1.7;
+}
+
 .ethics {
   margin: 24px 0; padding: 18px 20px;
   background: #1c1517; border: 1px solid #3b2a2e; border-radius: var(--radius);
