@@ -5,14 +5,15 @@
   "generatedAt": "2026-07-28",
   "generator": "claude-code",
   "regionNote": "광주에서 교복을 입고 거리로 나선 일은 두 번 있었고, 두 번 다 전국을 흔들었다. 1929년에는 통학열차에서 시작해 학교에서 번졌고, 1980년에는 교문 앞에서 시작해 도청에서 끝났다. 51년 사이에 죽은 사람의 나이는 오히려 어려졌다. 이 코스는 묘비에 적힌 숫자를 읽는 코스다.",
-
   "places": [
     {
       "id": "gwangju-jeilgo",
       "name": "광주제일고 (옛 광주고등보통학교)",
       "sigungu": "북구",
       "sigunguCode": null,
-      "lenses": ["youth"],
+      "lenses": [
+        "youth"
+      ],
       "era": "1929",
       "eraStart": 1929,
       "weight": 3,
@@ -37,19 +38,28 @@
       "encyQuery": "광주학생운동",
       "motifs": [],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «광주학생운동»", "encyQuery": "광주학생운동" },
-        { "type": "법령", "label": "「각종 기념일 등에 관한 규정」 — 학생독립운동기념일(11월 3일)" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «광주학생운동»",
+          "encyQuery": "광주학생운동"
+        },
+        {
+          "type": "법령",
+          "label": "「각종 기념일 등에 관한 규정」 — 학생독립운동기념일(11월 3일)"
+        }
       ],
       "sourceNote": "참가 학교 수와 참가 인원은 자료마다 편차가 커서 수치를 적지 않았다.",
       "links": []
     },
-
     {
       "id": "gwangju-jeonnamyeogo",
       "name": "전남여고 (옛 광주여자고등보통학교)",
       "sigungu": "동구",
       "sigunguCode": null,
-      "lenses": ["youth", "women"],
+      "lenses": [
+        "youth",
+        "women"
+      ],
       "era": "1929~1930",
       "eraStart": 1929,
       "weight": 2,
@@ -75,18 +85,24 @@
       "encyQuery": "광주학생운동",
       "motifs": [],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «광주학생운동»", "encyQuery": "광주학생운동" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «광주학생운동»",
+          "encyQuery": "광주학생운동"
+        }
       ],
       "sourceNote": "백지동맹의 규모와 처벌 인원은 자료마다 차이가 있어 구체적 수치를 적지 않았다.",
       "links": []
     },
-
     {
       "id": "gwangju-jnu",
       "name": "전남대학교 정문 (1980년 5월 18일 아침)",
       "sigungu": "북구",
       "sigunguCode": null,
-      "lenses": ["youth", "people"],
+      "lenses": [
+        "youth",
+        "people"
+      ],
       "era": "1980. 5. 18",
       "eraStart": 1980,
       "weight": 3,
@@ -112,18 +128,27 @@
       "encyQuery": "5·18민주화운동",
       "motifs": [],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «5·18민주화운동»", "encyQuery": "5·18민주화운동" },
-        { "type": "기관", "label": "5·18기념재단 — 5·18 사적지 안내" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «5·18민주화운동»",
+          "encyQuery": "5·18민주화운동"
+        },
+        {
+          "type": "기관",
+          "label": "5·18기념재단 — 5·18 사적지 안내"
+        }
       ],
       "links": []
     },
-
     {
       "id": "gwangju-geumnam",
       "name": "금남로와 5·18민주광장 (옛 전남도청 앞)",
       "sigungu": "동구",
       "sigunguCode": null,
-      "lenses": ["youth", "people"],
+      "lenses": [
+        "youth",
+        "people"
+      ],
       "era": "1980. 5. 18~27",
       "eraStart": 1980,
       "weight": 3,
@@ -149,20 +174,32 @@
       "encyQuery": "5·18민주화운동",
       "motifs": [],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «5·18민주화운동»", "encyQuery": "5·18민주화운동" },
-        { "type": "법령", "label": "「5·18민주화운동 등에 관한 특별법」(1995 제정)" },
-        { "type": "기관", "label": "5·18기념재단" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «5·18민주화운동»",
+          "encyQuery": "5·18민주화운동"
+        },
+        {
+          "type": "법령",
+          "label": "「5·18민주화운동 등에 관한 특별법」(1995 제정)"
+        },
+        {
+          "type": "기관",
+          "label": "5·18기념재단"
+        }
       ],
       "links": []
     },
-
     {
       "id": "gwangju-jeonil245",
       "name": "전일빌딩245",
       "sigungu": "동구",
       "sigunguCode": null,
-      "lenses": ["youth", "people"],
-      "era": "1980. 5. 21",
+      "lenses": [
+        "youth",
+        "people"
+      ],
+      "era": "1980. 5",
       "eraStart": 1980,
       "weight": 2,
       "evidence": "site",
@@ -173,7 +210,7 @@
       "summary": "건물 이름의 245는 조사에서 확인된 탄흔의 개수다.",
       "story": [
         "전일빌딩은 금남로에 면한 건물이다. 2016~2017년 국립과학수사연구원 조사에서 이 건물 내부와 외벽에서 다수의 탄흔이 확인되었고, 그 위치와 각도가 헬기에서의 사격을 가리킨다는 분석이 제시되었다.",
-        "헬기 사격은 오랫동안 부인되어 온 사안이다. 목격 증언은 많았으나 물증이 요구되었고, 이 건물의 탄흔이 그 물증으로 다뤄졌다. 확인된 탄흔의 수가 245개였고, 건물 이름에 그 숫자가 붙었다.",
+        "헬기 사격은 오랫동안 부인되어 온 사안이다. 목격 증언은 많았으나 물증이 요구되었고, 이 건물의 탄흔이 그 물증으로 다뤄졌다. 광주시는 2017년 조사 결과를 발표하며 1980년 5월 27일 새벽 헬기가 이 일대에 사격했다고 밝혔다. 당시 확인된 탄흔이 245개였고, 건물 이름에 그 숫자가 붙었다. 이후 추가 조사에서 탄흔은 270여 개까지 늘었다.",
         "현재 전일빌딩245는 리모델링되어 전시·문화 공간으로 운영되며, 탄흔이 남은 층 일부가 보존 공개되어 있다."
       ],
       "lensNotes": {
@@ -187,18 +224,31 @@
       "encyQuery": "5·18민주화운동",
       "motifs": [],
       "sources": [
-        { "type": "기관", "label": "국립과학수사연구원 전일빌딩 탄흔 감정(2016~2017)" },
-        { "type": "기관", "label": "광주광역시 전일빌딩245" }
+        {
+          "type": "기관",
+          "label": "국립과학수사연구원 전일빌딩 탄흔 감정(2016~2017)"
+        },
+        {
+          "type": "기관",
+          "label": "광주광역시 전일빌딩245"
+        },
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «5·18민주화운동»",
+          "encyQuery": "5·18민주화운동"
+        }
       ],
-      "links": []
+      "links": [],
+      "sourceNote": "건물 이름의 245는 명명 시점에 확인된 수이며, 이후 조사에서 더 늘었다. 헬기 사격의 일자와 횟수는 조사 주체에 따라 서술이 갈린다."
     },
-
     {
       "id": "gwangju-sangmu",
       "name": "5·18자유공원 (옛 상무대 영창과 법정)",
       "sigungu": "서구",
       "sigunguCode": null,
-      "lenses": ["youth"],
+      "lenses": [
+        "youth"
+      ],
       "era": "1980",
       "eraStart": 1980,
       "weight": 2,
@@ -223,18 +273,31 @@
       "encyQuery": "5·18민주화운동",
       "motifs": [],
       "sources": [
-        { "type": "법령", "label": "「5·18민주화운동 등에 관한 특별법」(1995 제정)" },
-        { "type": "기관", "label": "5·18자유공원" }
+        {
+          "type": "법령",
+          "label": "「5·18민주화운동 등에 관한 특별법」(1995 제정)"
+        },
+        {
+          "type": "기관",
+          "label": "5·18자유공원"
+        },
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «5·18민주화운동»",
+          "encyQuery": "5·18민주화운동"
+        }
       ],
       "links": []
     },
-
     {
       "id": "gwangju-mangwol",
       "name": "망월동 구묘역",
       "sigungu": "북구",
       "sigunguCode": null,
-      "lenses": ["youth", "people"],
+      "lenses": [
+        "youth",
+        "people"
+      ],
       "era": "1980~",
       "eraStart": 1980,
       "weight": 2,
@@ -260,23 +323,32 @@
       "encyQuery": "5·18민주화운동",
       "motifs": [],
       "sources": [
-        { "type": "기관", "label": "5·18기념재단 — 망월묘역 안내" },
-        { "type": "사전", "label": "한국민족문화대백과사전 «5·18민주화운동»", "encyQuery": "5·18민주화운동" }
+        {
+          "type": "기관",
+          "label": "5·18기념재단 — 망월묘역 안내"
+        },
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «5·18민주화운동»",
+          "encyQuery": "5·18민주화운동"
+        }
       ],
       "links": []
     },
-
     {
       "id": "gwangju-518-myoji",
       "name": "국립5·18민주묘지",
       "sigungu": "북구",
       "sigunguCode": null,
-      "lenses": ["youth", "people"],
+      "lenses": [
+        "youth",
+        "people"
+      ],
       "era": "1997",
       "eraStart": 1997,
       "weight": 3,
       "evidence": "record",
-      "lat": 35.2200,
+      "lat": 35.22,
       "lng": 126.9756,
       "coordAccuracy": "approx",
       "voices": "묘비마다 태어난 해와 죽은 해가 적힌 사람들 — 그 간격이 열몇 해인 무덤이 있다",
@@ -297,8 +369,19 @@
       "encyQuery": "5·18민주화운동",
       "motifs": [],
       "sources": [
-        { "type": "법령", "label": "「5·18민주화운동 등에 관한 특별법」(1995 제정)" },
-        { "type": "기관", "label": "국립5·18민주묘지관리소" }
+        {
+          "type": "법령",
+          "label": "「5·18민주화운동 등에 관한 특별법」(1995 제정)"
+        },
+        {
+          "type": "기관",
+          "label": "국립5·18민주묘지관리소"
+        },
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «5·18민주화운동»",
+          "encyQuery": "5·18민주화운동"
+        }
       ],
       "sourceNote": "희생자 수는 사망·행방불명·부상 후 사망 등 집계 기준에 따라 달라져 수치를 적지 않았다.",
       "links": []

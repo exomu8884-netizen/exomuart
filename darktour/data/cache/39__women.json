@@ -5,14 +5,16 @@
   "generatedAt": "2026-07-28",
   "generator": "claude-code",
   "regionNote": "제주에서 여성은 배경이 아니다. 섬을 만든 것도 여신이고, 마을의 신을 모신 것도 여자이며, 바다에 들어가 집안을 먹인 것도 여자였다. 그리고 1948년에 남자들이 사라진 뒤 마을을 다시 세운 것도 여자들이었다. 이 코스는 신화에서 시작해 학살로 끝나는데, 그 사이 내내 같은 사람들이 일하고 있다.",
-
   "places": [
     {
       "id": "jeju-seolmundae",
       "name": "설문대할망의 섬 (제주돌문화공원)",
       "sigungu": "제주시",
       "sigunguCode": null,
-      "lenses": ["women", "people"],
+      "lenses": [
+        "women",
+        "people"
+      ],
       "era": "신화",
       "eraStart": 0,
       "weight": 3,
@@ -38,19 +40,30 @@
       "encyQuery": "설문대할망",
       "motifs": [],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «설문대할망»", "encyQuery": "설문대할망" },
-        { "type": "구비", "label": "한국구비문학대계 — 제주 설문대할망 전승", "url": "http://gubi.aks.ac.kr/" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «설문대할망»",
+          "encyQuery": "설문대할망"
+        },
+        {
+          "type": "구비",
+          "label": "한국구비문학대계 — 제주 설문대할망 전승",
+          "url": "http://gubi.aks.ac.kr/"
+        }
       ],
       "sourceNote": "이본이 많아 죽음의 경위를 비롯한 세부가 채록마다 다르다. 대표적인 두 갈래만 적었다.",
       "links": []
     },
-
     {
       "id": "jeju-songdang-bonhyang",
       "name": "송당본향당 (심방들의 자리)",
       "sigungu": "제주시",
       "sigunguCode": null,
-      "lenses": ["women", "outcast", "people"],
+      "lenses": [
+        "women",
+        "outcast",
+        "people"
+      ],
       "era": "조선~현재",
       "eraStart": 1600,
       "weight": 2,
@@ -75,21 +88,36 @@
       "caution": "현재 사용 중인 신앙 공간.",
       "tourKeyword": "송당본향당",
       "encyQuery": "본향당",
-      "motifs": ["danggol-mudang"],
+      "motifs": [
+        "danggol-mudang"
+      ],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «본향당»", "encyQuery": "본향당" },
-        { "type": "사전", "label": "한국민족문화대백과사전 «심방»", "encyQuery": "심방" },
-        { "type": "문화재", "label": "국가무형유산 — 제주칠머리당영등굿" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «본향당»",
+          "encyQuery": "본향당"
+        },
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «심방»",
+          "encyQuery": "심방"
+        },
+        {
+          "type": "문화재",
+          "label": "국가무형유산 — 제주칠머리당영등굿"
+        }
       ],
       "links": []
     },
-
     {
       "id": "jeju-jamnyeo",
       "name": "제주해녀박물관 (잠녀의 노동)",
       "sigungu": "제주시",
       "sigunguCode": null,
-      "lenses": ["women", "people"],
+      "lenses": [
+        "women",
+        "people"
+      ],
       "era": "조선~현재",
       "eraStart": 1700,
       "weight": 3,
@@ -115,19 +143,31 @@
       "encyQuery": "해녀",
       "motifs": [],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «해녀»", "encyQuery": "해녀" },
-        { "type": "문화재", "label": "유네스코 인류무형문화유산 — 제주해녀문화(2016)" },
-        { "type": "기관", "label": "제주해녀박물관" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «해녀»",
+          "encyQuery": "해녀"
+        },
+        {
+          "type": "문화재",
+          "label": "유네스코 인류무형문화유산 — 제주해녀문화(2016)"
+        },
+        {
+          "type": "기관",
+          "label": "제주해녀박물관"
+        }
       ],
       "links": []
     },
-
     {
       "id": "jeju-kimmandeok",
       "name": "김만덕기념관과 모충사",
       "sigungu": "제주시",
       "sigunguCode": null,
-      "lenses": ["women", "outcast"],
+      "lenses": [
+        "women",
+        "outcast"
+      ],
       "era": "1795",
       "eraStart": 1795,
       "weight": 3,
@@ -153,18 +193,27 @@
       "encyQuery": "김만덕",
       "motifs": [],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «김만덕»", "encyQuery": "김만덕" },
-        { "type": "기관", "label": "김만덕기념관" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «김만덕»",
+          "encyQuery": "김만덕"
+        },
+        {
+          "type": "기관",
+          "label": "김만덕기념관"
+        }
       ],
       "links": []
     },
-
     {
       "id": "jeju-haenyeo-1932",
       "name": "제주해녀항일운동기념탑",
       "sigungu": "제주시",
       "sigunguCode": null,
-      "lenses": ["women", "people"],
+      "lenses": [
+        "women",
+        "people"
+      ],
       "era": "1931~1932",
       "eraStart": 1932,
       "weight": 3,
@@ -190,19 +239,29 @@
       "encyQuery": "제주해녀항일운동",
       "motifs": [],
       "sources": [
-        { "type": "사전", "label": "한국민족문화대백과사전 «제주해녀항일운동»", "encyQuery": "제주해녀항일운동" },
-        { "type": "기관", "label": "제주해녀박물관 · 해녀항일운동기념공원" }
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «제주해녀항일운동»",
+          "encyQuery": "제주해녀항일운동"
+        },
+        {
+          "type": "기관",
+          "label": "제주해녀박물관 · 해녀항일운동기념공원"
+        }
       ],
       "sourceNote": "참여 인원은 자료에 따라 차이가 있어 정확한 수치를 적지 않았다.",
       "links": []
     },
-
     {
       "id": "seogwipo-pyoseon",
       "name": "표선 한모살 (도피자 가족이 죽은 백사장)",
       "sigungu": "서귀포시",
       "sigunguCode": null,
-      "lenses": ["women", "youth", "people"],
+      "lenses": [
+        "women",
+        "youth",
+        "people"
+      ],
       "era": "1948",
       "eraStart": 1948,
       "weight": 2,
@@ -229,19 +288,29 @@
       "encyQuery": "제주4·3사건",
       "motifs": [],
       "sources": [
-        { "type": "기관", "label": "제주4·3사건 진상조사보고서 (국무총리 소속 위원회)" },
-        { "type": "사전", "label": "한국민족문화대백과사전 «제주4·3사건»", "encyQuery": "제주4·3사건" }
+        {
+          "type": "기관",
+          "label": "제주4·3사건 진상조사보고서 (국무총리 소속 위원회)"
+        },
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «제주4·3사건»",
+          "encyQuery": "제주4·3사건"
+        }
       ],
       "sourceNote": "희생자 수와 날짜는 마을·자료에 따라 차이가 있어 범위로만 적었다.",
       "links": []
     },
-
     {
       "id": "jeju-darangswi",
       "name": "다랑쉬굴",
       "sigungu": "제주시",
       "sigunguCode": null,
-      "lenses": ["women", "youth", "people"],
+      "lenses": [
+        "women",
+        "youth",
+        "people"
+      ],
       "era": "1948",
       "eraStart": 1948,
       "weight": 2,
@@ -254,7 +323,7 @@
       "story": [
         "1948년 12월, 토벌을 피해 다랑쉬오름 인근의 굴에 숨어 있던 주민 열한 명이 발견되었다. 군경이 굴 입구에 불을 피워 연기를 넣었고, 안에 있던 사람들이 질식해 죽었다. 희생자 중에는 여성과 아홉 살 아이가 있었다.",
         "굴은 그대로 봉인되었고 1992년에야 발견되었다. 발굴 당시 유해와 함께 솥·그릇·요강 같은 생활 도구가 나왔다. 사람들이 그 안에서 얼마간 생활했다는 뜻이다.",
-        "발견 직후 유해는 화장되어 바다에 뿌려졌다. 당시 조사와 보존을 요구하는 목소리가 있었으나 받아들여지지 않았다. 굴 입구는 다시 막혀 있고 인근에 표석이 있다."
+        "유해는 발굴로부터 45일 만에 화장되어 바다에 뿌려졌다. 보존과 추가 조사를 요구하는 목소리가 있었으나 받아들여지지 않았고, 유족을 회유해 서둘러 처리했다는 지적이 이후 제기되었다. 굴 입구는 다시 막혀 있고 인근에 표석이 있다."
       ],
       "lensNotes": {
         "women": "굴 안에서 나온 것은 무기가 아니라 살림 도구였다. 무장대의 근거지가 아니라 피난처였다는 뜻이며, 그 안에서 살림을 유지한 사람이 누구였는지는 유물이 말해준다.",
@@ -268,18 +337,32 @@
       "encyQuery": "제주4·3사건",
       "motifs": [],
       "sources": [
-        { "type": "기관", "label": "제주4·3사건 진상조사보고서 (국무총리 소속 위원회)" },
-        { "type": "기관", "label": "제주4·3평화재단 — 다랑쉬굴 관련 자료" }
+        {
+          "type": "기관",
+          "label": "제주4·3사건 진상조사보고서 (국무총리 소속 위원회)"
+        },
+        {
+          "type": "기관",
+          "label": "제주4·3평화재단 — 다랑쉬굴 관련 자료"
+        },
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «제주4·3사건»",
+          "encyQuery": "제주4·3사건"
+        }
       ],
       "links": []
     },
-
     {
       "id": "jeju-bukchon",
       "name": "너븐숭이 4·3기념관과 애기무덤",
       "sigungu": "제주시",
       "sigunguCode": null,
-      "lenses": ["women", "youth", "people"],
+      "lenses": [
+        "women",
+        "youth",
+        "people"
+      ],
       "era": "1949",
       "eraStart": 1949,
       "weight": 3,
@@ -306,9 +389,23 @@
       "encyQuery": "제주4·3사건",
       "motifs": [],
       "sources": [
-        { "type": "기관", "label": "제주4·3사건 진상조사보고서 (국무총리 소속 위원회)" },
-        { "type": "기관", "label": "너븐숭이 4·3기념관" },
-        { "type": "문헌", "label": "현기영 「순이 삼촌」(1978)" }
+        {
+          "type": "기관",
+          "label": "제주4·3사건 진상조사보고서 (국무총리 소속 위원회)"
+        },
+        {
+          "type": "기관",
+          "label": "너븐숭이 4·3기념관"
+        },
+        {
+          "type": "문헌",
+          "label": "현기영 「순이 삼촌」(1978)"
+        },
+        {
+          "type": "사전",
+          "label": "한국민족문화대백과사전 «제주4·3사건»",
+          "encyQuery": "제주4·3사건"
+        }
       ],
       "sourceNote": "희생자 수는 자료에 따라 300~400명대로 차이가 있어 «수백 명»으로 적었다.",
       "links": []
