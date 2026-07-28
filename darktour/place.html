@@ -48,9 +48,10 @@
     return;
   }
 
-  Promise.all([DT.findPlace(areaCode, id), DT.loadLenses(), DT.loadTour(), DT.loadGrandculture()])
+  Promise.all([DT.findPlace(areaCode, id), DT.loadLenses(), DT.loadTour(),
+               DT.loadGrandculture(), DT.loadMotifs()])
     .then(function (r) {
-      var place = r[0], lensData = r[1], tourAll = r[2] || {}, gc = r[3];
+      var place = r[0], lensData = r[1], tourAll = r[2] || {}, gc = r[3], motifData = r[4];
       if (!place) {
         $('body').innerHTML = '<div class="empty"><b>해당 장소를 찾지 못했습니다.</b>코스에서 다시 들어와 주세요.</div>';
         return;
@@ -89,6 +90,28 @@
             '<p>' + DT.esc(place.lensNotes[k]) + '</p></div>';
         });
       }
+
+      /* 같은 이야기가 있는 곳 */
+      (place.motifs || []).forEach(function (mid) {
+        var m = DT.motifById(motifData, mid);
+        if (!m) return;
+        var others = (m.places || []).filter(function (x) { return x.id !== place.id; });
+        html += '<div class="motif">' +
+          '<h4>같은 이야기가 있는 곳 — 「' + DT.esc(m.name) + '」</h4>' +
+          '<p class="motif-read">' + DT.esc(m.reading) + '</p>' +
+          '<p class="motif-dist">' + DT.esc(m.distribution) + '</p>';
+        if (others.length) {
+          html += '<ul class="motif-places">' + others.map(function (o) {
+            return '<li><a href="' + DT.placeURL(o.areaCode, o.id) + '">' +
+              DT.esc(o.name) + '</a> <span>' + DT.esc(o.sigungu) + '</span></li>';
+          }).join('') + '</ul>';
+        }
+        if ((m.candidates || []).length) {
+          html += '<p class="motif-todo">아직 정리하지 않은 곳 — ' +
+            DT.esc(m.candidates.join(' · ')) + '</p>';
+        }
+        html += '</div>';
+      });
 
       /* 방문 예절 */
       if (place.ethics) {

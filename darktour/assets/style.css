@@ -229,6 +229,26 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
 .badge-ev[data-ev="oral"] { color: #8fa0b8; }
 .badge-ev[data-ev="site"] { color: #8fae95; }
 
+/* ---------- 모티프 ---------- */
+
+.motif {
+  margin: 24px 0; padding: 18px 20px;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  border-left: 3px solid #8a7a5c;
+}
+.motif h4 { margin: 0 0 8px; font-size: .86rem; color: #c9b189; letter-spacing: .02em; }
+.motif .motif-read { margin: 0 0 10px; font-size: .92rem; color: var(--ink-2); }
+.motif .motif-dist { margin: 0; font-size: .84rem; color: var(--ink-3); }
+.motif-places { list-style: none; margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); }
+.motif-places li { font-size: .89rem; padding: 4px 0; }
+.motif-places a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+.motif-places a:hover { color: var(--accent); border-bottom-color: currentColor; }
+.motif-places span { color: var(--ink-3); font-size: .82rem; margin-left: 8px; }
+.motif-todo {
+  margin: 10px 0 0; padding-top: 10px; border-top: 1px dashed var(--line);
+  font-size: .8rem; color: var(--ink-3);
+}
+
 /* ---------- 출처 ---------- */
 
 .sources {

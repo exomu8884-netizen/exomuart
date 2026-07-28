@@ -30,6 +30,13 @@
   DT.loadCoverage = function () { return DT.get('coverage.json'); };
   DT.loadTour = function () { return DT.get('tour.json'); };
   DT.loadGrandculture = function () { return DT.get('grandculture.json'); };
+  DT.loadMotifs = function () { return DT.get('motifs.json'); };
+
+  DT.motifById = function (motifData, id) {
+    var hit = null;
+    ((motifData && motifData.motifs) || []).forEach(function (m) { if (m.id === id) hit = m; });
+    return hit;
+  };
 
   DT.loadCache = function (areaCode, lens) {
     return DT.get('cache/' + areaCode + '__' + lens + '.json');

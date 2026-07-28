@@ -255,7 +255,37 @@ https://{slug}.grandculture.net/{slug}
 230개 시군구 중 서비스 중인 곳은 121곳뿐이므로 **존재를 확인한 슬러그만 등록**하고,
 없으면 링크를 만들지 않는다. 죽은 링크를 만드느니 링크가 없는 편이 낫다.
 
-### 3.6 `data/tour.json` — TourAPI 캐시 (손대지 않는 파일)
+### 3.6 `data/motifs.json` — 전국 분포 모티프
+
+전국에 변이형으로 퍼진 이야기·유물 유형. 두 가지 일을 한다.
+
+**① 화면** — 장소에 `motifs: ["maesin-hyonyeo"]` 를 달면 상세 페이지에
+「같은 이야기가 있는 곳」 블록이 붙어 다른 지역의 장소로 이어진다.
+한 지역만 보던 사람이 그 이야기가 전국에 있다는 것을 알게 된다.
+
+**② 기획** — `fills` 에 적힌 areaCode 를 보면 이 모티프 하나로 어느 빈칸을 메울 수 있는지 보인다.
+`places` 는 실제로 캐시에 쓴 장소, `candidates` 는 아직 쓰지 않은 후보다.
+시군구를 하나씩 훑는 것보다 모티프 하나를 잡아 지역별 사례를 뽑는 편이 빈칸을 훨씬 빨리 메운다.
+
+```jsonc
+{
+  "id": "maesin-hyonyeo",
+  "name": "몸을 판 딸",
+  "lenses": ["people", "women", "disability"],
+  "summary": "가난한 딸이 앞을 보지 못하는 부모를 먹이기 위해 자기 몸을 판다.",
+  "reading": "…뒤집어 읽기. 이 유형 전체를 관통하는 한 문단",
+  "distribution": "경주 빈녀양모, 곡성 관음사 연기설화, 판소리 심청가로 이어진다.",
+  "fills": [35, 38, 37],
+  "places":     [ { "areaCode": 35, "id": "gyeongju-binnyeo", "name": "…", "sigungu": "경주시" } ],
+  "candidates": [ "전남 곡성 — 관음사 연기설화 원홍장" ],
+  "sources": [ … ]
+}
+```
+
+`places` 는 비정규화된 역색인이다. 장소를 추가하면 여기에도 넣어야 한다
+(전체 캐시를 스캔하지 않고 한 파일만 읽어 교차 링크를 만들기 위한 의도적 중복).
+
+### 3.7 `data/tour.json` — TourAPI 캐시 (손대지 않는 파일)
 
 ```jsonc
 {
@@ -321,6 +351,7 @@ darktour/
 │   ├── lenses.json
 │   ├── coverage.json             어떤 (areaCode, lens) 캐시가 존재하는지의 색인
 │   ├── grandculture.json         향토문화전자대전 시군구 슬러그 (확인된 것만)
+│   ├── motifs.json               전국 분포 모티프 — 교차 링크 + 빈칸 메우기 계획
 │   ├── tour.json
 │   └── cache/
 │       ├── 11__people.json  …  11__youth.json      (서울)
