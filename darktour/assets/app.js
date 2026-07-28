@@ -138,6 +138,9 @@
           (file.places || []).forEach(function (p) {
             if (!byId[p.id]) {
               byId[p.id] = JSON.parse(JSON.stringify(p));
+              // 같은 해에 벌어진 일이 여러 개일 때(예: 1980년 5월의 광주) eraStart 만으로는
+              // 순서가 정해지지 않는다. 캐시 파일에 적힌 순서를 최종 동률 기준으로 남긴다.
+              byId[p.id]._order = order.length;
               order.push(p.id);
             } else {
               // 같은 장소가 다른 렌즈 캐시에도 있으면 관점 문단을 합친다
@@ -249,7 +252,8 @@
       return route;
     }
     return list.sort(function (a, b) {
-      return (a.eraStart || 0) - (b.eraStart || 0);
+      var d = (a.eraStart || 0) - (b.eraStart || 0);
+      return d !== 0 ? d : (a._order || 0) - (b._order || 0);
     });
   };
 
