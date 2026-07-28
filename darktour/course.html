@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>코스 — 다크투어</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html">다크<em>투어</em> <small>지워진 사람들의 자리</small></a>
+    <nav class="site-nav">
+      <a href="index.html">코스 만들기</a>
+      <a href="about.html">이 프로젝트에 대하여</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <a class="backlink" href="index.html">← 다시 고르기</a>
+  <div id="head"><p class="loading">코스를 만드는 중…</p></div>
+  <div id="map"></div>
+  <div id="notes"></div>
+  <ol class="stops" id="stops"></ol>
+  <div id="foot"></div>
+</div>
+
+<footer class="site">
+  <div class="wrap">
+    <p>이야기는 요약본입니다. 각 장소에서 한국민족문화대백과사전 원문으로 이어집니다.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var p = DT.params();
+  var areaCode = parseInt(p.area, 10);
+  var sigungu = p.sigungu || '*';
+  var lenses = (p.lens || '').split(',').filter(Boolean);
+  var days = p.days || 'day';
+  var order = p.order || 'chronological';
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  if (!areaCode || !lenses.length) {
+    $('head').innerHTML = '<div class="empty"><b>코스 정보가 없습니다.</b>처음부터 다시 골라 주세요.</div>';
+    $('map').hidden = true;
+    return;
+  }
+
+  Promise.all([
+    DT.buildCourse({ areaCode: areaCode, sigungu: sigungu, lenses: lenses, days: days, order: order }),
+    DT.loadRegions()
+  ]).then(function (r) {
+    var course = r[0], regions = r[1];
+    var sido = null;
+    regions.sido.forEach(function (s) { if (s.areaCode === areaCode) sido = s; });
+
+    var lensNames = lenses.map(function (l) { return DT.lensLabel(course.lensData, l); }).join(' · ');
+    var where = (sido ? sido.short : '') + (sigungu === '*' ? ' 전역' : ' ' + sigungu);
+
+    document.title = course.order.title + ' — ' + where + ' 다크투어';
+
+    $('head').innerHTML =
+      '<h1 class="page">' + DT.esc(course.order.title) + '</h1>' +
+      '<p class="lede">' + DT.esc(where) + ' · ' + DT.esc(lensNames) + ' · ' +
+      DT.esc(course.duration.label) + ' · 정거장 ' + course.stops.length + '곳<br>' +
+      DT.esc(course.order.blurb) + '</p>';
+
+    if (!course.stops.length) {
+      $('map').hidden = true;
+      $('stops').innerHTML = '<div class="empty"><b>이 조건에 맞는 자리가 없습니다.</b>범위를 넓혀 보세요.</div>';
+      return;
+    }
+
+    DT.drawMap($('map'), course.stops, { line: true });
+
+    // 지역·관점 맥락
+    var notes = $('notes');
+    notes.innerHTML = course.regionNotes.filter(function (n) {
+      return lenses.indexOf(n.lens) !== -1;
+    }).map(function (n) {
+      return '<div class="lens-blurb"><b>' +
+        DT.esc(DT.lensLabel(course.lensData, n.lens)) + '의 눈</b> — ' + DT.esc(n.text) + '</div>';
+    }).join('');
+
+    // 경고
+    course.warnings.forEach(function (w) {
+      if (w.type === 'tooShort' || w.type === 'noData') {
+        var names = w.missing.map(function (l) { return DT.lensLabel(course.lensData, l); }).join('·');
+        notes.innerHTML += '<div class="notice">이 코스에는 ' + DT.esc(names) +
+          ' 관점의 자리가 들어가지 못했습니다. 기간을 늘리거나 범위를 넓혀 보세요.</div>';
+      }
+    });
+
+    // 정거장
+    var back = location.search.slice(1);
+    var half = Math.ceil(course.stops.length / 2);
+    var twoDays = days === 'two' && course.stops.length > 4;
+
+    var html = '';
+    course.stops.forEach(function (s, i) {
+      if (twoDays && i === 0) html += '<div class="day-break" style="margin-left:0;border-top:0;padding-top:0">첫째 날</div>';
+      if (twoDays && i === half) html += '<div class="day-break">둘째 날</div>';
+
+      var prev = i > 0 ? course.stops[i - 1] : null;
+      var dist = prev ? DT.distanceKm(prev, s) : 0;
+
+      html +=
+        '<li class="stop">' +
+        '<div class="badges">' + DT.badges(course.lensData, s.lenses) + '</div>' +
+        '<h3><a href="' + DT.placeURL(areaCode, s.id, back) + '">' + DT.esc(s.name) + '</a></h3>' +
+        '<div class="stop-meta">' + DT.esc(s.sigungu || '') + ' · ' + DT.esc(s.era || '') +
+        (prev ? ' · 이전 정거장에서 약 ' + dist.toFixed(dist < 10 ? 1 : 0) + 'km' : '') +
+        '</div>' +
+        '<p class="stop-voices">' + DT.esc(s.summary || '') + '</p>' +
+        '<a class="source-link" href="' + DT.placeURL(areaCode, s.id, back) + '">이야기 읽기 →</a>' +
+        '</li>';
+    });
+    $('stops').innerHTML = html;
+
+    // 다른 안으로 전환
+    var otherId = order === 'chronological' ? 'walking' : 'chronological';
+    var other = DT.orderById(course.lensData, otherId);
+    $('foot').innerHTML =
+      '<div class="btn-row">' +
+      '<a class="btn btn-primary" href="' + DT.courseURL({
+        areaCode: areaCode, sigungu: sigungu, lenses: lenses, days: days, order: otherId
+      }) + '">' + DT.esc(other.title) + '(으)로 보기</a>' +
+      '<a class="btn" href="index.html">조건 바꾸기</a>' +
+      '</div>';
+  });
+})();
+</script>
+
+</body>
+</html>

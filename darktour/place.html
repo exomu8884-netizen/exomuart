@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>장소 — 다크투어</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html">다크<em>투어</em> <small>지워진 사람들의 자리</small></a>
+    <nav class="site-nav">
+      <a href="index.html">코스 만들기</a>
+      <a href="about.html">이 프로젝트에 대하여</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <a class="backlink" id="back" href="index.html">← 코스로 돌아가기</a>
+  <div id="body"><p class="loading">불러오는 중…</p></div>
+</div>
+
+<footer class="site">
+  <div class="wrap">
+    <p>이 글은 요약본입니다. 사실 확인과 더 깊은 내용은 한국민족문화대백과사전 원문을 확인해 주세요.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var p = DT.params();
+  var areaCode = parseInt(p.area, 10);
+  var id = p.id;
+  var $ = function (x) { return document.getElementById(x); };
+
+  if (p.back) $('back').href = 'course.html?' + p.back;
+
+  if (!areaCode || !id) {
+    $('body').innerHTML = '<div class="empty"><b>장소 정보가 없습니다.</b></div>';
+    return;
+  }
+
+  Promise.all([DT.findPlace(areaCode, id), DT.loadLenses(), DT.loadTour()])
+    .then(function (r) {
+      var place = r[0], lensData = r[1], tourAll = r[2] || {};
+      if (!place) {
+        $('body').innerHTML = '<div class="empty"><b>해당 장소를 찾지 못했습니다.</b>코스에서 다시 들어와 주세요.</div>';
+        return;
+      }
+      document.title = place.name + ' — 다크투어';
+
+      var tour = tourAll[place.id] || null;
+      var html = '';
+
+      /* 머리 */
+      html += '<div class="place-hero">';
+      html += '<div class="badges">' + DT.badges(lensData, place.lenses) + '</div>';
+      html += '<h1 class="page">' + DT.esc(place.name) + '</h1>';
+      html += '<p class="lede">' + DT.esc(place.sigungu || '') + ' · ' + DT.esc(place.era || '') + '</p>';
+      html += '<div class="voices"><span>이 자리에서 지워진 사람</span>' + DT.esc(place.voices || '') + '</div>';
+      html += '</div>';
+
+      /* 지도 */
+      if (place.lat != null) html += '<div id="map" class="small"></div>';
+
+      /* 본문 */
+      html += '<div class="story">' +
+        (place.story || []).map(function (s) { return '<p>' + DT.esc(s) + '</p>'; }).join('') +
+        '</div>';
+
+      /* 렌즈별 관점 */
+      var noteKeys = Object.keys(place.lensNotes || {});
+      if (noteKeys.length) {
+        html += '<div class="section-title">관점별로 다시 읽기</div>';
+        noteKeys.forEach(function (k) {
+          html += '<div class="lensnote" data-lens="' + DT.esc(k) + '">' +
+            '<h4>' + DT.esc(DT.lensLabel(lensData, k)) + '의 눈</h4>' +
+            '<p>' + DT.esc(place.lensNotes[k]) + '</p></div>';
+        });
+      }
+
+      /* 방문 예절 */
+      if (place.ethics) {
+        html += '<div class="ethics"><h4>방문하기 전에</h4><p>' + DT.esc(place.ethics) + '</p></div>';
+      }
+
+      /* 관광공사 정보 */
+      html += '<div class="factbox"><h4>장소 정보 — 한국관광공사 TourAPI</h4>';
+      if (tour && tour.matched) {
+        if (tour.firstimage) html += '<img src="' + DT.esc(tour.firstimage) + '" alt="' + DT.esc(place.name) + '">';
+        html += '<dl>';
+        if (tour.addr1) html += '<dt>주소</dt><dd>' + DT.esc(tour.addr1) + '</dd>';
+        if (tour.tel) html += '<dt>전화</dt><dd>' + DT.esc(tour.tel) + '</dd>';
+        if (place.visit) html += '<dt>관람</dt><dd>' + DT.esc(place.visit) + '</dd>';
+        if (place.caution) html += '<dt>유의</dt><dd>' + DT.esc(place.caution) + '</dd>';
+        html += '</dl>';
+        if (tour.overview) {
+          html += '<div style="padding:0 18px 16px"><p style="font-size:.89rem;color:var(--ink-2);margin:0">' +
+            DT.esc(tour.overview.replace(/<[^>]*>/g, '')) + '</p></div>';
+        }
+      } else {
+        html += '<dl>';
+        html += '<dt>위치</dt><dd>' + DT.esc(place.sigungu || '') +
+          (place.coordAccuracy === 'approx' ? ' <span style="color:var(--ink-3)">(좌표는 근사값입니다)</span>' : '') + '</dd>';
+        if (place.visit) html += '<dt>관람</dt><dd>' + DT.esc(place.visit) + '</dd>';
+        if (place.caution) html += '<dt>유의</dt><dd>' + DT.esc(place.caution) + '</dd>';
+        html += '</dl>';
+        html += '<p class="unmatched">관광공사 데이터베이스에 등록되지 않은 장소입니다. ' +
+          '소수자의 자리는 관광 정보로 관리되지 않는 경우가 많습니다.</p>';
+      }
+      html += '</div>';
+
+      /* 링크 */
+      html += '<div class="btn-row">';
+      if (place.encyQuery) {
+        html += '<a class="btn btn-primary" target="_blank" rel="noopener" href="' +
+          DT.encyURL(place.encyQuery) + '">한국민족문화대백과사전에서 «' + DT.esc(place.encyQuery) + '» 찾기</a>';
+      }
+      var kakao = DT.kakaoURL(place);
+      if (kakao) html += '<a class="btn" target="_blank" rel="noopener" href="' + kakao + '">카카오맵에서 열기</a>';
+      (place.links || []).forEach(function (l) {
+        html += '<a class="btn" target="_blank" rel="noopener" href="' + DT.esc(l.url) + '">' + DT.esc(l.label) + '</a>';
+      });
+      html += '</div>';
+
+      $('body').innerHTML = html;
+
+      if (place.lat != null) {
+        DT.drawMap(document.getElementById('map'), [place], { numbered: false, line: false });
+      }
+    });
+})();
+</script>
+
+</body>
+</html>
