@@ -277,6 +277,32 @@
       });
   };
 
+  /* ---------- 「이 테마 여행은 ○○에서도 가능합니다」 ----------
+   *
+   * 전국 순례 페이지를 따로 두지 않는다. 지역을 골라 코스를 다 본 사람에게
+   * 코스 끝에서 같은 관점이 가능한 다른 지역을 권하는 방식으로만 확장한다.
+   * coverage.json 한 파일만 읽으므로 캐시가 85건이 되어도 비용이 늘지 않는다.
+   */
+  DT.alsoIn = function (cov, regions, lensIds, currentAreaCode) {
+    var avail = (cov && cov.available) || {};
+    var out = [];
+    Object.keys(avail).forEach(function (a) {
+      var code = parseInt(a, 10);
+      if (code === currentAreaCode) return;
+      var shared = lensIds.filter(function (l) { return avail[a].indexOf(l) !== -1; });
+      if (!shared.length) return;
+      var sido = null;
+      regions.sido.forEach(function (s) { if (s.areaCode === code) sido = s; });
+      out.push({
+        areaCode: code,
+        short: sido ? sido.short : String(code),
+        name: sido ? sido.name : String(code),
+        lenses: shared
+      });
+    });
+    return out;
+  };
+
   /* ---------- 장소 단건 조회 ---------- */
 
   DT.findPlace = function (areaCode, placeId) {

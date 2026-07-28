@@ -57,9 +57,10 @@
 
   Promise.all([
     DT.buildCourse({ areaCode: areaCode, sigungu: sigungu, lenses: lenses, days: days, order: order }),
-    DT.loadRegions()
+    DT.loadRegions(),
+    DT.loadCoverage()
   ]).then(function (r) {
-    var course = r[0], regions = r[1];
+    var course = r[0], regions = r[1], cov = r[2];
     var sido = null;
     regions.sido.forEach(function (s) { if (s.areaCode === areaCode) sido = s; });
 
@@ -129,13 +130,34 @@
     // 다른 안으로 전환
     var otherId = order === 'chronological' ? 'walking' : 'chronological';
     var other = DT.orderById(course.lensData, otherId);
-    $('foot').innerHTML =
+    var foot =
       '<div class="btn-row">' +
       '<a class="btn btn-primary" href="' + DT.courseURL({
         areaCode: areaCode, sigungu: sigungu, lenses: lenses, days: days, order: otherId
       }) + '">' + DT.esc(other.title) + '(으)로 보기</a>' +
       '<a class="btn" href="index.html">조건 바꾸기</a>' +
       '</div>';
+
+    // 이 코스는 한 지역의 하루지만, 같은 관점은 다른 지역에도 있다.
+    // 전국 순례로 묶지 않고, 다 본 사람에게 옆 지역을 권하는 방식으로만 잇는다.
+    var also = DT.alsoIn(cov, regions, lenses, areaCode);
+    if (also.length) {
+      foot +=
+        '<div class="also">' +
+        '<span class="also-tag">이 테마 여행은</span>' +
+        '<p>' + also.map(function (x) {
+          var names = x.lenses.map(function (l) { return DT.lensLabel(course.lensData, l); }).join('·');
+          return '<a href="' + DT.courseURL({
+            areaCode: x.areaCode, sigungu: '*', lenses: x.lenses, days: days, order: order
+          }) + '"><b>' + DT.esc(x.name) + '</b>' +
+            (x.lenses.length < lenses.length ? ' <span>' + DT.esc(names) + '</span>' : '') +
+            '</a>';
+        }).join('') + '</p>' +
+        '<p class="also-tail">에서도 가능합니다.</p>' +
+        '</div>';
+    }
+
+    $('foot').innerHTML = foot;
   });
 })();
 </script>
