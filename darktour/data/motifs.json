@@ -190,13 +190,27 @@
           "id": "andong-jebiwon",
           "name": "안동 이천동 마애여래입상 (제비원 미륵)",
           "sigungu": "안동시"
+        },
+        {
+          "areaCode": 34,
+          "id": "nonsan-gwanchoksa",
+          "name": "논산 관촉사 석조미륵보살입상 (은진미륵)",
+          "sigungu": "논산시"
+        },
+        {
+          "areaCode": 34,
+          "id": "buyeo-daejosa",
+          "name": "부여 대조사 석조미륵보살입상",
+          "sigungu": "부여군"
+        },
+        {
+          "areaCode": 31,
+          "id": "paju-yongmiri",
+          "name": "파주 용미리 마애이불입상",
+          "sigungu": "파주시"
         }
       ],
-      "candidates": [
-        "충남 논산 — 관촉사 석조미륵보살입상",
-        "경기 파주 — 용미리 마애이불입상",
-        "충남 부여 — 대조사 석조미륵보살입상"
-      ],
+      "candidates": [],
       "sources": [
         {
           "type": "사전",
@@ -219,11 +233,17 @@
         38,
         34
       ],
-      "places": [],
+      "places": [
+        {
+          "areaCode": 34,
+          "id": "dangjin-anguksa",
+          "name": "당진 안국사지와 매향 바위",
+          "sigungu": "당진시"
+        }
+      ],
       "candidates": [
         "경남 사천 — 흥사리 매향비",
-        "전남 영암·신안 — 매향비",
-        "충남 당진 — 안국사지 매향암각"
+        "전남 영암·신안 — 매향비"
       ],
       "sources": [
         {

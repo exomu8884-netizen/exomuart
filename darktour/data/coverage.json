@@ -2,9 +2,26 @@
   "_note": "어떤 (areaCode, lens) 캐시가 존재하는지의 목록. 85건을 매번 탐색하지 않고 이 파일만 읽어 지역·렌즈의 활성/비활성을 결정한다. 캐시를 추가하면 여기에도 반드시 추가할 것.",
   "updatedAt": "2026-07-28",
   "available": {
-    "1": ["lgbtq"],
-    "35": ["people"],
-    "36": ["people"],
-    "38": ["disability"]
+    "1": [
+      "lgbtq"
+    ],
+    "31": [
+      "people"
+    ],
+    "34": [
+      "people"
+    ],
+    "35": [
+      "people"
+    ],
+    "36": [
+      "people"
+    ],
+    "37": [
+      "people"
+    ],
+    "38": [
+      "disability"
+    ]
   }
 }
