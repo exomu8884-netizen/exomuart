@@ -16,6 +16,9 @@
   --disability: #6fb0c9;
   --lgbtq: #a98ad9;
   --youth: #7fb98a;
+  --elder: #9d9ec2;
+  --migrant: #6fc9ab;
+  --outcast: #c47b7b;
 
   --radius: 12px;
   --max: 940px;
@@ -106,6 +109,9 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
 .chip-lens[aria-pressed="true"][data-lens="disability"] { color: var(--disability); }
 .chip-lens[aria-pressed="true"][data-lens="lgbtq"] { color: var(--lgbtq); }
 .chip-lens[aria-pressed="true"][data-lens="youth"] { color: var(--youth); }
+.chip-lens[aria-pressed="true"][data-lens="elder"] { color: var(--elder); }
+.chip-lens[aria-pressed="true"][data-lens="migrant"] { color: var(--migrant); }
+.chip-lens[aria-pressed="true"][data-lens="outcast"] { color: var(--outcast); }
 
 .chip-region[data-has="0"] { opacity: .34; }
 
@@ -191,6 +197,9 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
 .badge[data-lens="disability"] { color: var(--disability); }
 .badge[data-lens="lgbtq"] { color: var(--lgbtq); }
 .badge[data-lens="youth"] { color: var(--youth); }
+.badge[data-lens="elder"] { color: var(--elder); }
+.badge[data-lens="migrant"] { color: var(--migrant); }
+.badge[data-lens="outcast"] { color: var(--outcast); }
 
 /* ---------- 장소 상세 ---------- */
 
@@ -214,12 +223,18 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
 .lensnote[data-lens="disability"] { border-left-color: var(--disability); }
 .lensnote[data-lens="lgbtq"] { border-left-color: var(--lgbtq); }
 .lensnote[data-lens="youth"] { border-left-color: var(--youth); }
+.lensnote[data-lens="elder"] { border-left-color: var(--elder); }
+.lensnote[data-lens="migrant"] { border-left-color: var(--migrant); }
+.lensnote[data-lens="outcast"] { border-left-color: var(--outcast); }
 .lensnote h4 { margin: 0 0 6px; font-size: .84rem; letter-spacing: .04em; }
 .lensnote[data-lens="people"] h4 { color: var(--people); }
 .lensnote[data-lens="women"] h4 { color: var(--women); }
 .lensnote[data-lens="disability"] h4 { color: var(--disability); }
 .lensnote[data-lens="lgbtq"] h4 { color: var(--lgbtq); }
 .lensnote[data-lens="youth"] h4 { color: var(--youth); }
+.lensnote[data-lens="elder"] h4 { color: var(--elder); }
+.lensnote[data-lens="migrant"] h4 { color: var(--migrant); }
+.lensnote[data-lens="outcast"] h4 { color: var(--outcast); }
 .lensnote p { margin: 0; font-size: .93rem; color: var(--ink-2); }
 
 /* ---------- 근거 배지 ---------- */

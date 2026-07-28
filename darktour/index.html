@@ -49,7 +49,7 @@
   <!-- ③ 렌즈 -->
   <section class="step" id="step-lens" hidden>
     <div class="step-head"><span class="step-num">3</span><h2>누구의 눈으로 볼까요?</h2></div>
-    <p class="step-hint">여러 개를 고를 수 있습니다. 고른 관점의 자리가 모두 코스에 들어갑니다.</p>
+    <p class="step-hint" id="lens-hint">고른 관점의 자리가 모두 코스에 들어갑니다.</p>
     <div class="step-body">
       <div class="chips" id="lens-chips"></div>
       <div id="lens-blurbs"></div>
@@ -223,6 +223,8 @@
     return avail.filter(function (l) { return set[l]; });
   }
 
+  function maxLenses() { return LENSES.maxLenses || 3; }
+
   function renderLens() {
     var box = $('lens-chips');
     var here = lensesPresentHere();
@@ -235,6 +237,7 @@
       b.setAttribute('aria-pressed', 'false');
       b.innerHTML = '<span class="dot"></span>' + DT.esc(l.label);
       if (here.indexOf(l.id) === -1) {
+        b.dataset.absent = '1';
         b.disabled = true;
         b.title = '이 지역에는 아직 이 관점의 기록이 없습니다.';
       } else {
@@ -242,13 +245,39 @@
       }
       box.appendChild(b);
     });
+    updateLensHint();
     $('lens-blurbs').innerHTML = '';
+  }
+
+  /**
+   * 한 번에 고를 수 있는 관점은 maxLenses 개까지.
+   * 렌즈마다 최소 1곳을 보장하므로, 한도를 두지 않으면 짧은 기간에서 고른 관점이
+   * 조용히 빠지게 된다. 한도에 닿으면 «고르게 한 뒤 거절»하지 않고 아예 비활성화한다.
+   */
+  function updateLensHint() {
+    var max = maxLenses();
+    var full = state.lenses.length >= max;
+    document.querySelectorAll('#lens-chips .chip-lens').forEach(function (c) {
+      if (c.dataset.absent === '1') return;
+      var on = c.getAttribute('aria-pressed') === 'true';
+      c.disabled = full && !on;
+      c.title = c.disabled ? '관점은 한 번에 ' + max + '개까지 고를 수 있습니다.' : '';
+    });
+    $('lens-hint').textContent = full
+      ? '관점을 ' + max + '개 다 골랐습니다. 바꾸려면 고른 것을 먼저 해제하세요.'
+      : '한 번에 ' + max + '개까지 고를 수 있습니다. 고른 관점의 자리가 모두 코스에 들어갑니다.';
   }
 
   function toggleLens(id, btn) {
     var i = state.lenses.indexOf(id);
-    if (i === -1) state.lenses.push(id); else state.lenses.splice(i, 1);
+    if (i === -1) {
+      if (state.lenses.length >= maxLenses()) return;
+      state.lenses.push(id);
+    } else {
+      state.lenses.splice(i, 1);
+    }
     btn.setAttribute('aria-pressed', i === -1 ? 'true' : 'false');
+    updateLensHint();
 
     var blurbs = $('lens-blurbs');
     blurbs.innerHTML = '';
