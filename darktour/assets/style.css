@@ -405,3 +405,73 @@ footer.site a { color: var(--ink-2); }
 /* 제목 요소로 바뀐 것들의 기본 여백을 없앤다 */
 .sources h3, .ethics h3, .factbox h3, .motif h3, .lensnote h3 { font-weight: 700; }
 h2.section-title { margin-top: 36px; }
+
+/* ---------- 인쇄 ----------
+ *
+ * 이 앱의 결과물은 화면이 아니라 현장에서 쓰인다. 통신이 끊기거나 배터리가 없어도
+ * 코스를 들고 다닐 수 있어야 하므로, 인쇄본에는 화면에서 접혀 있던 것들을 편다 —
+ * 정거장마다 방문 예절과 좌표를 함께 찍는다. 예절은 현장에서 필요한 정보이지
+ * 읽고 지나갈 정보가 아니기 때문이다.
+ */
+
+.print-only { display: none; }
+
+@media print {
+  :root {
+    --bg: #fff; --bg-2: #fff; --card: #fff; --card-2: #f4f4f2;
+    --line: #ccc; --ink: #000; --ink-2: #333; --ink-3: #666; --accent: #8a6a3a;
+  }
+
+  body { background: #fff; color: #000; font-size: 10.5pt; line-height: 1.6; }
+  .wrap { max-width: none; padding: 0; }
+
+  /* 종이에서 쓸모없는 것 */
+  .skip, .site-nav, footer.site, .backlink, .btn-row, .also, .notice-actions,
+  #map, .leaflet-container, .source-link, .motif-todo, .chips, .step-hint { display: none !important; }
+
+  header.site { border-bottom: 1px solid #000; margin-bottom: 14pt; background: none; }
+  header.site .wrap { padding: 0 0 8pt; }
+  .brand { font-size: 12pt; }
+  .brand em { color: #000; }
+
+  h1.page { font-size: 17pt; margin-bottom: 4pt; }
+  p.lede { color: #333; margin-bottom: 14pt; }
+
+  .print-only { display: block; }
+
+  /* 정거장이 페이지 사이에서 잘리지 않게 */
+  .stop, .lensnote, .ethics, .sources, .motif { break-inside: avoid; page-break-inside: avoid; }
+  .stop { padding-bottom: 16pt; }
+  .stop::after { display: none; }
+  .stop::before { background: #eee; border-color: #999; color: #000; }
+  .day-break { break-before: page; page-break-before: always; color: #000; border-color: #000; }
+
+  .badge { border-color: #999 !important; color: #333 !important; }
+  .badge-ev { border-style: dashed; }
+
+  /* 현장에서 실제로 필요한 것 */
+  .stop-print {
+    margin-top: 6pt; padding: 6pt 8pt;
+    border: 1px solid #bbb; border-left: 3px solid #8a6a3a;
+    font-size: 9.5pt; color: #222;
+  }
+  .stop-print dt { font-weight: 700; float: left; margin-right: 6pt; }
+  .stop-print dd { margin: 0 0 3pt; }
+  .stop-print .coord { font-family: ui-monospace, Menlo, monospace; }
+
+  .ethics { background: none; border: 1px solid #999; }
+  .ethics h3 { color: #000; }
+  .ethics p { color: #000; }
+  .sources { background: none; }
+  .factbox img { display: none; }
+
+  /* 종이에는 링크를 눌러도 소용이 없으므로 주소를 적는다 */
+  .sources a::after { content: " (" attr(href) ")"; font-size: 8pt; color: #666; word-break: break-all; }
+
+  @page { margin: 14mm; }
+}
+
+.print-hint {
+  margin: 12px 0 0; font-size: .82rem; color: var(--ink-3);
+}
+@media print { .print-hint { display: none; } }

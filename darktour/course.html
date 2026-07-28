@@ -3,6 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- meta -->
+<meta name="description" content="역사 속 소수자의 자리를 잇는 코스. 사건 순서대로 걷는 「시간의 길」과 가까운 곳부터 걷는 「발의 길」 두 가지로 제안합니다.">
+<meta name="theme-color" content="#101014">
+<link rel="canonical" href="https://exomu.art/darktour/course.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="다크투어 · exomu.art">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="코스 — 다크투어">
+<meta property="og:description" content="역사 속 소수자의 자리를 잇는 코스. 사건 순서대로 걷는 「시간의 길」과 가까운 곳부터 걷는 「발의 길」 두 가지로 제안합니다.">
+<meta property="og:url" content="https://exomu.art/darktour/course.html">
+<meta property="og:image" content="https://exomu.art/darktour/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="다크투어 — 누가 여기서 지워졌는가. 민중·여성·장애인·성소수자·청소년·노인·이주민·천민">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /meta -->
 <title>코스 — 다크투어</title>
 <link rel="stylesheet" href="assets/leaflet/leaflet.css">
 <link rel="stylesheet" href="assets/style.css">
@@ -124,6 +141,15 @@
         '</div>' +
         '<p class="stop-voices">' + DT.esc(s.summary || '') + '</p>' +
         '<a class="source-link" href="' + DT.placeURL(areaCode, s.id, back) + '">이야기 읽기 →</a>' +
+        // 화면에서는 접혀 있고 인쇄본에만 펴진다. 현장에서 필요한 것은 예절과 좌표다.
+        '<dl class="print-only stop-print">' +
+        (s.voices ? '<dt>지워진 사람</dt><dd>' + DT.esc(s.voices) + '</dd>' : '') +
+        (s.ethics ? '<dt>방문 예절</dt><dd>' + DT.esc(s.ethics) + '</dd>' : '') +
+        (s.visit ? '<dt>관람</dt><dd>' + DT.esc(s.visit) + '</dd>' : '') +
+        (s.caution ? '<dt>유의</dt><dd>' + DT.esc(s.caution) + '</dd>' : '') +
+        (s.lat != null ? '<dt>좌표</dt><dd class="coord">' + s.lat + ', ' + s.lng +
+          (s.coordAccuracy === 'approx' ? ' (근사값)' : '') + '</dd>' : '') +
+        '</dl>' +
         '</li>';
     });
     $('stops').innerHTML = html;
@@ -137,7 +163,10 @@
         areaCode: areaCode, sigungu: sigungu, lenses: lenses, days: days, order: otherId
       }) + '">' + DT.esc(other.title) + '(으)로 보기</a>' +
       '<a class="btn" href="index.html">조건 바꾸기</a>' +
-      '</div>';
+      '<button class="btn" type="button" id="print-btn">인쇄 · PDF로 저장</button>' +
+      '</div>' +
+      '<p class="print-hint">인쇄본에는 정거장마다 방문 예절과 좌표가 함께 나옵니다. ' +
+      '통신이 되지 않는 곳에서도 쓸 수 있습니다.</p>';
 
     // 이 코스는 한 지역의 하루지만, 같은 관점은 다른 지역에도 있다.
     // 전국 순례로 묶지 않고, 다 본 사람에게 옆 지역을 권하는 방식으로만 잇는다.
@@ -159,6 +188,8 @@
     }
 
     $('foot').innerHTML = foot;
+    var pb = document.getElementById('print-btn');
+    if (pb) pb.onclick = function () { window.print(); };
   });
 })();
 </script>

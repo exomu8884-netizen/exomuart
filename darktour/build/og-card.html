@@ -1,0 +1,63 @@
+<!doctype html>
+<!--
+  공유 카드(og:image)의 원본. build/make_og.js 가 이 파일을 1200×630 으로 찍어
+  darktour/og.png 를 만든다. 문구를 바꾸려면 이 파일을 고치고 스크립트를 다시 돌린다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden;
+    background: #101014;
+    color: #e8e6e3;
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 72px 80px;
+    position: relative;
+  }
+  body::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 78% 18%, rgba(201,160,106,.13), transparent 58%);
+  }
+  .top { position: relative; }
+  .brand { font-size: 30px; font-weight: 800; letter-spacing: -.01em; }
+  .brand em { font-style: normal; color: #c9a06a; }
+  h1 {
+    font-size: 82px; line-height: 1.18; font-weight: 800;
+    letter-spacing: -.03em; margin-top: 40px;
+  }
+  h1 span { color: #c9a06a; }
+  p.sub { margin-top: 26px; font-size: 27px; color: #a8a6a3; line-height: 1.6; }
+  .bottom { position: relative; display: flex; align-items: flex-end; justify-content: space-between; }
+  .lenses { display: flex; flex-wrap: wrap; gap: 11px; max-width: 820px; }
+  .lens {
+    font-size: 21px; font-weight: 700; padding: 8px 19px;
+    border: 1.5px solid currentColor; border-radius: 999px;
+  }
+  .host { font-size: 21px; color: #6e6c72; letter-spacing: .04em; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="brand">다크<em>투어</em></div>
+    <h1>누가 여기서<br><span>지워졌는가</span></h1>
+    <p class="sub">역사 속 소수자의 자리만 골라 걷는 관광 코스</p>
+  </div>
+
+  <div class="bottom">
+    <div class="lenses">
+      <span class="lens" style="color:#c9a06a">민중</span>
+      <span class="lens" style="color:#d98a9b">여성</span>
+      <span class="lens" style="color:#6fb0c9">장애인</span>
+      <span class="lens" style="color:#a98ad9">성소수자</span>
+      <span class="lens" style="color:#7fb98a">청소년</span>
+      <span class="lens" style="color:#9d9ec2">노인</span>
+      <span class="lens" style="color:#6fc9ab">이주·정착민</span>
+      <span class="lens" style="color:#c47b7b">천민</span>
+    </div>
+    <div class="host">exomu.art/darktour</div>
+  </div>
+</body>
+</html>
