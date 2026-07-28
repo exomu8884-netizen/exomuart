@@ -1,16 +1,9 @@
-이미지 누락 수정 (2026-07-26)
-====================================
+이 폴더 파일들을 GitHub → exomuart 저장소 → Add file → Upload files에 드래그 후 Commit changes를 눌러주세요.
+(posts.json 도 반드시 함께 업로드하세요.)
 
-원인
-------------------
-post-08~12 글의 HTML 페이지는 GitHub에 올라갔는데, 그 글에 쓰이는 이미지 파일
-(08_img1~5.png ... 12_img1~5.png, 총 25장)이 실제로는 한 번도 업로드되지 않았습니다.
-그래서 글은 보이는데 사진 자리가 다 깨져 보였던 것입니다.
-
-할 일
-------------------
-이 폴더의 PNG 파일 25개 전부를 GitHub → exomuart 저장소 → Add file → Upload files
-화면에 드래그해서 Commit changes를 눌러주세요. 파일명이 겹치지 않으니 새로 추가만 됩니다.
-
-업로드 후 1~2분 내로 http://exomu.art/post-08.html 등에서 사진이 정상적으로 보이는지
-확인해보시면 됩니다.
+오늘 추가/갱신 파일:
+- post-18.html ~ post-22.html (새 글 5개)
+- 18_img1.png ~ 22_img5.png (글당 이미지 5장)
+- index.html (전체 갱신)
+- category-econ.html / category-movie.html / category-books.html / category-psych.html / category-knowhow.html (갱신)
+- posts.json (기존 17개 + 오늘 5개 = 총 22개)
