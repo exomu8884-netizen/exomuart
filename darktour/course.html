@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- meta -->
+<meta name="description" content="역사 속 소수자의 자리를 잇는 코스. 사건 순서대로 걷는 「시간의 길」과 가까운 곳부터 걷는 「발의 길」 두 가지로 제안합니다.">
+<meta name="theme-color" content="#101014">
+<link rel="canonical" href="https://exomu.art/darktour/course.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="다크투어 · exomu.art">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="코스 — 다크투어">
+<meta property="og:description" content="역사 속 소수자의 자리를 잇는 코스. 사건 순서대로 걷는 「시간의 길」과 가까운 곳부터 걷는 「발의 길」 두 가지로 제안합니다.">
+<meta property="og:url" content="https://exomu.art/darktour/course.html">
+<meta property="og:image" content="https://exomu.art/darktour/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="다크투어 — 누가 여기서 지워졌는가. 민중·여성·장애인·성소수자·청소년·노인·이주민·천민">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /meta -->
+<title>코스 — 다크투어</title>
+<link rel="stylesheet" href="assets/leaflet/leaflet.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html">다크<em>투어</em> <small>지워진 사람들의 자리</small></a>
+    <nav class="site-nav">
+      <a href="index.html">코스 만들기</a>
+      <a href="about.html">이 프로젝트에 대하여</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <a class="backlink" href="index.html">← 다시 고르기</a>
+  <div id="head"><p class="loading">코스를 만드는 중…</p></div>
+  <div id="map"></div>
+  <div id="notes"></div>
+  <ol class="stops" id="stops"></ol>
+  <div id="foot"></div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p>이야기는 요약본입니다. 각 장소에서 한국민족문화대백과사전 원문으로 이어집니다.</p>
+  </div>
+</footer>
+
+<script src="assets/leaflet/leaflet.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var p = DT.params();
+  var areaCode = parseInt(p.area, 10);
+  var sigungu = p.sigungu || '*';
+  var lenses = (p.lens || '').split(',').filter(Boolean);
+  var days = p.days || 'day';
+  var order = p.order || 'chronological';
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  if (!areaCode || !lenses.length) {
+    $('head').innerHTML = '<div class="empty"><b>코스 정보가 없습니다.</b>처음부터 다시 골라 주세요.</div>';
+    $('map').hidden = true;
+    return;
+  }
+
+  Promise.all([
+    DT.buildCourse({ areaCode: areaCode, sigungu: sigungu, lenses: lenses, days: days, order: order }),
+    DT.loadRegions(),
+    DT.loadCoverage()
+  ]).then(function (r) {
+    var course = r[0], regions = r[1], cov = r[2];
+    var sido = null;
+    regions.sido.forEach(function (s) { if (s.areaCode === areaCode) sido = s; });
+
+    var lensNames = lenses.map(function (l) { return DT.lensLabel(course.lensData, l); }).join(' · ');
+    var where = (sido ? sido.short : '') + (sigungu === '*' ? ' 전역' : ' ' + sigungu);
+
+    document.title = course.order.title + ' — ' + where + ' 다크투어';
+
+    $('head').innerHTML =
+      '<h1 class="page">' + DT.esc(course.order.title) + '</h1>' +
+      '<p class="lede">' + DT.esc(where) + ' · ' + DT.esc(lensNames) + ' · ' +
+      DT.esc(course.duration.label) + ' · 정거장 ' + course.stops.length + '곳<br>' +
+      DT.esc(course.order.blurb) + '</p>';
+
+    if (!course.stops.length) {
+      $('map').hidden = true;
+      $('stops').innerHTML = '<div class="empty"><b>이 조건에 맞는 자리가 없습니다.</b>범위를 넓혀 보세요.</div>';
+      return;
+    }
+
+    DT.drawMap($('map'), course.stops, { line: true });
+
+    // 지역·관점 맥락
+    var notes = $('notes');
+    notes.innerHTML = course.regionNotes.filter(function (n) {
+      return lenses.indexOf(n.lens) !== -1;
+    }).map(function (n) {
+      return '<div class="lens-blurb"><b>' +
+        DT.esc(DT.lensLabel(course.lensData, n.lens)) + '의 눈</b> — ' + DT.esc(n.text) + '</div>';
+    }).join('');
+
+    // 경고
+    course.warnings.forEach(function (w) {
+      if (w.type === 'tooShort' || w.type === 'noData') {
+        var names = w.missing.map(function (l) { return DT.lensLabel(course.lensData, l); }).join('·');
+        notes.innerHTML += '<div class="notice">이 코스에는 ' + DT.esc(names) +
+          ' 관점의 자리가 들어가지 못했습니다. 기간을 늘리거나 범위를 넓혀 보세요.</div>';
+      }
+    });
+
+    // 정거장
+    var back = location.search.slice(1);
+    var half = Math.ceil(course.stops.length / 2);
+    var twoDays = days === 'two' && course.stops.length > 4;
+
+    var html = '';
+    course.stops.forEach(function (s, i) {
+      if (twoDays && i === 0) html += '<div class="day-break" style="margin-left:0;border-top:0;padding-top:0">첫째 날</div>';
+      if (twoDays && i === half) html += '<div class="day-break">둘째 날</div>';
+
+      var prev = i > 0 ? course.stops[i - 1] : null;
+      var dist = prev ? DT.distanceKm(prev, s) : 0;
+
+      html +=
+        '<li class="stop">' +
+        '<div class="badges">' + DT.badges(course.lensData, s.lenses) + '</div>' +
+        '<h2><a href="' + DT.placeURL(areaCode, s.id, back) + '">' + DT.esc(s.name) + '</a></h2>' +
+        '<div class="stop-meta">' + DT.esc(s.sigungu || '') + ' · ' + DT.esc(s.era || '') +
+        (prev ? ' · 이전 정거장에서 약 ' + dist.toFixed(dist < 10 ? 1 : 0) + 'km' : '') +
+        '</div>' +
+        '<p class="stop-voices">' + DT.esc(s.summary || '') + '</p>' +
+        '<a class="source-link" href="' + DT.placeURL(areaCode, s.id, back) + '">이야기 읽기 →</a>' +
+        // 화면에서는 접혀 있고 인쇄본에만 펴진다. 현장에서 필요한 것은 예절과 좌표다.
+        '<dl class="print-only stop-print">' +
+        (s.voices ? '<dt>지워진 사람</dt><dd>' + DT.esc(s.voices) + '</dd>' : '') +
+        (s.ethics ? '<dt>방문 예절</dt><dd>' + DT.esc(s.ethics) + '</dd>' : '') +
+        (s.visit ? '<dt>관람</dt><dd>' + DT.esc(s.visit) + '</dd>' : '') +
+        (s.caution ? '<dt>유의</dt><dd>' + DT.esc(s.caution) + '</dd>' : '') +
+        (s.lat != null ? '<dt>좌표</dt><dd class="coord">' + s.lat + ', ' + s.lng +
+          (s.coordAccuracy === 'approx' ? ' (근사값)' : '') + '</dd>' : '') +
+        '</dl>' +
+        '</li>';
+    });
+    $('stops').innerHTML = html;
+
+    // 다른 안으로 전환
+    var otherId = order === 'chronological' ? 'walking' : 'chronological';
+    var other = DT.orderById(course.lensData, otherId);
+    var foot =
+      '<div class="btn-row">' +
+      '<a class="btn btn-primary" href="' + DT.courseURL({
+        areaCode: areaCode, sigungu: sigungu, lenses: lenses, days: days, order: otherId
+      }) + '">' + DT.esc(other.title) + '(으)로 보기</a>' +
+      '<a class="btn" href="index.html">조건 바꾸기</a>' +
+      '<button class="btn" type="button" id="print-btn">인쇄 · PDF로 저장</button>' +
+      '</div>' +
+      '<p class="print-hint">인쇄본에는 정거장마다 방문 예절과 좌표가 함께 나옵니다. ' +
+      '통신이 되지 않는 곳에서도 쓸 수 있습니다.</p>';
+
+    // 이 코스는 한 지역의 하루지만, 같은 관점은 다른 지역에도 있다.
+    // 전국 순례로 묶지 않고, 다 본 사람에게 옆 지역을 권하는 방식으로만 잇는다.
+    var also = DT.alsoIn(cov, regions, lenses, areaCode);
+    if (also.length) {
+      foot +=
+        '<div class="also">' +
+        '<span class="also-tag">이 테마 여행은</span>' +
+        '<p>' + also.map(function (x) {
+          var names = x.lenses.map(function (l) { return DT.lensLabel(course.lensData, l); }).join('·');
+          return '<a href="' + DT.courseURL({
+            areaCode: x.areaCode, sigungu: '*', lenses: x.lenses, days: days, order: order
+          }) + '"><b>' + DT.esc(x.name) + '</b>' +
+            (x.lenses.length < lenses.length ? ' <span>' + DT.esc(names) + '</span>' : '') +
+            '</a>';
+        }).join('') + '</p>' +
+        '<p class="also-tail">에서도 가능합니다.</p>' +
+        '</div>';
+    }
+
+    $('foot').innerHTML = foot;
+    var pb = document.getElementById('print-btn');
+    if (pb) pb.onclick = function () { window.print(); };
+  });
+})();
+</script>
+
+</body>
+</html>
