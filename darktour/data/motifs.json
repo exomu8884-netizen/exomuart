@@ -396,9 +396,15 @@
         35,
         36
       ],
-      "places": [],
+      "places": [
+        {
+          "areaCode": 39,
+          "id": "jeju-songdang-bonhyang",
+          "name": "송당본향당 (심방들의 자리)",
+          "sigungu": "제주시"
+        }
+      ],
       "candidates": [
-        "제주 — 본향당",
         "전남 진도 — 씻김굿 전승지",
         "경북·강원 동해안 — 별신굿 전승지"
       ],
