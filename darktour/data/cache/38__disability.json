@@ -38,6 +38,7 @@
       "caution": "거주민 있음. 주거 구역 출입·촬영 금지.",
       "tourKeyword": "소록도",
       "encyQuery": "소록도",
+      "motifs": [],
       "sources": [
         {
           "type": "사전",
@@ -86,6 +87,7 @@
       "caution": "거주민·운영 중 병원 있음.",
       "tourKeyword": "애양원",
       "encyQuery": "애양원",
+      "motifs": [],
       "sources": [
         {
           "type": "사전",
@@ -129,6 +131,7 @@
       "caution": null,
       "tourKeyword": "소록도 감금실",
       "encyQuery": "소록도",
+      "motifs": [],
       "sources": [
         {
           "type": "법령",
@@ -175,6 +178,7 @@
       "caution": "촬영 최소화 권장.",
       "tourKeyword": "소록도 검시실",
       "encyQuery": "우생학",
+      "motifs": [],
       "sources": [
         {
           "type": "문화재",
@@ -223,6 +227,7 @@
       "caution": null,
       "tourKeyword": "소록도 중앙공원",
       "encyQuery": "소록도",
+      "motifs": [],
       "sources": [
         {
           "type": "사전",
@@ -268,6 +273,7 @@
       "caution": null,
       "tourKeyword": "소록도",
       "encyQuery": "소록도",
+      "motifs": [],
       "sources": [
         {
           "type": "사전",
@@ -313,6 +319,7 @@
       "caution": null,
       "tourKeyword": "소록도",
       "encyQuery": "한센병",
+      "motifs": [],
       "sources": [
         {
           "type": "기관",
@@ -357,6 +364,7 @@
       "caution": null,
       "tourKeyword": "국립소록도병원 한센병박물관",
       "encyQuery": "한센병",
+      "motifs": [],
       "sources": [
         {
           "type": "기관",

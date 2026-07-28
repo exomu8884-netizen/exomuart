@@ -36,6 +36,7 @@
       "caution": null,
       "tourKeyword": "진주농민항쟁기념탑",
       "encyQuery": "진주농민항쟁",
+      "motifs": [],
       "sources": [
         {
           "type": "문헌",
@@ -86,6 +87,7 @@
       "caution": null,
       "tourKeyword": "형평운동기념탑",
       "encyQuery": "형평사",
+      "motifs": [],
       "sources": [
         {
           "type": "문헌",
@@ -135,6 +137,7 @@
       "caution": "생존자 거주 시설. 사전 확인 후 방문 권장.",
       "tourKeyword": "합천 원폭피해자복지회관",
       "encyQuery": "원폭피해자",
+      "motifs": [],
       "sources": [
         {
           "type": "법령",
@@ -184,6 +187,7 @@
       "caution": null,
       "tourKeyword": "거창사건추모공원",
       "encyQuery": "거창양민학살사건",
+      "motifs": [],
       "sources": [
         {
           "type": "법령",
@@ -233,6 +237,7 @@
       "caution": null,
       "tourKeyword": "산청함양사건추모공원",
       "encyQuery": "산청함양사건",
+      "motifs": [],
       "sources": [
         {
           "type": "법령",
@@ -282,6 +287,7 @@
       "caution": null,
       "tourKeyword": "국립3.15민주묘지",
       "encyQuery": "3·15의거",
+      "motifs": [],
       "sources": [
         {
           "type": "사전",
@@ -332,6 +338,7 @@
       "caution": "관람 시설 아님. 외부 조망만 가능.",
       "tourKeyword": "마산자유무역지역",
       "encyQuery": "마산수출자유지역",
+      "motifs": [],
       "sources": [
         {
           "type": "법령",
@@ -378,6 +385,7 @@
       "caution": null,
       "tourKeyword": "부마민주항쟁",
       "encyQuery": "부마민주항쟁",
+      "motifs": [],
       "sources": [
         {
           "type": "법령",
