@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+<a class="skip" href="#main">본문으로 건너뛰기</a>
 
 <header class="site">
   <div class="wrap">
@@ -19,10 +20,10 @@
   </div>
 </header>
 
-<div class="wrap">
+<main id="main" class="wrap">
   <a class="backlink" id="back" href="index.html">← 코스로 돌아가기</a>
   <div id="body"><p class="loading">불러오는 중…</p></div>
-</div>
+</main>
 
 <footer class="site">
   <div class="wrap">
@@ -83,10 +84,10 @@
       /* 렌즈별 관점 */
       var noteKeys = Object.keys(place.lensNotes || {});
       if (noteKeys.length) {
-        html += '<div class="section-title">관점별로 다시 읽기</div>';
+        html += '<h2 class="section-title">관점별로 다시 읽기</h2>';
         noteKeys.forEach(function (k) {
           html += '<div class="lensnote" data-lens="' + DT.esc(k) + '">' +
-            '<h4>' + DT.esc(DT.lensLabel(lensData, k)) + '의 눈</h4>' +
+            '<h3>' + DT.esc(DT.lensLabel(lensData, k)) + '의 눈</h3>' +
             '<p>' + DT.esc(place.lensNotes[k]) + '</p></div>';
         });
       }
@@ -97,7 +98,7 @@
         if (!m) return;
         var others = (m.places || []).filter(function (x) { return x.id !== place.id; });
         html += '<div class="motif">' +
-          '<h4>같은 이야기가 있는 곳 — 「' + DT.esc(m.name) + '」</h4>' +
+          '<h3>같은 이야기가 있는 곳 — 「' + DT.esc(m.name) + '」</h3>' +
           '<p class="motif-read">' + DT.esc(m.reading) + '</p>' +
           '<p class="motif-dist">' + DT.esc(m.distribution) + '</p>';
         if (others.length) {
@@ -115,11 +116,11 @@
 
       /* 방문 예절 */
       if (place.ethics) {
-        html += '<div class="ethics"><h4>방문하기 전에</h4><p>' + DT.esc(place.ethics) + '</p></div>';
+        html += '<div class="ethics"><h3>방문하기 전에</h3><p>' + DT.esc(place.ethics) + '</p></div>';
       }
 
       /* 관광공사 정보 */
-      html += '<div class="factbox"><h4>장소 정보 — 한국관광공사 TourAPI</h4>';
+      html += '<div class="factbox"><h3>장소 정보 — 한국관광공사 TourAPI</h3>';
       if (tour && tour.matched) {
         if (tour.firstimage) html += '<img src="' + DT.esc(tour.firstimage) + '" alt="' + DT.esc(place.name) + '">';
         html += '<dl>';
@@ -145,7 +146,7 @@
       html += '</div>';
 
       /* 출처 — 모든 글에 반드시 붙는다 */
-      html += '<div class="sources"><h4>' + (ev ? DT.esc(ev.label) : '출처') + '</h4>';
+      html += '<div class="sources"><h3>' + (ev ? DT.esc(ev.label) : '출처') + '</h3>';
       if (ev) html += '<p class="ev-note">' + DT.esc(ev.note) + '</p>';
       if ((place.sources || []).length) {
         html += '<ul>';

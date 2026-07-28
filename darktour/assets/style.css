@@ -174,9 +174,9 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
   content: ""; position: absolute; left: 13.5px; top: 34px; bottom: 6px;
   width: 1px; background: var(--line);
 }
-.stop h3 { margin: 0 0 4px; font-size: 1.08rem; }
-.stop h3 a { text-decoration: none; }
-.stop h3 a:hover { color: var(--accent); }
+.stop h2 { margin: 0 0 4px; font-size: 1.08rem; }
+.stop h2 a { text-decoration: none; }
+.stop h2 a:hover { color: var(--accent); }
 .stop .stop-meta { font-size: .8rem; color: var(--ink-3); margin-bottom: 8px; }
 .stop .stop-voices { font-size: .89rem; color: var(--ink-2); margin: 0 0 10px; }
 
@@ -226,15 +226,15 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
 .lensnote[data-lens="elder"] { border-left-color: var(--elder); }
 .lensnote[data-lens="migrant"] { border-left-color: var(--migrant); }
 .lensnote[data-lens="outcast"] { border-left-color: var(--outcast); }
-.lensnote h4 { margin: 0 0 6px; font-size: .84rem; letter-spacing: .04em; }
-.lensnote[data-lens="people"] h4 { color: var(--people); }
-.lensnote[data-lens="women"] h4 { color: var(--women); }
-.lensnote[data-lens="disability"] h4 { color: var(--disability); }
-.lensnote[data-lens="lgbtq"] h4 { color: var(--lgbtq); }
-.lensnote[data-lens="youth"] h4 { color: var(--youth); }
-.lensnote[data-lens="elder"] h4 { color: var(--elder); }
-.lensnote[data-lens="migrant"] h4 { color: var(--migrant); }
-.lensnote[data-lens="outcast"] h4 { color: var(--outcast); }
+.lensnote h3 { margin: 0 0 6px; font-size: .84rem; letter-spacing: .04em; }
+.lensnote[data-lens="people"] h3 { color: var(--people); }
+.lensnote[data-lens="women"] h3 { color: var(--women); }
+.lensnote[data-lens="disability"] h3 { color: var(--disability); }
+.lensnote[data-lens="lgbtq"] h3 { color: var(--lgbtq); }
+.lensnote[data-lens="youth"] h3 { color: var(--youth); }
+.lensnote[data-lens="elder"] h3 { color: var(--elder); }
+.lensnote[data-lens="migrant"] h3 { color: var(--migrant); }
+.lensnote[data-lens="outcast"] h3 { color: var(--outcast); }
 .lensnote p { margin: 0; font-size: .93rem; color: var(--ink-2); }
 
 /* ---------- 근거 배지 ---------- */
@@ -276,7 +276,7 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
   border-left: 3px solid #8a7a5c;
 }
-.motif h4 { margin: 0 0 8px; font-size: .86rem; color: #c9b189; letter-spacing: .02em; }
+.motif h3 { margin: 0 0 8px; font-size: .86rem; color: #c9b189; letter-spacing: .02em; }
 .motif .motif-read { margin: 0 0 10px; font-size: .92rem; color: var(--ink-2); }
 .motif .motif-dist { margin: 0; font-size: .84rem; color: var(--ink-3); }
 .motif-places { list-style: none; margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); }
@@ -295,7 +295,7 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
   margin: 26px 0; padding: 18px 20px;
   background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius);
 }
-.sources h4 { margin: 0 0 4px; font-size: .84rem; letter-spacing: .04em; color: var(--ink-2); }
+.sources h3 { margin: 0 0 4px; font-size: .84rem; letter-spacing: .04em; color: var(--ink-2); }
 .sources .ev-note { margin: 0 0 12px; font-size: .82rem; color: var(--ink-3); }
 .sources ul { margin: 0; padding: 0; list-style: none; }
 .sources li { font-size: .87rem; color: var(--ink-2); padding: 5px 0; border-top: 1px solid var(--line); }
@@ -315,14 +315,14 @@ p.lede { color: var(--ink-2); margin: 0 0 34px; font-size: .98rem; }
   margin: 24px 0; padding: 18px 20px;
   background: #1c1517; border: 1px solid #3b2a2e; border-radius: var(--radius);
 }
-.ethics h4 { margin: 0 0 8px; font-size: .86rem; color: #e0a9ae; letter-spacing: .04em; }
+.ethics h3 { margin: 0 0 8px; font-size: .86rem; color: #e0a9ae; letter-spacing: .04em; }
 .ethics p { margin: 0; font-size: .92rem; color: #d6bdc0; }
 
 .factbox {
   margin: 24px 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius);
   overflow: hidden;
 }
-.factbox h4 {
+.factbox h3 {
   margin: 0; padding: 12px 18px; font-size: .82rem; letter-spacing: .04em;
   background: var(--card-2); color: var(--ink-2); font-weight: 700;
 }
@@ -390,3 +390,18 @@ footer.site a { color: var(--ink-2); }
 .source-link:hover { border-bottom-color: currentColor; }
 
 .loading { color: var(--ink-3); font-size: .9rem; padding: 20px 0; }
+
+/* ---------- 접근성 ---------- */
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--accent); color: #14120e; font-weight: 700;
+  padding: 10px 18px; border-radius: 0 0 8px 0; text-decoration: none;
+}
+.skip:focus { left: 0; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 제목 요소로 바뀐 것들의 기본 여백을 없앤다 */
+.sources h3, .ethics h3, .factbox h3, .motif h3, .lensnote h3 { font-weight: 700; }
+h2.section-title { margin-top: 36px; }

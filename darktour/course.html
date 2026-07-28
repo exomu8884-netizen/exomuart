@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+<a class="skip" href="#main">본문으로 건너뛰기</a>
 
 <header class="site">
   <div class="wrap">
@@ -19,14 +20,14 @@
   </div>
 </header>
 
-<div class="wrap">
+<main id="main" class="wrap">
   <a class="backlink" href="index.html">← 다시 고르기</a>
   <div id="head"><p class="loading">코스를 만드는 중…</p></div>
   <div id="map"></div>
   <div id="notes"></div>
   <ol class="stops" id="stops"></ol>
   <div id="foot"></div>
-</div>
+</main>
 
 <footer class="site">
   <div class="wrap">
@@ -117,7 +118,7 @@
       html +=
         '<li class="stop">' +
         '<div class="badges">' + DT.badges(course.lensData, s.lenses) + '</div>' +
-        '<h3><a href="' + DT.placeURL(areaCode, s.id, back) + '">' + DT.esc(s.name) + '</a></h3>' +
+        '<h2><a href="' + DT.placeURL(areaCode, s.id, back) + '">' + DT.esc(s.name) + '</a></h2>' +
         '<div class="stop-meta">' + DT.esc(s.sigungu || '') + ' · ' + DT.esc(s.era || '') +
         (prev ? ' · 이전 정거장에서 약 ' + dist.toFixed(dist < 10 ? 1 : 0) + 'km' : '') +
         '</div>' +
