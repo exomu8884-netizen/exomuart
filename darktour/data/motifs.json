@@ -402,6 +402,12 @@
           "id": "jeju-songdang-bonhyang",
           "name": "송당본향당 (심방들의 자리)",
           "sigungu": "제주시"
+        },
+        {
+          "areaCode": 36,
+          "id": "tongyeong-byeolsingut",
+          "name": "남해안별신굿의 자리 (통영·거제 연안)",
+          "sigungu": "통영시"
         }
       ],
       "candidates": [
