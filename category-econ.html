@@ -20,11 +20,6 @@ main.content{flex:1;min-width:0;padding:36px 44px 80px;max-width:900px}
 .hero h1{font-size:1.6rem;margin:0 0 6px}
 .hero p{color:var(--sub);margin:0}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
-.hrow{display:flex;gap:22px;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
-.hrow .pcard{flex:0 0 240px;scroll-snap-align:start}
-.hrow::-webkit-scrollbar{height:8px}
-.hrow::-webkit-scrollbar-track{background:transparent}
-.hrow::-webkit-scrollbar-thumb{background:#dcdcd8;border-radius:8px}
 .pcard{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:transform .15s}
 .pcard:hover{transform:translateY(-3px)}
 .pcard img{width:100%;display:block;aspect-ratio:1200/630;object-fit:cover}
@@ -58,18 +53,17 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 .post-views{margin-top:1.6em;padding-top:1em;border-top:1px solid var(--line);color:var(--sub);font-size:.88rem}
 @media (max-width:760px){.layout{flex-direction:column}.sidebar{position:static;height:auto;width:100%}main.content{padding:24px 18px 60px}}
 </style></head><body>
-
 <div class="layout">
 <aside class="sidebar">
 <a class="logo" href="index.html">exomu<span>'s home</span></a>
 <div class="tagline">매일 새로 쌓는 개인 아카이브</div>
 <nav>
 <a href="category-movie.html">영화와 사상 (5)</a>
-<a href="category-art.html">미술과 사상 (4)</a>
-<a href="category-books.html">도서와 사상 (4)</a>
-<a href="category-psych.html">심리학용어사전 (5)</a>
-<a href="category-econ.html" class="active">쉬운 경제학 (6)</a>
-<a href="category-knowhow.html">노하우 (3)</a>
+<a href="category-art.html">미술과 사상 (5)</a>
+<a href="category-books.html">도서와 사상 (5)</a>
+<a href="category-psych.html">심리학용어사전 (6)</a>
+<a href="category-econ.html" class="active">쉬운 경제학 (7)</a>
+<a href="category-knowhow.html">노하우 (4)</a>
 </nav>
 <div class="stats-box">
 <div class="stats-row"><span>누적 방문자</span><b id="stat-total">–</b></div>
@@ -83,9 +77,15 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 <main class="content">
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3169773352082499" data-ad-slot="6448432776" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-
-<div class="hero"><h1>쉬운 경제학</h1><p>금리·환율·증시를 유동성과 거시의 눈으로 쉽게 읽는 경제 이야기</p></div>
+<div class="hero"><h1>쉬운 경제학</h1><p>복잡한 경제를 유동성의 흐름으로 쉽게 읽습니다.</p></div>
 <div class="grid">
+<a class="pcard" href="post-28.html">
+<img src="28_img1.png" alt="7월 FOMC 이후, 금값이 4,000달러 박스권에 갇힌 이유">
+<div class="pc-body">
+<span class="pc-cat" style="background:#2b4a86">쉬운 경제학</span>
+<h3>7월 FOMC 이후, 금값이 4,000달러 박스권에 갇힌 이유</h3>
+<div class="pc-date">2026-07-30 08:23</div>
+</div></a>
 <a class="pcard" href="post-23.html">
 <img src="23_img1.png" alt="수출은 사상 최대인데 원화는 왜 약할까 — 흑자와 자본유출이 갈라선 여름">
 <div class="pc-body">
@@ -115,14 +115,14 @@ footer.sitefoot a{color:#999;text-decoration:underline}
 <div class="pc-date">2026-07-26 09:34</div>
 </div></a>
 <a class="pcard" href="post-02.html">
-<img src="02_card.png" alt="코스피 조정, AI 반도체 거품일까 기회일까">
+<img src="02_img1.png" alt="코스피 조정, AI 반도체 거품일까 기회일까">
 <div class="pc-body">
 <span class="pc-cat" style="background:#2b4a86">쉬운 경제학</span>
 <h3>코스피 조정, AI 반도체 거품일까 기회일까</h3>
 <div class="pc-date">2026.07.26</div>
 </div></a>
 <a class="pcard" href="post-01.html">
-<img src="01_card.png" alt="기준금리 2.75% 시대, 내 통장은 어떻게 지켜야 할까">
+<img src="01_img1.png" alt="기준금리 2.75% 시대, 내 통장은 어떻게 지켜야 할까">
 <div class="pc-body">
 <span class="pc-cat" style="background:#2b4a86">쉬운 경제학</span>
 <h3>기준금리 2.75% 시대, 내 통장은 어떻게 지켜야 할까</h3>
