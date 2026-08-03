@@ -28,6 +28,20 @@ main.content{flex:1;min-width:0;padding:36px 44px 80px;max-width:900px}
 .pcard h3{font-size:1.02rem;margin:0 0 6px;line-height:1.4}
 .pcard .pc-date{color:var(--sub);font-size:.8rem}
 .empty-note{color:var(--sub);font-size:.92rem;padding:30px 0}
+.catsec{margin:1.4em 0 1.6em}
+.cathead{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 .7em}
+.cathead h2{font-size:1.25rem;margin:0}
+.cathead a.more{font-size:.82rem;color:var(--sub)}
+.carousel{position:relative}
+.crow{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:4px 2px 10px;scrollbar-width:none;-ms-overflow-style:none}
+.crow::-webkit-scrollbar{display:none}
+.crow>.pcard{flex:0 0 calc((100% - 88px)/5);scroll-snap-align:start}
+.cbtn{position:absolute;top:38%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;color:#333;font-size:1.4rem;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.14);z-index:5;display:flex;align-items:center;justify-content:center;transition:opacity .15s}
+.cbtn:hover{background:#f0f0ee}
+.cbtn.cprev{left:-10px}
+.cbtn.cnext{right:-10px}
+.cbtn[disabled]{opacity:0;pointer-events:none}
+@media (max-width:760px){.crow>.pcard{flex:0 0 calc((100% - 22px)/2)}}
 article.post{background:var(--card);border-radius:16px;padding:40px 44px;box-shadow:0 2px 14px rgba(0,0,0,.06)}
 article.post .pc-cat{margin-bottom:14px}
 article.post h1{font-size:1.85rem;margin:.1em 0 .2em;line-height:1.35}
@@ -146,16 +160,37 @@ function renderNav(list){
  var nav=document.getElementById("nav");if(!nav)return;
  nav.innerHTML=CATS.map(function(c){var act=(PAGE.type==="category"&&PAGE.cat===c[0])?' class="active"':'';return '<a href="category-'+c[0]+'.html"'+act+'>'+c[1]+' ('+(counts[c[0]]||0)+')</a>';}).join("");
 }
+function wireCarousels(root){
+ (root.querySelectorAll(".carousel")||[]).forEach(function(car){
+  var row=car.querySelector(".crow"),prev=car.querySelector(".cprev"),next=car.querySelector(".cnext");
+  if(!row||!prev||!next)return;
+  function upd(){var max=row.scrollWidth-row.clientWidth-2;prev.disabled=row.scrollLeft<=2;next.disabled=row.scrollLeft>=max;}
+  function page(dir){row.scrollBy({left:dir*row.clientWidth,behavior:"smooth"});}
+  prev.addEventListener("click",function(){page(-1)});
+  next.addEventListener("click",function(){page(1)});
+  row.addEventListener("scroll",upd,{passive:true});
+  window.addEventListener("resize",upd);
+  upd();
+ });
+}
 function renderContent(list){
  var el=document.getElementById("content");if(!el)return;
- var cats=PAGE.type==="category"?[PAGE.cat]:CATS.map(function(c){return c[0]});
+ if(PAGE.type==="category"){
+  var cps=bycat(list,PAGE.cat);
+  el.innerHTML=cps.length?'<div class="grid">'+cps.map(pcard).join("")+'</div>':'<div class="empty-note">아직 게시물이 없습니다.</div>';
+  return;
+ }
  var html="";
- cats.forEach(function(cat){
-  var ps=bycat(list,cat).slice(0,7);
-  if(PAGE.type!=="category")html+='<h2 style="font-size:1.25rem;margin:1.6em 0 .8em">'+esc(NAME[cat])+'</h2>';
-  html+=ps.length?'<div class="grid">'+ps.map(pcard).join("")+'</div>':'<div class="empty-note">아직 게시물이 없습니다.</div>';
+ CATS.forEach(function(c){
+  var cat=c[0],ps=bycat(list,cat);
+  if(!ps.length)return;
+  html+='<section class="catsec"><div class="cathead"><h2>'+esc(NAME[cat])+'</h2><a class="more" href="category-'+cat+'.html">전체 보기 ›</a></div>'
+   +'<div class="carousel"><button class="cbtn cprev" aria-label="이전">‹</button>'
+   +'<div class="crow">'+ps.map(pcard).join("")+'</div>'
+   +'<button class="cbtn cnext" aria-label="다음">›</button></div></section>';
  });
- el.innerHTML=html;
+ el.innerHTML=html||'<div class="empty-note">아직 게시물이 없습니다.</div>';
+ wireCarousels(el);
 }
 function renderPopular(list){
  var el=document.getElementById("stat-popular");if(!el||!list.length)return;
