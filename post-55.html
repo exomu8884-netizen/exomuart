@@ -1,0 +1,205 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>자코메티의 가느다란 사람 — 다가갈수록 멀어지는 거리에 대하여 — exomu's home</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3169773352082499" crossorigin="anonymous"></script>
+<style>
+:root{--bg:#f7f7f5;--card:#ffffff;--ink:#1c1c1c;--sub:#8a8a8a;--line:#ececec;--sidebar-w:240px;}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Pretendard','Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--ink);line-height:1.75}
+a{color:inherit;text-decoration:none}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:#141319;color:#eee;padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .logo{display:block;font-weight:800;font-size:1.35rem;letter-spacing:-.5px;color:#fff;margin-bottom:6px}
+.sidebar .logo span{color:#c9a6ff}
+.sidebar .tagline{color:#8a8a95;font-size:.8rem;margin-bottom:28px}
+.sidebar nav a{display:block;padding:11px 14px;margin-bottom:4px;border-radius:8px;color:#cfcfd6;font-size:.95rem;font-weight:600}
+.sidebar nav a:hover{background:#232230;color:#fff}
+.sidebar nav a.active{background:#2c2a3d;color:#fff}
+main.content{flex:1;min-width:0;padding:36px 44px 80px;max-width:900px}
+.hero{padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.hero h1{font-size:1.6rem;margin:0 0 6px}
+.hero p{color:var(--sub);margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
+.pcard{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:transform .15s}
+.pcard:hover{transform:translateY(-3px)}
+.pcard img{width:100%;display:block;aspect-ratio:1200/630;object-fit:cover}
+.pcard .pc-body{padding:16px 18px}
+.pc-cat{display:inline-block;font-size:.72rem;font-weight:700;color:#fff;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.pcard h3{font-size:1.02rem;margin:0 0 6px;line-height:1.4}
+.pcard .pc-date{color:var(--sub);font-size:.8rem}
+.empty-note{color:var(--sub);font-size:.92rem;padding:30px 0}
+article.post{background:var(--card);border-radius:16px;padding:40px 44px;box-shadow:0 2px 14px rgba(0,0,0,.06)}
+article.post .pc-cat{margin-bottom:14px}
+article.post h1{font-size:1.85rem;margin:.1em 0 .2em;line-height:1.35}
+article.post .meta{color:var(--sub);font-size:.9rem;margin-bottom:22px}
+article.post img{max-width:100%;border-radius:10px;margin:20px 0;display:block}
+article.post h3{font-size:1.2rem;margin-top:1.8em;margin-bottom:.5em}
+article.post p{margin:0 0 1.1em}
+.note{background:#fafaf5;border-left:4px solid #d8c98a;padding:14px 16px;font-size:.9rem;color:#6b6144;border-radius:6px;margin:1.2em 0}
+.tags{margin-top:2em;padding-top:1.4em;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px}
+.tag{background:#f0f0ee;color:#666;font-size:.8rem;padding:5px 12px;border-radius:20px}
+footer.sitefoot{text-align:center;color:#aaa;font-size:.82rem;padding:30px 0}
+footer.sitefoot a{color:#999;text-decoration:underline}
+.backlink{display:inline-block;margin-top:30px;color:#888;font-size:.9rem}
+.stats-box{margin-top:22px;padding:16px 14px;background:#1c1b26;border-radius:10px;font-size:.82rem}
+.stats-row{display:flex;justify-content:space-between;padding:5px 0;color:#cfcfd6}
+.stats-row b{color:#fff;font-weight:700}
+.stats-pop{margin-top:10px;padding-top:10px;border-top:1px solid #2c2b3a}
+.stats-pop-title{color:#8a8a95;font-size:.72rem;margin-bottom:6px}
+.stats-pop ol{margin:0;padding-left:18px;color:#cfcfd6}
+.stats-pop li{margin-bottom:5px;line-height:1.4;font-size:.82rem}
+.stats-pop a{color:#cfcfd6}
+.stats-pop a:hover{color:#fff}
+.post-views{margin-top:1.6em;padding-top:1em;border-top:1px solid var(--line);color:var(--sub);font-size:.88rem}
+@media (max-width:760px){.layout{flex-direction:column}.sidebar{position:static;height:auto;width:100%}main.content{padding:24px 18px 60px}}
+</style></head><body>
+<div class="layout">
+<aside class="sidebar">
+<a class="logo" href="index.html">exomu<span>'s home</span></a>
+<div class="tagline">매일 새로 쌓는 개인 아카이브</div>
+<nav id="nav">
+<a href="category-movie.html">영화와 사상</a>
+<a href="category-art.html" class="active">미술과 사상</a>
+<a href="category-books.html">도서와 사상</a>
+<a href="category-psych.html">심리학용어사전</a>
+<a href="category-econ.html">쉬운 경제학</a>
+<a href="category-knowhow.html">노하우</a>
+</nav>
+<div class="stats-box">
+<div class="stats-row"><span>누적 방문자</span><b id="stat-total">–</b></div>
+<div class="stats-row"><span>오늘 방문자</span><b id="stat-today">–</b></div>
+<div class="stats-pop">
+<div class="stats-pop-title">인기 게시물</div>
+<ol id="stat-popular"><li>불러오는 중…</li></ol>
+</div>
+</div>
+</aside>
+<main class="content">
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3169773352082499" data-ad-slot="6448432776" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+<article class="post" data-post-id="55" data-cat="art">
+<script type="application/json" id="post-meta">{"id": "55", "cat": "art", "title": "자코메티의 가느다란 사람 — 다가갈수록 멀어지는 거리에 대하여", "date": "2026-08-05 15:06", "img": "55_img1.png"}</script>
+<span class="pc-cat" style="background:#8a4a3a">미술과 사상</span>
+<h1>자코메티의 가느다란 사람 — 다가갈수록 멀어지는 거리에 대하여</h1>
+<div class="meta">2026-08-05 15:06 · 왜 그의 인물은 그토록 야위었나</div>
+<img src="55_img1.png" alt="자코메티의 가느다란 사람 — 다가갈수록 멀어지는 거리에 대하여">
+<h3>한 뼘 앞에 있는데도 닿지 않는</h3>
+<p>미술관에서 알베르토 자코메티의 조각을 처음 마주했을 때, 나는 그 앞에서 이상하게 오래 서 있었다. 뼈만 남은 듯 가느다란 사람이 한 걸음을 내딛고 있었다. 가까이 다가갈수록 그는 오히려 멀어지는 것 같았고, 물러설수록 어렴풋이 사람의 형상이 또렷해졌다. 나는 그때 사람과 사람 사이의 거리라는 것을 눈으로 본 기분이었다. 자코메티의 인물은 왜 그렇게 야위었을까. 나는 그 마름이 게으른 생략이 아니라, 어떤 진실을 향한 깎아냄이라고 생각한다.</p>
+<h3>깎아낼수록 드러나는 것</h3>
+<p>자코메티는 하나의 인물을 만들고 또 부수기를 끝없이 반복한 조각가로 유명하다. 살을 붙이면 붙일수록 실제 사람에게서 멀어진다고 느꼈고, 그래서 그는 자꾸만 깎아냈다. 남은 것은 부피가 아니라 존재의 심지 같은 것이었다. 두꺼운 근육과 매끈한 표면 대신, 울퉁불퉁하게 손자국이 남은 가느다란 형상. 그것은 잘생긴 몸을 흉내 내지 않는다. 대신 여기 한 사람이 서 있다는 사실 자체의 무게를 전한다.</p>
+<p>나는 이 깎아냄이 우리 삶에도 닿는다고 느낀다. 우리는 흔히 무언가를 더 쌓아야 내가 또렷해진다고 믿는다. 더 많은 경력, 더 많은 관계, 더 많은 소유. 그러나 자코메티는 반대로 말하는 듯하다. 군더더기를 걷어냈을 때 비로소 남는 것, 그 앙상한 심지가 진짜 나에 가깝다고. 마름은 결핍이 아니라 집중이다.</p>
+<img src="55_img2.png" alt="걸어가는 사람 — 깎여 나간 형상">
+<h3>시선과 거리</h3>
+<p>자코메티의 인물이 유난히 멀게 느껴지는 데에는 이유가 있다. 그는 사람을 늘 일정한 거리 너머에 있는 존재로 보았다. 우리는 타인의 겉모습은 볼 수 있어도 그 속으로는 끝내 들어가지 못한다. 아무리 사랑해도, 아무리 오래 함께해도, 상대의 의식 안쪽은 영영 내 손 밖에 있다. 자코메티의 마른 형상은 바로 그 닿지 않는 거리, 눈앞에 있으나 결코 소유할 수 없는 타인의 아득함을 조각으로 붙잡은 것처럼 보인다.</p>
+<p>그와 가까웠던 한 철학자는 시선에 관해 이렇게 생각했다. 내가 누군가를 바라볼 때 그를 하나의 대상으로 붙잡는 것 같지만, 그 사람 역시 나를 바라보는 순간 나는 도리어 그의 시선 아래 놓인 대상이 된다고. 서로를 바라보는 두 사람 사이에는 결코 없어지지 않는 틈이 있다는 것이다. 자코메티의 조각 앞에서 우리가 느끼는 거리감은, 어쩌면 사람과 사람 사이에 원래부터 존재하던 그 틈을 눈으로 확인하는 경험이다.</p>
+<img src="55_img3.png" alt="바라봄과 바라보임 — 두 사람 사이의 틈">
+<h3>실패를 계속하는 일</h3>
+<p>자코메티는 자신의 작업을 늘 실패라고 불렀다. 눈에 보이는 사람을 있는 그대로 옮기는 일이 불가능하다는 것을 알면서도, 그는 매일 다시 시작했다. 완성이 목표가 아니라, 조금 더 진실에 가까워지려는 시도 자체가 그의 삶이었다. 나는 이 태도가 그의 조각보다 더 오래 마음에 남는다. 끝내 닿지 못할 것을 알면서도 오늘 한 번 더 손을 대는 사람. 그것은 예술가만의 이야기가 아니라, 무언가를 사랑하며 사는 모든 사람의 이야기다.</p>
+<p>우리는 완벽하게 이해받기를 바라지만 그런 일은 일어나지 않는다. 그럼에도 우리는 다시 편지를 쓰고, 다시 말을 건네고, 다시 손을 내민다. 닿지 않는 거리를 알면서도 한 걸음을 내딛는 그 반복이, 자코메티의 걸어가는 사람이 영원히 멈추지 않는 이유와 닮았다.</p>
+<img src="55_img4.png" alt="멈추지 않는 걸음 — 반복이라는 태도">
+<h3>다시 나의 삶으로</h3>
+<p>미술관을 나서며 나는 곁에 있는 사람들을 다르게 보게 되었다. 가장 가까운 이조차 끝내 다 알 수 없다는 사실은 쓸쓸하지만, 동시에 그것은 상대를 함부로 다 안다고 단정하지 않게 만드는 겸손의 근거이기도 하다. 다 알 수 없기에 우리는 계속 물어야 하고, 다 소유할 수 없기에 매일 다시 다가가야 한다. 자코메티의 마른 사람은 그 영원한 거리 앞에서도 걸음을 멈추지 않는다.</p>
+<img src="55_img5.png" alt="닿지 않는 거리 — 그래도 다가가기">
+<p>나는 오늘, 다 이해했다고 믿었던 사람에게 한 번 더 안부를 묻기로 한다. 닿지 않는 거리를 좁히려는 그 작은 걸음이야말로, 어쩌면 우리가 사람에게 할 수 있는 가장 정직한 예술인지도 모른다.</p>
+<div class="tags"><span class="tag">#미술과사상</span><span class="tag">#자코메티</span><span class="tag">#조각</span><span class="tag">#시선</span><span class="tag">#거리</span></div>
+<div class="post-views">조회수 <b id="post-view-count">–</b></div>
+<a class="backlink" href="index.html">← 목록으로</a>
+</article>
+</main></div><footer class="sitefoot"><a href="mailto:exomu@naver.com">exomu@naver.com</a></footer>
+<script>window.PAGE={"type": "post", "id": "55", "cat": "art"};</script>
+<script>
+(function(){
+var NS="exomuart", API="https://abacus.jasoncameron.dev";
+var CATS=[["movie","영화와 사상","#4a3b78"],["art","미술과 사상","#8a4a3a"],["books","도서와 사상","#2f5d4f"],["psych","심리학용어사전","#8040a8"],["econ","쉬운 경제학","#2b4a86"],["knowhow","노하우","#136b7a"]];
+var NAME={},COLOR={},KEYBYNAME={};
+CATS.forEach(function(c){NAME[c[0]]=c[1];COLOR[c[0]]=c[2];KEYBYNAME[c[1]]=c[0];});
+var PAGE=window.PAGE||{type:"index"};
+var MISS=6, MAXID=600, BATCH=8;
+function pad(n){return (n<10?"0":"")+n;}
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function hit(k){return fetch(API+"/hit/"+NS+"/"+k).then(function(r){return r.json()}).then(function(j){return j.value||0}).catch(function(){return 0})}
+function get(k){return fetch(API+"/get/"+NS+"/"+k).then(function(r){return r.ok?r.json():{value:0}}).then(function(j){return j.value||0}).catch(function(){return 0})}
+function todayKey(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Seoul"}));var y=d.getFullYear(),m=("0"+(d.getMonth()+1)).slice(-2),day=("0"+d.getDate()).slice(-2);return "day-"+y+m+day;}
+function parsePost(id,html){
+ try{
+  var doc=new DOMParser().parseFromString(html,"text/html");
+  var mEl=doc.getElementById("post-meta");
+  if(mEl){var m=JSON.parse(mEl.textContent);m.id=m.id||id;if(!COLOR[m.cat])m.cat="knowhow";return m;}
+  var art=doc.querySelector("article.post");
+  var h1=(art&&art.querySelector("h1"))||doc.querySelector("h1");
+  var title=h1?h1.textContent.trim():((doc.title||"").replace(/\s*—\s*exomu.*$/,"").trim());
+  var catEl=art&&art.querySelector(".pc-cat");
+  var cat=catEl?(KEYBYNAME[catEl.textContent.trim()]||"knowhow"):"knowhow";
+  var metaEl=art&&art.querySelector(".meta");
+  var date=metaEl?metaEl.textContent.split("·")[0].trim():"";
+  var imgEl=art&&art.querySelector("img");
+  var img=imgEl?imgEl.getAttribute("src"):(id+"_img1.png");
+  if(!title)return null;
+  return {id:id,cat:cat,title:title,date:date,img:img};
+ }catch(e){return null;}
+}
+function loadCache(){try{return JSON.parse(localStorage.getItem("exomu_posts")||"{}").posts||{}}catch(e){return {}}}
+function saveCache(p){try{localStorage.setItem("exomu_posts",JSON.stringify({posts:p,t:Date.now()}))}catch(e){}}
+function vals(o){return Object.keys(o).map(function(k){return o[k]})}
+function discover(){
+ var results=loadCache();
+ return new Promise(function(resolve){
+  var n=1,last=0,done=false;
+  Object.keys(results).forEach(function(k){var v=parseInt(k,10);if(v>last)last=v;});
+  function batch(){
+   if(done||n>MAXID){saveCache(results);resolve(vals(results));return;}
+   var ids=[];for(var i=0;i<BATCH;i++)ids.push(n+i);n+=BATCH;
+   Promise.all(ids.map(function(k){
+    var id=pad(k);
+    if(results[id])return Promise.resolve([k,results[id]]);
+    return fetch("post-"+id+".html",{cache:"force-cache"}).then(function(r){return r.ok?r.text():null}).then(function(h){return [k,h?parsePost(id,h):null]}).catch(function(){return [k,null]});
+   })).then(function(arr){
+    arr.forEach(function(p){if(p[1]){results[pad(p[0])]=p[1];if(p[0]>last)last=p[0];}});
+    if(n-1>last+MISS)done=true;
+    batch();
+   });
+  }
+  batch();
+ });
+}
+function pcard(p){
+ return '<a class="pcard" href="post-'+p.id+'.html"><img src="'+esc(p.img)+'" alt="'+esc(p.title)+'"><div class="pc-body"><span class="pc-cat" style="background:'+(COLOR[p.cat]||"#888")+'">'+esc(NAME[p.cat]||"")+'</span><h3>'+esc(p.title)+'</h3><div class="pc-date">'+esc(p.date)+'</div></div></a>';
+}
+function bycat(list,cat){return list.filter(function(p){return p.cat===cat}).sort(function(a,b){return parseInt(b.id,10)-parseInt(a.id,10)});}
+function renderNav(list){
+ var counts={};CATS.forEach(function(c){counts[c[0]]=0});
+ list.forEach(function(p){if(counts[p.cat]!=null)counts[p.cat]++});
+ var nav=document.getElementById("nav");if(!nav)return;
+ nav.innerHTML=CATS.map(function(c){var act=(PAGE.type==="category"&&PAGE.cat===c[0])?' class="active"':'';return '<a href="category-'+c[0]+'.html"'+act+'>'+c[1]+' ('+(counts[c[0]]||0)+')</a>';}).join("");
+}
+function renderContent(list){
+ var el=document.getElementById("content");if(!el)return;
+ var cats=PAGE.type==="category"?[PAGE.cat]:CATS.map(function(c){return c[0]});
+ var html="";
+ cats.forEach(function(cat){
+  var ps=bycat(list,cat).slice(0,7);
+  if(PAGE.type!=="category")html+='<h2 style="font-size:1.25rem;margin:1.6em 0 .8em">'+esc(NAME[cat])+'</h2>';
+  html+=ps.length?'<div class="grid">'+ps.map(pcard).join("")+'</div>':'<div class="empty-note">아직 게시물이 없습니다.</div>';
+ });
+ el.innerHTML=html;
+}
+function renderPopular(list){
+ var el=document.getElementById("stat-popular");if(!el||!list.length)return;
+ Promise.all(list.map(function(p){return get("post-"+p.id).then(function(v){return {id:p.id,title:p.title,v:v}})})).then(function(a){
+  a.sort(function(x,y){return y.v-x.v});
+  el.innerHTML=a.slice(0,5).map(function(p){return '<li><a href="post-'+p.id+'.html">'+esc(p.title)+'</a></li>'}).join("");
+ }).catch(function(){el.innerHTML='<li>통계를 불러올 수 없습니다</li>'});
+}
+function renderAll(list){renderNav(list);renderContent(list);renderPopular(list);}
+var tk=todayKey(),flag="exomu_v_"+tk;
+if(!localStorage.getItem(flag)){hit("total-visits");hit(tk);localStorage.setItem(flag,"1");}
+var te=document.getElementById("stat-total"),de=document.getElementById("stat-today");
+if(te)get("total-visits").then(function(v){te.textContent=v.toLocaleString()});
+if(de)get(tk).then(function(v){de.textContent=v.toLocaleString()});
+if(PAGE.type==="post"&&PAGE.id){var ve=document.getElementById("post-view-count");if(ve)hit("post-"+PAGE.id).then(function(v){ve.textContent=v.toLocaleString()});}
+var cached=vals(loadCache());
+if(cached.length)renderAll(cached);
+discover().then(renderAll);
+})();
+</script>
+</body></html>
