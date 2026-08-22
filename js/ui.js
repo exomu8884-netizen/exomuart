@@ -82,6 +82,16 @@ export class UI {
     foldBtn.addEventListener('click', doFold);
     foldBtn.addEventListener('touchend', doFold, { passive: false });
 
+    // 자유롭게 움직이다 길을 잃으면 처음 자리로
+    const rc = $('recenter');
+    const doRecenter = (e) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      this.game.room.resetView();
+      sfx.play('pop', 0.4);
+    };
+    rc.addEventListener('click', doRecenter);
+    rc.addEventListener('touchend', doRecenter, { passive: false });
+
     $('chips').addEventListener('click', (e) => {
       const id = e.target.dataset.pet;
       if (id) { this.game.select(id); sfx.play('pop', 0.5); }

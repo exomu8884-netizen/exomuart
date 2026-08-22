@@ -69,10 +69,15 @@ export class Room {
   }
 
   applyCamera() {
-    // 코앞까지 붙기도, 방 전체가 들어오게 물러서기도 한다
-    this.pitch = Math.max(-4, Math.min(84, this.pitch));
-    this.dist = Math.max(0.9, Math.min(18, this.dist));
-    this.yaw = Math.max(-120, Math.min(120, this.yaw));
+    // 코앞까지 붙기도, 방 전체가 들어오게 물러서기도 한다. 좌우는 한 바퀴 다 돈다.
+    this.pitch = Math.max(-12, Math.min(86, this.pitch));
+    this.dist = Math.max(0.7, Math.min(20, this.dist));
+
+    // 보는 지점이 방을 너무 벗어나지 않게만 잡아 둔다
+    const HX = T.roomHalfX + 2.5, HZ = T.roomHalfZ + 2.5;
+    this.pivot.x = Math.max(-HX, Math.min(HX, this.pivot.x));
+    this.pivot.z = Math.max(-HZ, Math.min(HZ, this.pivot.z));
+    this.pivot.y = Math.max(-0.5, Math.min(3.2, this.pivot.y));
 
     const yaw = this.yaw * Math.PI / 180;
     const pitch = this.pitch * Math.PI / 180;
@@ -83,6 +88,32 @@ export class Room {
       this.pivot.y + d * Math.sin(pitch),
       this.pivot.z - d * Math.cos(yaw) * Math.cos(pitch));
     this.cam.lookAt(this.pivot);
+  }
+
+  /**
+   * 보는 지점을 옆으로·위아래로 민다.
+   * 이게 없으면 카메라가 방 한가운데만 붙잡고 돌아서 답답하다.
+   * dx, dy 는 화면에서 움직인 픽셀.
+   */
+  pan(dx, dy) {
+    const h = this.canvas.clientHeight || 1;
+    // 화면에서 움직인 만큼이 그 거리에서 실제로 몇 미터인지
+    const perPx = 2 * this.dist * Math.tan(this.cam.fov * Math.PI / 360) / h;
+
+    const right = new THREE.Vector3();
+    const up = new THREE.Vector3();
+    this.cam.matrixWorld.extractBasis(right, up, new THREE.Vector3());
+
+    this.pivot.addScaledVector(right, -dx * perPx);
+    this.pivot.addScaledVector(up, dy * perPx);
+    this.applyCamera();
+  }
+
+  /** 시점을 처음 자리로 */
+  resetView() {
+    this.yaw = 0; this.pitch = 18; this.dist = 4.2;
+    this.pivot.set(0, 0.7, 0);
+    this.applyCamera();
   }
 
   resize() {

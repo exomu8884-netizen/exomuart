@@ -257,24 +257,53 @@ class Game {
       dragging = false;
     };
 
-    cv.addEventListener('mousedown', e => down(e.clientX, e.clientY));
-    cv.addEventListener('mousemove', e => move(e.clientX, e.clientY));
-    window.addEventListener('mouseup', e => up(e.clientX, e.clientY));
+    let panning = false;
+    cv.addEventListener('contextmenu', e => e.preventDefault());
+    cv.addEventListener('mousedown', e => {
+      // 오른쪽 단추나 Shift 를 누르고 끌면 민다
+      if (e.button === 2 || e.shiftKey) { panning = true; lx = e.clientX; ly = e.clientY; return; }
+      down(e.clientX, e.clientY);
+    });
+    cv.addEventListener('mousemove', e => {
+      if (panning) {
+        this.room.pan(e.clientX - lx, e.clientY - ly);
+        lx = e.clientX; ly = e.clientY;
+        return;
+      }
+      move(e.clientX, e.clientY);
+    });
+    window.addEventListener('mouseup', e => {
+      if (panning) { panning = false; return; }
+      up(e.clientX, e.clientY);
+    });
+
+    // 손가락 두 개: 벌리면 확대, 같이 움직이면 보는 지점을 민다
+    let mid = null;
 
     cv.addEventListener('touchstart', e => {
-      if (e.touches.length === 2) { pinch = this._pinchDist(e); dragging = false; return; }
+      if (e.touches.length === 2) {
+        pinch = this._pinchDist(e);
+        mid = this._pinchMid(e);
+        dragging = false;
+        return;
+      }
       down(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
     cv.addEventListener('touchmove', e => {
       if (e.touches.length === 2) {
         const d = this._pinchDist(e);
-        // 멀수록 크게 움직여야 답답하지 않다
+        const m = this._pinchMid(e);
+
         if (pinch > 0) {
+          // 멀수록 크게 움직여야 답답하지 않다
           this.room.dist -= (d - pinch) * 0.010 * Math.max(1, this.room.dist * 0.5);
           this.room.applyCamera();
         }
+        if (mid) this.room.pan(m.x - mid.x, m.y - mid.y);
+
         pinch = d;
+        mid = m;
         return;
       }
       move(e.touches[0].clientX, e.touches[0].clientY);
@@ -282,6 +311,7 @@ class Game {
 
     cv.addEventListener('touchend', e => {
       pinch = 0;
+      mid = null;
       const t = e.changedTouches[0];
       if (t) up(t.clientX, t.clientY);
     });
@@ -299,6 +329,12 @@ class Game {
   _pinchDist(e) {
     const a = e.touches[0], b = e.touches[1];
     return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  }
+
+  /** 두 손가락의 가운데 — 이게 움직인 만큼 화면을 민다 */
+  _pinchMid(e) {
+    const a = e.touches[0], b = e.touches[1];
+    return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
   }
 
   _tap(x, y) {
