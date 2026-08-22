@@ -69,9 +69,10 @@ export class Room {
   }
 
   applyCamera() {
-    this.pitch = Math.max(6, Math.min(62, this.pitch));
-    this.dist = Math.max(1.8, Math.min(9, this.dist));
-    this.yaw = Math.max(-60, Math.min(60, this.yaw));
+    // 코앞까지 붙기도, 방 전체가 들어오게 물러서기도 한다
+    this.pitch = Math.max(-4, Math.min(84, this.pitch));
+    this.dist = Math.max(0.9, Math.min(18, this.dist));
+    this.yaw = Math.max(-120, Math.min(120, this.yaw));
 
     const yaw = this.yaw * Math.PI / 180;
     const pitch = this.pitch * Math.PI / 180;

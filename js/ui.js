@@ -67,6 +67,15 @@ export class UI {
       if (a) this.game.doAction(a);
     });
 
+    // 아래 판을 접었다 폈다 — 방을 넓게 보려고
+    $('fold').addEventListener('click', () => {
+      const b = $('bottom');
+      const folded = b.classList.toggle('folded');
+      document.body.classList.toggle('folded', folded);
+      sfx.play('pop', 0.4);
+      setTimeout(() => this.game.room.resize(), 240);
+    });
+
     $('chips').addEventListener('click', (e) => {
       const id = e.target.dataset.pet;
       if (id) { this.game.select(id); sfx.play('pop', 0.5); }

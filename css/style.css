@@ -65,7 +65,18 @@ html, body {
   padding: 10px 12px 14px;
   background: linear-gradient(#fff9fbEE, #fff9fbF7);
   border-top: 1px solid #f0d8e2;
+  transition: transform .22s ease;
 }
+/* 접으면 아래로 내려가고 이름줄만 남는다 — 방을 넓게 보려고 */
+#bottom.folded { transform: translateY(calc(100% - 92px)); }
+
+#fold {
+  position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+  width: 76px; height: 34px; border: 0; border-radius: 12px 12px 0 0;
+  background: #fff9fbEE; color: #8a7d84; font-size: 16px; line-height: 1;
+  border-top: 1px solid #f0d8e2;
+}
+#bottom.folded #fold { transform: translateX(-50%) rotate(180deg); border-radius: 0 0 12px 12px; }
 
 #chips { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
 .chip {
@@ -100,6 +111,7 @@ html, body {
 /* ── 토스트 ──────────────────────────────────────────── */
 #toasts {
   position: absolute; left: 12px; right: 12px; bottom: 340px;
+  transition: bottom .22s ease;
   display: flex; flex-direction: column; gap: 6px; pointer-events: none;
 }
 .toast {
@@ -185,3 +197,6 @@ input[type=text] {
 }
 #loading .t { font-size: 24px; font-weight: 800; letter-spacing: 1px; }
 #loading .h { font-size: 13px; opacity: .65; }
+
+/* 아래 판을 접으면 토스트도 따라 내려온다 */
+body.folded #toasts { bottom: 120px; }

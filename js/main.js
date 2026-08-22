@@ -269,7 +269,11 @@ class Game {
     cv.addEventListener('touchmove', e => {
       if (e.touches.length === 2) {
         const d = this._pinchDist(e);
-        if (pinch > 0) { this.room.dist -= (d - pinch) * 0.008; this.room.applyCamera(); }
+        // 멀수록 크게 움직여야 답답하지 않다
+        if (pinch > 0) {
+          this.room.dist -= (d - pinch) * 0.010 * Math.max(1, this.room.dist * 0.5);
+          this.room.applyCamera();
+        }
         pinch = d;
         return;
       }
@@ -283,7 +287,7 @@ class Game {
     });
 
     cv.addEventListener('wheel', e => {
-      this.room.dist += e.deltaY * 0.002;
+      this.room.dist += e.deltaY * 0.0016 * Math.max(1, this.room.dist * 0.6);
       this.room.applyCamera();
     }, { passive: true });
 
