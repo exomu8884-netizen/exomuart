@@ -68,15 +68,17 @@ html, body {
   transition: transform .22s ease;
 }
 /* 접으면 아래로 내려가고 이름줄만 남는다 — 방을 넓게 보려고 */
-#bottom.folded { transform: translateY(calc(100% - 92px)); }
+#bottom.folded { transform: translateY(calc(100% - 108px)); }
 
+/* 판 안쪽 맨 위에 붙은 띠. 밖에 띄우면 3D 화면과 겹쳐 폰에서 안 눌린다. */
 #fold {
-  position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
-  width: 76px; height: 34px; border: 0; border-radius: 12px 12px 0 0;
-  background: #fff9fbEE; color: #8a7d84; font-size: 16px; line-height: 1;
-  border-top: 1px solid #f0d8e2;
+  display: block; width: 100%; height: 34px; margin: -4px 0 6px;
+  border: 0; border-radius: 10px; background: #f6e3ec; color: #8a7d84;
+  font-size: 15px; line-height: 1; letter-spacing: 4px;
+  position: relative; z-index: 5; touch-action: manipulation;
 }
-#bottom.folded #fold { transform: translateX(-50%) rotate(180deg); border-radius: 0 0 12px 12px; }
+#fold:active { background: #eed3e0; }
+#bottom.folded #fold { letter-spacing: 4px; }
 
 #chips { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
 .chip {

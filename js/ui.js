@@ -67,14 +67,20 @@ export class UI {
       if (a) this.game.doAction(a);
     });
 
-    // 아래 판을 접었다 폈다 — 방을 넓게 보려고
-    $('fold').addEventListener('click', () => {
+    // 아래 판을 접었다 폈다 — 방을 넓게 보려고.
+    // 폰에서는 click 이 씹히는 일이 있어 touchend 도 같이 받는다.
+    const foldBtn = $('fold');
+    const doFold = (e) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
       const b = $('bottom');
       const folded = b.classList.toggle('folded');
       document.body.classList.toggle('folded', folded);
+      foldBtn.textContent = folded ? '▲  펴기' : '▼  접기';
       sfx.play('pop', 0.4);
       setTimeout(() => this.game.room.resize(), 240);
-    });
+    };
+    foldBtn.addEventListener('click', doFold);
+    foldBtn.addEventListener('touchend', doFold, { passive: false });
 
     $('chips').addEventListener('click', (e) => {
       const id = e.target.dataset.pet;
