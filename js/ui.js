@@ -587,6 +587,14 @@ export class UI {
     });
     this._btn(c, '소리 시험 (멍멍)', '', () => sfx.play('bark'));
 
+    // 홈 화면 아이콘으로 열면 주소창이 없어 새로고침할 방법이 마땅치 않다.
+    // 주소 뒤에 숫자를 바꿔 붙여 캐시를 확실히 건너뛴다.
+    this._btn(c, '새로고침 (새 버전 받기)', '', () => {
+      this.game.save();
+      const url = location.origin + location.pathname + '?v=' + Date.now();
+      location.replace(url);
+    });
+
     // ── 시간 빠르기 ──
     c.appendChild(el('h2', null, '시간 빠르기'));
     c.appendChild(el('p', 'small', this._scaleText(T.timeScale)));
