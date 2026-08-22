@@ -3,8 +3,8 @@
 // 현실 시간은 저장해 둔 lastSeen(UTC 초)과 기기 시계의 차이로 잰다.
 // 서버를 안 쓰므로 기기 시계를 앞으로 돌리면 시간이 건너뛴다. 뒤로 돌리면 그냥 멈춘다.
 
-import { T } from './tuning.js';
-import { addToShelf } from './dolls.js';
+import { T } from './tuning.js?v=1787385309';
+import { addToShelf } from './dolls.js?v=1787385309';
 
 const KEY = 'dulli_save_v1';
 

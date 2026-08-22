@@ -2,9 +2,9 @@
 // 강아지가 부딪혀 떨어뜨리고, 바닥에 있으면 물어뜯는다.
 // 망가진 건 버려야 하고, 새로 사려면 용품점에 간다.
 
-import { T, Stage, Illness, clamp } from './tuning.js';
-import { uid, atHome } from './save.js';
-import { pushEvent } from './events.js';
+import { T, Stage, Illness, clamp } from './tuning.js?v=1787385309';
+import { uid, atHome } from './save.js?v=1787385309';
+import { pushEvent } from './events.js?v=1787385309';
 
 export const onShelf = (s) => s.dolls.filter(d => d.state === 0).length;
 export const onFloor = (s) => s.dolls.filter(d => d.state === 1).length;
