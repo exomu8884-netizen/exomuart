@@ -1,6 +1,6 @@
 {
-  "name": "둘리키우기",
-  "short_name": "둘리키우기",
+  "name": "둘리 이야기",
+  "short_name": "둘리 이야기",
   "description": "강아지를 한 마리 데려와 집에서 키웁니다. 밥 주고 산책시키고 아프면 병원에 데려갑니다.",
   "lang": "ko",
   "start_url": "./",
@@ -10,8 +10,23 @@
   "background_color": "#2b2226",
   "theme_color": "#e07ba6",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
