@@ -1,0 +1,187 @@
+/* 둘리키우기 — 폰 세로 화면 기준. 글씨는 크게. */
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* hidden 속성은 CSS display 에 밀린다. #loading·#overlay·#warn 처럼
+   display 를 지정한 것들이 안 숨겨지므로 여기서 못박는다. */
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0; padding: 0; height: 100%; overflow: hidden;
+  background: #241d21;
+  font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", sans-serif;
+  color: #2e2622;
+  -webkit-text-size-adjust: 100%;
+  user-select: none;
+}
+
+#frame { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+
+/* 폰이면 꽉 차고, 넓은 화면이면 가운데 세로 틀.
+   9:16 으로 못박으면 PC 에서 지나치게 좁아진다 — 화면 높이의 0.62 배까지 넓힌다. */
+#app {
+  position: relative;
+  width: 100%; height: 100%;
+  max-width: min(100vw, max(460px, calc(100vh * 0.62)));
+  background: #2b2226;
+  overflow: hidden;
+}
+
+#scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+/* ── 위쪽 띠 ─────────────────────────────────────────── */
+#top {
+  position: absolute; top: 0; left: 0; right: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(#fff9fbEE, #fff9fbCC);
+  border-bottom: 1px solid #f0d8e2;
+}
+#topleft { flex: 1; min-width: 0; }
+#money { font-size: 20px; font-weight: 800; line-height: 1.15; }
+#clock { font-size: 13px; color: #8a7d84; line-height: 1.3; }
+#clock.night { color: #6a6ba0; }
+
+#topbtns { display: flex; gap: 6px; }
+.tb {
+  font: inherit; font-size: 13px; font-weight: 700;
+  padding: 9px 10px; border-radius: 10px; border: 0;
+  background: #fdeef4; color: #4a3d44;
+}
+.tb:active { background: #f6dbe7; }
+.tb.wood { background: #d99cb8; color: #fff; }
+
+/* ── 경고 띠 ─────────────────────────────────────────── */
+#warn {
+  position: absolute; left: 0; right: 0; top: 62px;
+  padding: 10px 14px; font-size: 14px; font-weight: 700;
+  color: #fff; text-align: center; background: #c8443c;
+}
+#warn.age { background: #6f6478; }
+
+/* ── 아래쪽 판 ───────────────────────────────────────── */
+#bottom {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 10px 12px 14px;
+  background: linear-gradient(#fff9fbEE, #fff9fbF7);
+  border-top: 1px solid #f0d8e2;
+}
+
+#chips { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.chip {
+  font: inherit; font-size: 13px; font-weight: 700;
+  padding: 8px 12px; border-radius: 999px; border: 0;
+  background: #fdeef4; color: #4a3d44;
+}
+.chip.on { background: #e07ba6; color: #fff; }
+
+#petname { font-size: 21px; font-weight: 800; }
+#petname .sub { font-size: 13px; font-weight: 600; color: #8a7d84; margin-left: 6px; }
+#petnote { font-size: 13px; color: #8a7d84; margin: 2px 0 8px; min-height: 17px; }
+
+#bars { display: grid; gap: 5px; margin-bottom: 10px; }
+.bar { display: grid; grid-template-columns: 52px 1fr 34px; align-items: center; gap: 8px; }
+.bar .cap { font-size: 12px; color: #8a7d84; }
+.bar .track { height: 9px; border-radius: 999px; background: #00000014; overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 999px; transition: width .25s; }
+.bar .num { font-size: 12px; color: #8a7d84; text-align: right; }
+
+#actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ab {
+  font: inherit; font-size: 14px; font-weight: 700;
+  padding: 13px 4px; border-radius: 12px; border: 0;
+  background: #fdeef4; color: #3c3138;
+}
+.ab.primary { background: #e8894f; color: #fff; }
+.ab.muted { color: #9b8f95; }
+.ab:active { transform: translateY(1px); }
+.ab[disabled] { opacity: .45; }
+
+/* ── 토스트 ──────────────────────────────────────────── */
+#toasts {
+  position: absolute; left: 12px; right: 12px; bottom: 340px;
+  display: flex; flex-direction: column; gap: 6px; pointer-events: none;
+}
+.toast {
+  background: #241f22EE; color: #fff;
+  padding: 12px 14px; border-radius: 12px;
+  font-size: 14px; line-height: 1.5; white-space: pre-line;
+  animation: pop .18s ease-out;
+}
+@keyframes pop { from { transform: translateY(6px); opacity: 0; } }
+
+/* ── 덮는 창 ─────────────────────────────────────────── */
+#overlay {
+  position: absolute; inset: 0; z-index: 20;
+  background: #00000088;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+#overlay.full { background: #fdf5f8; padding: 0; align-items: stretch; }
+
+.card {
+  width: 100%; max-height: 88%; overflow-y: auto;
+  background: #fdf5f8; border-radius: 18px; padding: 20px;
+}
+.full-panel { width: 100%; display: flex; flex-direction: column; height: 100%; }
+.full-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border-bottom: 1px solid #f0d8e2; background: #fff9fb;
+}
+.full-head h2 { margin: 0; font-size: 21px; flex: 1; }
+.full-body { flex: 1; overflow-y: auto; padding: 14px 16px 30px; }
+
+.card h2 { margin: 0 0 12px; font-size: 22px; text-align: center; }
+.card p { margin: 0 0 12px; font-size: 15px; line-height: 1.65; white-space: pre-line; }
+.card .small { font-size: 13px; color: #8a7d84; }
+.card .warnline { color: #c04a3f; font-weight: 700; }
+
+.btn {
+  display: block; width: 100%; margin-top: 8px;
+  font: inherit; font-size: 15px; font-weight: 700;
+  padding: 14px; border-radius: 12px; border: 0;
+  background: #fdeef4; color: #3c3138; text-align: center;
+}
+.btn.primary { background: #e8894f; color: #fff; }
+.btn.pink { background: #e07ba6; color: #fff; }
+.btn.ghost { background: #f6ecf1; color: #8a7d84; }
+.btn[disabled] { opacity: .45; }
+
+.row { display: flex; gap: 8px; }
+.row .btn { margin-top: 8px; }
+
+.item {
+  background: #fff9fb; border-radius: 14px; padding: 14px; margin-bottom: 10px;
+}
+.item h3 { margin: 0 0 4px; font-size: 17px; }
+.item .desc { font-size: 13px; color: #8a7d84; margin-bottom: 6px; }
+.item .price { font-size: 14px; font-weight: 700; color: #d1703f; margin-bottom: 8px; }
+
+input[type=text] {
+  width: 100%; font: inherit; font-size: 20px; text-align: center;
+  padding: 14px; border-radius: 12px; border: 1px solid #ecd6e0; background: #fff;
+}
+
+.scalerow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 6px; }
+.scalerow .btn { margin-top: 0; font-size: 13px; padding: 11px 2px; }
+
+/* ── 장례 ────────────────────────────────────────────── */
+#overlay.funeral { background: #100e14F2; }
+.stone {
+  background: #9c979a; border-radius: 14px 14px 6px 6px;
+  padding: 26px 18px; text-align: center; color: #2b2724;
+}
+.stone .nm { font-size: 30px; font-weight: 800; }
+.stone .ag { font-size: 15px; color: #4b4643; margin-top: 6px; }
+.flowers { display: flex; gap: 6px; justify-content: center; min-height: 30px; margin: 14px 0; }
+.flower { width: 26px; height: 26px; border-radius: 50%; background: #f08bad; }
+.funeral-msg { color: #ded6d9; text-align: center; font-size: 14px; line-height: 1.6; white-space: pre-line; }
+
+/* ── 로딩 ────────────────────────────────────────────── */
+#loading {
+  position: absolute; inset: 0; z-index: 40;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; background: #2b2226; color: #f6e7ee;
+}
+#loading .t { font-size: 24px; font-weight: 800; letter-spacing: 1px; }
+#loading .h { font-size: 13px; opacity: .65; }

@@ -1,9 +1,0 @@
-이 폴더 파일들을 GitHub → exomuart 저장소 → Add file → Upload files에 드래그 후 Commit changes를 눌러주세요.
-(posts.json 도 반드시 함께 업로드하세요.)
-
-오늘 추가/갱신 파일:
-- post-18.html ~ post-22.html (새 글 5개)
-- 18_img1.png ~ 22_img5.png (글당 이미지 5장)
-- index.html (전체 갱신)
-- category-econ.html / category-movie.html / category-books.html / category-psych.html / category-knowhow.html (갱신)
-- posts.json (기존 17개 + 오늘 5개 = 총 22개)
