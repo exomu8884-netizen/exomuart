@@ -29,19 +29,27 @@ class Game {
     this.room = new Room(document.getElementById('scene'));
     this.ui = new UI(this);
 
+    // 모델이 도착해야 시작한다.
+    // 먼저 시작해 버리면 임시 모양(베개)으로 만들어진 채로 굳는다.
     this.room.onDogReady = () => {
       document.getElementById('loading').hidden = true;
       this.start();
+    };
+    this.room.onDogProgress = (r) => {
+      const h = document.querySelector('#loading .h');
+      if (h) h.textContent = `강아지를 데려오는 중… ${Math.round(r * 100)}%`;
     };
 
     this._wireInput();
     this._loop();
     sfx.preload();
 
-    // 모델이 오래 걸려도 10초 뒤에는 시작한다
+    // 아주 오래 걸리면 안내를 바꿔 준다 (그래도 계속 기다린다)
     setTimeout(() => {
-      if (!this.started) { document.getElementById('loading').hidden = true; this.start(); }
-    }, 10000);
+      if (this.started) return;
+      const h = document.querySelector('#loading .h');
+      if (h) h.textContent = '조금 오래 걸립니다. 그대로 두시면 곧 열립니다…';
+    }, 15000);
   }
 
   get now() { return save.nowUnix(); }

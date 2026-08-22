@@ -173,8 +173,17 @@ export class Room {
       this.dogProto = gltf.scene;
       this.dogClips = gltf.animations || [];
       this.dogProto.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; } });
+
+      // 모델이 늦게 오면 그 사이에 임시 모양으로 만들어진 아이들이 있다.
+      // 여기서 지워 주지 않으면 계속 베개로 남는다.
+      for (const [, e] of this.pets) this.petRoot.remove(e.g);
+      this.pets.clear();
+
       this.onDogReady && this.onDogReady();
-    }, undefined, (err) => {
+    }, (e) => {
+      // 얼마나 받았는지 알려 준다 — 안 그러면 멈춘 것처럼 보인다
+      if (this.onDogProgress && e.total) this.onDogProgress(e.loaded / e.total);
+    }, (err) => {
       console.warn('[둘리] 모델을 못 읽었습니다. 임시 모양으로 대신합니다.', err);
       this.dogProto = null;
       this.dogFailed = true;
@@ -207,14 +216,30 @@ export class Room {
         action.play();
       }
     } else {
-      // 모델이 없을 때 쓰는 임시 몸
+      // 모델이 아직 없을 때 쓰는 임시 몸.
+      // 캡슐 하나만 두면 베개처럼 보여서, 최소한 개 꼴은 갖춘다.
       const breed = breedOf(p.breedId);
-      const body = new THREE.Mesh(
-        new THREE.CapsuleGeometry(0.18, 0.28, 6, 12), this._mat(breed.tint));
-      body.rotation.z = Math.PI / 2;
-      body.position.y = 0.3;
-      body.castShadow = true;
-      g.add(body);
+      const m = this._mat(breed.tint);
+      const k = HEIGHT[p.stage] / 0.55;      // 단계에 맞춰 통째로 키운다
+      const tmp = new THREE.Group();
+      const add = (geo, x, y, z, rx = 0) => {
+        const o = new THREE.Mesh(geo, m);
+        o.position.set(x, y, z); o.rotation.x = rx; o.castShadow = true;
+        tmp.add(o); return o;
+      };
+
+      add(new THREE.CapsuleGeometry(0.115, 0.20, 5, 12), 0, 0.30, 0, Math.PI / 2);   // 몸통
+      const head = add(new THREE.SphereGeometry(0.105, 16, 12), 0, 0.40, 0.21);       // 머리
+      head.scale.set(1, 0.95, 1.05);
+      add(new THREE.ConeGeometry(0.045, 0.075, 8), -0.062, 0.475, 0.20);              // 귀
+      add(new THREE.ConeGeometry(0.045, 0.075, 8), 0.062, 0.475, 0.20);
+      add(new THREE.SphereGeometry(0.055, 12, 10), 0, 0.365, 0.30);                   // 주둥이
+      for (const [x, z] of [[-0.07, 0.11], [0.07, 0.11], [-0.07, -0.11], [0.07, -0.11]])
+        add(new THREE.CylinderGeometry(0.030, 0.026, 0.20, 8), x, 0.11, z);           // 다리
+      add(new THREE.CapsuleGeometry(0.035, 0.09, 4, 8), 0, 0.40, -0.20, -0.9);        // 꼬리
+
+      tmp.scale.setScalar(k);
+      g.add(tmp);
     }
 
     // 탭을 받을 보이지 않는 상자
