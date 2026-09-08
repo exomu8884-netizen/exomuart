@@ -1,12 +1,12 @@
 // 짝을 맺고, 새끼를 낳고, 분양을 보낸다.
 // 이 한 바퀴가 돌아야 게임이 끝나지 않는다 — 용돈 말고 두 번째 수입원이다.
 
-import { T, Stage, clamp, won } from './tuning.js?v=1787385309';
-import { PUPPY_NAMES } from './data.js?v=1787385309';
-import { atHome, livingCount, hasInCollection } from './save.js?v=1787385309';
-import { realSecondsFor } from './sim.js?v=1787385309';
-import { newPet } from './actions.js?v=1787385309';
-import { pushEvent } from './events.js?v=1787385309';
+import { T, Stage, clamp, won } from './tuning.js?v=1788837232';
+import { PUPPY_NAMES } from './data.js?v=1788837232';
+import { atHome, livingCount, hasInCollection } from './save.js?v=1788837232';
+import { realSecondsFor } from './sim.js?v=1788837232';
+import { newPet } from './actions.js?v=1788837232';
+import { pushEvent } from './events.js?v=1788837232';
 
 /** 집에 없는 이름으로 하나 고른다 */
 export function pickName(s) {
@@ -154,10 +154,14 @@ export function sendAway(s, p) {
   if (p.lost) return { ok: false, message: `${p.name}은(는) 집에 없습니다.` };
   if (p.pregnantDue > 0) return { ok: false, message: `${p.name}은(는) 새끼를 배고 있습니다.` };
 
-  const price = adoptOutPrice(s, p);
-  s.money += price;
+  // 지운 뒤에 값을 치른다.
+  // 먼저 더하면, 목록에 없는 옛 객체가 넘어왔을 때 돈만 들어오고 아이는 그대로 남는다.
   const i = s.pets.indexOf(p);
-  if (i >= 0) s.pets.splice(i, 1);
+  if (i < 0) return { ok: false, message: '' };
+
+  const price = adoptOutPrice(s, p);
+  s.pets.splice(i, 1);
+  s.money += price;
 
   return {
     ok: true,

@@ -5,12 +5,12 @@
 //  · 돌봄 시계 — 켜 놓았을 때만 배속대로, 꺼 둔 동안은 훨씬 느리다.
 // 그리고 꺼 둔 동안에는 죽지 않는다. 자고 일어나니 떠나 있는 일은 없어야 한다.
 
-import { T, rate, Stage, Illness, clamp, won } from './tuning.js?v=1787385309';
-import { breedOf, temperName, temperStory, AXIS } from './data.js?v=1787385309';
-import { findPet, hasInCollection, uid } from './save.js?v=1787385309';
-import { stepDolls } from './dolls.js?v=1787385309';
-import { stepPregnancy } from './breeding.js?v=1787385309';
-import { rollEvents, pushEvent } from './events.js?v=1787385309';
+import { T, rate, Stage, Illness, clamp, won } from './tuning.js?v=1788837232';
+import { breedOf, temperName, temperStory, AXIS } from './data.js?v=1788837232';
+import { findPet, hasInCollection, uid } from './save.js?v=1788837232';
+import { stepDolls } from './dolls.js?v=1788837232';
+import { stepPregnancy } from './breeding.js?v=1788837232';
+import { rollEvents, pushEvent } from './events.js?v=1788837232';
 
 // ── 시간 환산 ─────────────────────────────────────────────
 
@@ -197,7 +197,10 @@ function stepPet(s, p, ageH, careH, illH, end, offline, rep) {
   // 잠과 기력
   if (p.asleep) {
     p.energy = clamp(p.energy + rate.energyGain * careH);
-    if (p.energy >= T.wakeThreshold) p.asleep = false;
+    if (p.energy >= T.wakeThreshold) {
+      p.asleep = false;
+      say(rep, p.id, 'woke', `${p.name}이(가) 기지개를 켜며 일어났습니다.`);
+    }
   } else {
     const ageEnergy = p.stage === Stage.Senior ? T.seniorEnergyRate : 1;
     const sleepy = isNight(s) ? T.nightEnergyRate : 1;

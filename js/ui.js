@@ -1,18 +1,18 @@
 // 화면 — 위쪽 띠, 아래쪽 판, 덮는 창들.
 // 열 때 새로 그리고 닫을 때 지운다. 상태가 남지 않아 헷갈릴 일이 없다.
 
-import { T, Stage, Illness, won } from './tuning.js?v=1787385309';
-import { BREEDS, FOODS, breedOf, foodOf, temperName, temperStory, stageName } from './data.js?v=1787385309';
+import { T, Stage, Illness, won } from './tuning.js?v=1788837232';
+import { BREEDS, FOODS, breedOf, foodOf, temperName, temperStory, stageName } from './data.js?v=1788837232';
 import {
   findPet, livingCount, mealsOf, atHome, totalMeals,
-} from './save.js?v=1787385309';
-import * as sim from './sim.js?v=1787385309';
-import * as act from './actions.js?v=1787385309';
-import * as breed from './breeding.js?v=1787385309';
-import * as dolls from './dolls.js?v=1787385309';
-import * as ev from './events.js?v=1787385309';
-import sfx from './sfx.js?v=1787385309';
-import { josa } from './josa.js?v=1787385309';
+} from './save.js?v=1788837232';
+import * as sim from './sim.js?v=1788837232';
+import * as act from './actions.js?v=1788837232';
+import * as breed from './breeding.js?v=1788837232';
+import * as dolls from './dolls.js?v=1788837232';
+import * as ev from './events.js?v=1788837232';
+import sfx from './sfx.js?v=1788837232';
+import { josa } from './josa.js?v=1788837232';
 
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => {
@@ -116,6 +116,10 @@ export class UI {
     const p = this.game.selected();
     const warn = $('warn');
 
+    // 자고 있으면 같은 자리에서 깨운다 — 버튼 글자가 지금 무슨 일이 일어나는지 알려 준다
+    const sleepBtn = document.querySelector('#actions [data-act="sleep"]');
+    if (sleepBtn) sleepBtn.textContent = p && p.asleep ? '깨우기' : '재우기';
+
     if (!p) {
       $('petname').textContent = '아직 아무도 없습니다';
       $('petnote').textContent = '분양가게에서 데려오세요.';
@@ -163,7 +167,12 @@ export class UI {
     }
     const stalled = sim.growthStalledReason(p);
     if (stalled) return stalled + '.';
-    if (p.asleep) return '자고 있습니다.';
+    if (p.asleep) {
+      const left = Math.max(0, T.wakeThreshold - p.energy);
+      const mins = Math.ceil(left / (100 / T.energySleepHours) * 60 / T.timeScale);
+      return left <= 0 ? '자고 있습니다. 곧 일어납니다.'
+        : `자고 있습니다. 기력 ${Math.round(p.energy)} — ${mins}분쯤 뒤에 일어납니다. (탭하면 깨웁니다)`;
+    }
     if (p.illness > 0) {
       return p.illness === 1 ? '시름시름합니다. 병원에 데려가는 게 좋겠습니다.' : '앓아누웠습니다. 병원에 데려가야 합니다.';
     }
@@ -498,20 +507,35 @@ export class UI {
 
   sendAway(p) {
     const s = this.S;
+
+    // 못 보내는 상태면 아예 묻지 않는다.
+    // 보낼 것처럼 값까지 보여 준 뒤에 안 되는 게 제일 나쁘다 — 눌러도 그대로라 고장으로 보인다.
+    const block = p.dead ? `${p.name}은(는) 이미 곁을 떠났습니다.`
+      : p.lost ? `${p.name}은(는) 집에 없습니다. 돌아온 뒤에 보낼 수 있습니다.`
+        : p.pregnantDue > 0 ? `${p.name}은(는) 새끼를 배고 있습니다. 낳은 뒤에 보낼 수 있습니다.`
+          : null;
+
+    if (block) {
+      const c = this._card('보낼 수 없습니다');
+      c.appendChild(el('p', null, block));
+      this._btn(c, '알겠습니다', 'primary', () => this.close());
+      return;
+    }
+
     const price = breed.adoptOutPrice(s, p);
     const c = this._card('좋은 집으로 보내기');
     const q = el('p');
-    q.innerHTML = `${p.name}을(를) 다른 집으로 보냅니다.\n\n${won(price)}을 받습니다.\n<span class="warnline">되돌릴 수 없습니다.</span>`;
+    q.innerHTML = `${josa(`${p.name}을(를)`)} 다른 집으로 보냅니다.\n\n${won(price)}을 받습니다.\n<span class="warnline">되돌릴 수 없습니다.</span>`;
     c.appendChild(q);
 
     this._btn(c, '그냥 둔다', 'primary', () => this.close());
     this._btn(c, '보낸다', 'ghost', () => {
       const r = breed.sendAway(s, p);
-      sfx.play('coin');
-      this.game.selectFirst();
+      sfx.play(r.ok ? 'coin' : 'dong');
+      if (r.ok) this.game.selectFirst();
       this.game.save();
       this.close();
-      this.toast(r.message);
+      this.toast(r.message || '지금은 보낼 수 없습니다.');
     });
   }
 

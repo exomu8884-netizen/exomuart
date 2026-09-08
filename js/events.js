@@ -1,12 +1,12 @@
 // 이벤트 엔진 + 표.
 // 여기에 줄을 추가하면 게임에 이벤트가 는다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1787385309';
-import { foodOf } from './data.js?v=1787385309';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1788837232';
+import { foodOf } from './data.js?v=1788837232';
 import {
   findPet, atHome, cooldownOf, stampCooldown, pendingCountFor,
   addMeals, takeMeal, mealsOf, totalMeals, livingCount, uid,
-} from './save.js?v=1787385309';
+} from './save.js?v=1788837232';
 
 // 순환 참조를 피하려고 필요한 것만 늦게 가져온다
 let L = null;

@@ -32,10 +32,10 @@ export const T = {
   cleanHours: 36,
   socialHours: 240,
   energyAwakeHours: 13,
-  energySleepHours: 9,
+  energySleepHours: 5,     // 개는 금방 회복한다
 
   sleepThreshold: 12,
-  wakeThreshold: 95,
+  wakeThreshold: 82,       // 다 안 채워도 일어난다
 
   // ── 건강 ────────────────────────────────────────────────
   healthDrainPerHour: 3,

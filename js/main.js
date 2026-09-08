@@ -1,16 +1,16 @@
 // 조립. 저장을 읽고, 시간을 흘리고, 화면과 방을 맞춘다.
 
-import { T, Stage } from './tuning.js?v=1787385309';
-import * as save from './save.js?v=1787385309';
-import * as sim from './sim.js?v=1787385309';
-import * as act from './actions.js?v=1787385309';
-import * as breed from './breeding.js?v=1787385309';
-import * as dolls from './dolls.js?v=1787385309';
-import * as ev from './events.js?v=1787385309';
-import { buildExtraEvents, linkExtra } from './events_extra.js?v=1787385309';
-import { Room, ACT } from './room3d.js?v=1787385309';
-import { UI } from './ui.js?v=1787385309';
-import sfx from './sfx.js?v=1787385309';
+import { T, Stage } from './tuning.js?v=1788837232';
+import * as save from './save.js?v=1788837232';
+import * as sim from './sim.js?v=1788837232';
+import * as act from './actions.js?v=1788837232';
+import * as breed from './breeding.js?v=1788837232';
+import * as dolls from './dolls.js?v=1788837232';
+import * as ev from './events.js?v=1788837232';
+import { buildExtraEvents, linkExtra } from './events_extra.js?v=1788837232';
+import { Room, ACT } from './room3d.js?v=1788837232';
+import { UI } from './ui.js?v=1788837232';
+import sfx from './sfx.js?v=1788837232';
 
 // 순환 참조를 피하려고 이벤트 표에 필요한 것만 넘겨 준다
 const LIB = {
@@ -133,6 +133,7 @@ class Game {
         case 'birth': sfx.play('yip'); break;
         case 'sick': case 'worse': sfx.play('whine'); this.ui.toast(e.text); break;
         case 'home': sfx.play('bark'); break;
+        case 'woke': sfx.play('yawn'); this.ui.toast(e.text); break;
         case 'old': sfx.play('dong'); break;
         case 'doll_fell': sfx.play('pop'); this.ui.toast(e.text); break;
         case 'died': {
@@ -365,8 +366,17 @@ class Game {
       this.selectedId = hit.petId;
       const p = this.selected();
       if (p) {
-        act.pat(this.S, p, this.now);
-        sfx.play(p.asleep ? 'snore' : p.mood > 60 ? 'bark' : 'whine', 0.7);
+        if (p.asleep) {
+          // 자는 아이를 두드리면 깨운다 — 기다리기 답답할 때
+          const r = act.toggleSleep(this.S, p);
+          this.room.act(p.id, ACT.none, null);
+          sfx.play('yawn');
+          this.ui.toast(r.message);
+          this.save();
+        } else {
+          act.pat(this.S, p, this.now);
+          sfx.play(p.mood > 60 ? 'bark' : 'whine', 0.7);
+        }
       }
       this.ui.refresh();
     }
