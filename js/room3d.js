@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1788837232';
-import { breedOf } from './data.js?v=1788837232';
-import { nightDepth } from './sim.js?v=1788837232';
+import { T, Stage, Illness } from './tuning.js?v=1789206160';
+import { breedOf } from './data.js?v=1789206160';
+import { nightDepth } from './sim.js?v=1789206160';
 
 // 강아지가 행동할 때 찾아가는 자리
 export const ACT = { none: 0, eat: 1, play: 2, pat: 3, sleep: 4, away: 5 };

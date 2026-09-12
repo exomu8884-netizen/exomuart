@@ -1,16 +1,16 @@
 // 조립. 저장을 읽고, 시간을 흘리고, 화면과 방을 맞춘다.
 
-import { T, Stage } from './tuning.js?v=1788837232';
-import * as save from './save.js?v=1788837232';
-import * as sim from './sim.js?v=1788837232';
-import * as act from './actions.js?v=1788837232';
-import * as breed from './breeding.js?v=1788837232';
-import * as dolls from './dolls.js?v=1788837232';
-import * as ev from './events.js?v=1788837232';
-import { buildExtraEvents, linkExtra } from './events_extra.js?v=1788837232';
-import { Room, ACT } from './room3d.js?v=1788837232';
-import { UI } from './ui.js?v=1788837232';
-import sfx from './sfx.js?v=1788837232';
+import { T, Stage } from './tuning.js?v=1789206160';
+import * as save from './save.js?v=1789206160';
+import * as sim from './sim.js?v=1789206160';
+import * as act from './actions.js?v=1789206160';
+import * as breed from './breeding.js?v=1789206160';
+import * as dolls from './dolls.js?v=1789206160';
+import * as ev from './events.js?v=1789206160';
+import { buildExtraEvents, linkExtra } from './events_extra.js?v=1789206160';
+import { Room, ACT } from './room3d.js?v=1789206160';
+import { UI } from './ui.js?v=1789206160';
+import sfx from './sfx.js?v=1789206160';
 
 // 순환 참조를 피하려고 이벤트 표에 필요한 것만 넘겨 준다
 const LIB = {
@@ -68,7 +68,8 @@ class Game {
     if (save.livingCount(this.S) === 0) { this.ui.shop(); return; }
 
     const lines = [];
-    if (gained > 0) lines.push(`용돈 ${gained.toLocaleString('ko-KR')}원이 들어왔습니다.`);
+    if (gained.monthly > 0) lines.push(`이달 첫날입니다. 용돈 ${gained.monthly.toLocaleString('ko-KR')}원이 들어왔습니다.`);
+    if (gained.daily > 0) lines.push(`용돈 ${gained.daily.toLocaleString('ko-KR')}원이 들어왔습니다.`);
     for (const e of rep) {
       if (e.kind === 'event' || lines.length >= 6) continue;
       lines.push(e.text);
@@ -110,7 +111,11 @@ class Game {
         if (this._sec >= 1) {
           this._sec = 0;
           const rep = sim.catchUp(this.S, this.now);
-          act.claimAllowance(this.S);
+          const gained = act.claimAllowance(this.S);
+          if (gained.monthly > 0) {
+            sfx.play('coin');
+            this.ui.toast(`이달 첫날입니다. 용돈 ${gained.monthly.toLocaleString('ko-KR')}원이 들어왔습니다.`);
+          }
           this._handle(rep);
           this.ui.refresh();
         }
@@ -172,6 +177,16 @@ class Game {
 
   doAction(a) {
     sfx.unlock();
+
+    // 아이한테 하는 게 아니라 부모님한테 하는 것 — 아이가 없어도 된다
+    if (a === 'beg' || a === 'tidy') {
+      const r = a === 'beg' ? act.begAllowance(this.S) : act.tidyRoom(this.S);
+      sfx.play(r.ok ? (a === 'beg' ? 'coin' : 'pop') : 'dong');
+      this.ui.toast(r.message);
+      this.save(); this.ui.refresh();
+      return;
+    }
+
     const p = this.selected();
     if (!p) { this.ui.toast('먼저 아이를 고르세요.'); return; }
 

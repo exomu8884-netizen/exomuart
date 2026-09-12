@@ -135,6 +135,16 @@ export const T = {
   maxAllowanceDays: 7,
   startingMoney: 90000,
 
+  // ── 달마다 첫날 큰 용돈 ─────────────────────────────────
+  // 개의 30일을 한 달로 친다. 31일째·61일째… 첫날에 들어온다. (시작하는 달은 시작금이 그 몫)
+  monthlyAllowance: 500000,
+  daysPerMonth: 30,
+
+  // ── 용돈 조르기 ─────────────────────────────────────────
+  // 조르면 무조건 주신다. 대신 개의 사흘에 한 번만.
+  begAmount: 100000,
+  begEveryHours: 72,
+
   clinicBasicPrice: 15000,
   clinicFullPrice: 45000,
   vaccinePrice: 25000,

@@ -1,10 +1,11 @@
 // 유저가 누르는 것들. 시간은 sim.js 가 흘리고, 여기서는 그 순간의 변화만 준다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1788837232';
-import { foodOf, breedOf } from './data.js?v=1788837232';
-import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1788837232';
-import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1788837232';
-import { rollWalkEvent } from './events.js?v=1788837232';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1789206160';
+import { foodOf, breedOf } from './data.js?v=1789206160';
+import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1789206160';
+import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1789206160';
+import { rollWalkEvent } from './events.js?v=1789206160';
+import * as dolls from './dolls.js?v=1789206160';
 
 export const ok = (message = null) => ({ ok: true, message });
 export const no = (message) => ({ ok: false, message });
@@ -225,6 +226,27 @@ export function cleanPoop(s, poopId) {
   return ok(null);
 }
 
+/** 방을 한 번에 치운다 — 변은 전부, 떨어진 인형은 선반으로, 망가진 인형은 버린다 */
+export function tidyRoom(s) {
+  const poops = s.poops.length;
+  s.poops.length = 0;
+  s.roomFilth = 0;
+
+  let up = 0, out = 0, stuck = 0;
+  for (const d of [...s.dolls]) {
+    if (d.state === 1) { if (dolls.pickUp(s, d.id).ok) up++; else stuck++; }
+    else if (d.state === 2) { if (dolls.discard(s, d.id).ok) out++; }
+  }
+
+  if (!poops && !up && !out && !stuck) return no('이미 깨끗합니다.');
+  const parts = [];
+  if (poops) parts.push(`변 ${poops}개를 치웠습니다`);
+  if (up) parts.push(`인형 ${up}개를 선반에 올렸습니다`);
+  if (out) parts.push(`망가진 인형 ${out}개를 버렸습니다`);
+  if (stuck) parts.push(`선반이 꽉 차 인형 ${stuck}개는 바닥에 두었습니다`);
+  return ok(parts.join('. ') + '.');
+}
+
 // ── 돈 ────────────────────────────────────────────────────
 
 /**
@@ -235,16 +257,46 @@ export function cleanPoop(s, poopId) {
  */
 export function claimAllowance(s) {
   const dogDay = Math.floor(s.dogClockHours / 24);
-  if (s.lastAllowanceDay == null) { s.lastAllowanceDay = dogDay; return 0; }
-  if (dogDay <= s.lastAllowanceDay) return 0;
+  const month = Math.floor(dogDay / T.daysPerMonth);
+  const got = { daily: 0, monthly: 0 };
 
-  let days = dogDay - s.lastAllowanceDay;
-  days = Math.max(0, Math.min(days, T.maxAllowanceDays));
+  if (s.lastAllowanceDay == null) { s.lastAllowanceDay = dogDay; s.lastMonthlyMonth = month; return got; }
+  // 예전 저장은 달 기록이 없다 — 지금 달을 받은 것으로 치고 다음 달부터 준다
+  if (s.lastMonthlyMonth == null) s.lastMonthlyMonth = month;
 
-  const amount = days * T.dailyAllowance;
-  s.money += amount;
-  s.lastAllowanceDay = dogDay;
-  return amount;
+  if (dogDay > s.lastAllowanceDay) {
+    let days = dogDay - s.lastAllowanceDay;
+    days = Math.max(0, Math.min(days, T.maxAllowanceDays));
+    got.daily = days * T.dailyAllowance;
+    s.money += got.daily;
+    s.lastAllowanceDay = dogDay;
+  }
+
+  // 달이 바뀌었으면 큰 용돈. 오래 비웠어도 한 달치만 — 몰아 받으면 게임이 싱거워진다
+  if (month > s.lastMonthlyMonth) {
+    got.monthly = T.monthlyAllowance;
+    s.money += got.monthly;
+    s.lastMonthlyMonth = month;
+  }
+  return got;
+}
+
+/**
+ * 용돈 조르기. 정해진 용돈과 별개로 한 번 더 손을 벌린다.
+ * 조르면 무조건 주신다 — 쉬운 게임이다. 대신 개의 사흘에 한 번만.
+ * 쿨다운은 개의 시간으로 센다 (자동 용돈과 같은 이유 — 배속을 올려도 균형이 안 무너지게).
+ */
+export function begAllowance(s) {
+  const h = s.dogClockHours;
+  if (h < (s.begUntil || 0)) {
+    const left = s.begUntil - h;
+    const when = left >= 24 ? `개의 ${Math.ceil(left / 24)}일` : `개의 ${Math.ceil(left)}시간`;
+    return no(`「지난번에 줬잖니.」
+${when} 뒤에 다시 조를 수 있습니다.`);
+  }
+  s.money += T.begAmount;
+  s.begUntil = h + T.begEveryHours;
+  return ok(`「알았다, 알았어.」 ${won(T.begAmount)}을 쥐여 주셨습니다.`);
 }
 
 export function buyFood(s, foodId) {

@@ -115,6 +115,8 @@ html, body {
 }
 .ab.primary { background: #e8894f; color: #fff; }
 .ab.muted { color: #9b8f95; }
+/* 아이가 아니라 집에 하는 일 — 둘이 한 줄을 나눠 쓰고 색을 달리한다 */
+.ab.wide { grid-column: span 2; background: #f7e3b8; color: #5a4a2a; }
 .ab:active { transform: translateY(1px); }
 .ab[disabled] { opacity: .45; }
 
