@@ -1,16 +1,16 @@
 // 조립. 저장을 읽고, 시간을 흘리고, 화면과 방을 맞춘다.
 
-import { T, Stage } from './tuning.js?v=1789206160';
-import * as save from './save.js?v=1789206160';
-import * as sim from './sim.js?v=1789206160';
-import * as act from './actions.js?v=1789206160';
-import * as breed from './breeding.js?v=1789206160';
-import * as dolls from './dolls.js?v=1789206160';
-import * as ev from './events.js?v=1789206160';
-import { buildExtraEvents, linkExtra } from './events_extra.js?v=1789206160';
-import { Room, ACT } from './room3d.js?v=1789206160';
-import { UI } from './ui.js?v=1789206160';
-import sfx from './sfx.js?v=1789206160';
+import { T, Stage } from './tuning.js?v=1789279859';
+import * as save from './save.js?v=1789279859';
+import * as sim from './sim.js?v=1789279859';
+import * as act from './actions.js?v=1789279859';
+import * as breed from './breeding.js?v=1789279859';
+import * as dolls from './dolls.js?v=1789279859';
+import * as ev from './events.js?v=1789279859';
+import { buildExtraEvents, linkExtra } from './events_extra.js?v=1789279859';
+import { Room, ACT } from './room3d.js?v=1789279859';
+import { UI } from './ui.js?v=1789279859';
+import sfx from './sfx.js?v=1789279859';
 
 // 순환 참조를 피하려고 이벤트 표에 필요한 것만 넘겨 준다
 const LIB = {
@@ -21,6 +21,12 @@ const LIB = {
 ev.linkEvents(LIB);
 linkExtra(LIB);
 buildExtraEvents(sfx);
+
+// 한 번만 주는 선물. 다음에 열 때 받는다. 또 쏘고 싶으면 줄을 하나 더 적으면 된다 — 이름표가 다르면 또 준다.
+// 이미 게임을 시작한 사람(안내문을 지난 저장)에게만 간다.
+const GIFTS = [
+  { id: 'g2026-09-13', amount: 1000000, text: '대표님이 용돈을 보냈습니다. 1,000,000원.' },
+];
 
 class Game {
   constructor() {
@@ -65,9 +71,17 @@ class Game {
     this.ui.refresh();
 
     if (!this.S.warningAccepted) { this.ui.intro(); return; }
-    if (save.livingCount(this.S) === 0) { this.ui.shop(); return; }
 
-    const lines = [];
+    // 안 받은 선물이 있으면 준다
+    const gifts = this._claimGifts();
+
+    if (save.livingCount(this.S) === 0) {
+      for (const g of gifts) { sfx.play('coin'); this.ui.toast(g.text); }
+      this.ui.shop();
+      return;
+    }
+
+    const lines = gifts.map(g => g.text);
     if (gained.monthly > 0) lines.push(`이달 첫날입니다. 용돈 ${gained.monthly.toLocaleString('ko-KR')}원이 들어왔습니다.`);
     if (gained.daily > 0) lines.push(`용돈 ${gained.daily.toLocaleString('ko-KR')}원이 들어왔습니다.`);
     for (const e of rep) {
@@ -75,6 +89,21 @@ class Game {
       lines.push(e.text);
     }
     this.ui.catchUpReport(lines);
+  }
+
+  /** 아직 안 받은 선물을 전부 주고, 받은 것 목록을 돌려준다 */
+  _claimGifts() {
+    const s = this.S;
+    if (!Array.isArray(s.gifts)) s.gifts = [];
+    const got = [];
+    for (const g of GIFTS) {
+      if (s.gifts.includes(g.id)) continue;
+      s.money += g.amount;
+      s.gifts.push(g.id);
+      got.push(g);
+    }
+    if (got.length) this.save();
+    return got;
   }
 
   // ── 고르기 ────────────────────────────────────────────
