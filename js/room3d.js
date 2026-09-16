@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1789279859';
-import { breedOf } from './data.js?v=1789279859';
-import { nightDepth } from './sim.js?v=1789279859';
+import { T, Stage, Illness } from './tuning.js?v=1789549667';
+import { breedOf } from './data.js?v=1789549667';
+import { nightDepth } from './sim.js?v=1789549667';
 
 // 강아지가 행동할 때 찾아가는 자리
 export const ACT = { none: 0, eat: 1, play: 2, pat: 3, sleep: 4, away: 5 };
@@ -29,12 +29,22 @@ const DOLL_SCALE = 3;
 /** 단계별로 방에서 보이는 키 (미터) */
 const HEIGHT = [0.55, 0.75, 1.00, 1.00];
 
+/** 개집 — 뒷벽 아래 한 줄. 아이마다 하나씩(최대 6). 선반은 그 지붕 위. */
+/** 아이가 적으면 넓게, 여섯이면 좁게 — 뒷벽(6.8m)에 다 들어가야 한다. 다 자란 아이(키 1.0)가 옆으로 누우면 1m 를 차지한다. */
+function kennelDims(count) {
+  const gap = Math.min(1.55, 6.6 / Math.max(1, count));
+  return { w: Math.min(1.45, gap - 0.10), h: 0.92, d: 1.25, roof: 0.30, gap };
+}
+const SHELF_Y = 1.62;
+const KENNEL_COLORS = [0xf26fa0, 0x8ccbea, 0xfbd96f, 0xb78be8, 0x9bd8a4, 0xf7a072];
+
 export class Room {
   constructor(canvas) {
     this.canvas = canvas;
     this.pets = new Map();     // id → {group, mixer, action, target, act, actUntil, hidden, onArrive}
     this.poops = new Map();
     this.dolls = new Map();
+    this.kennels = new Map();  // id → {g, slot, spot, door, name}
     this.dogProto = null;
 
     this._initRenderer();
@@ -144,22 +154,21 @@ export class Room {
 
     // 선반
     this.shelfZ = shelfZ;
-    this._box(3.8, 0.07, 0.34, 0, 1.24, shelfZ, PINK.shelf);
-    this._box(0.06, 0.22, 0.34, -1.9, 1.35, shelfZ, PINK.shelf);
-    this._box(0.06, 0.22, 0.34, 1.9, 1.35, shelfZ, PINK.shelf);
+    // 선반은 개집 지붕 위로 (개집이 뒷벽 아래에 줄 선다)
+    this._box(3.8, 0.07, 0.34, 0, SHELF_Y, shelfZ, PINK.shelf);
+    this._box(0.06, 0.22, 0.34, -1.9, SHELF_Y + 0.11, shelfZ, PINK.shelf);
+    this._box(0.06, 0.22, 0.34, 1.9, SHELF_Y + 0.11, shelfZ, PINK.shelf);
 
-    // 밥그릇·방석
-    const bowl = new THREE.Vector3(-1.9, 0.05, 1.35);
-    const cushion = new THREE.Vector3(1.8, 0.07, 1.15);
+    // 밥그릇 — 앞쪽 왼편. 방석은 걷었다: 아이마다 개집이 있다(_syncKennels).
+    const bowl = new THREE.Vector3(-2.1, 0.05, -1.25);
     this._cyl(0.34, 0.10, bowl.x, bowl.y, bowl.z, PINK.bowl);
     this._cyl(0.30, 0.09, bowl.x + 0.55, bowl.y - 0.005, bowl.z + 0.05, PINK.water);
-    this._box(1.15, 0.14, 0.90, cushion.x, cushion.y, cushion.z, PINK.cushion);
 
     this.spots = {
-      bowl: new THREE.Vector3(bowl.x + 0.25, 0, bowl.z - 0.6),
-      cushion: new THREE.Vector3(cushion.x, 0, cushion.z),
+      bowl: new THREE.Vector3(bowl.x + 0.25, 0, bowl.z + 0.6),
       front: new THREE.Vector3(0, 0, -T.roomHalfZ + 0.5),
     };
+    this.kennelRoot = new THREE.Group(); this.scene.add(this.kennelRoot);
 
     // 조명
     this.sun = new THREE.DirectionalLight(0xfff7f2, 1.6);
@@ -410,12 +419,96 @@ export class Room {
 
   shelfSlotPos(slot) {
     const t = T.shelfSlots <= 1 ? 0.5 : slot / (T.shelfSlots - 1);
-    return new THREE.Vector3(-1.72 + t * 3.44, 1.275, this.shelfZ);
+    return new THREE.Vector3(-1.72 + t * 3.44, SHELF_Y + 0.035, this.shelfZ);
+  }
+
+  // ── 개집 ────────────────────────────────────────────────
+
+  /** slot 번째 개집의 가운데(바닥). 뒷벽에 붙여 왼쪽부터 줄 세운다. */
+  kennelPos(slot, count) {
+    const K = kennelDims(count);
+    const total = (count - 1) * K.gap;
+    const x = -total / 2 + slot * K.gap;
+    const z = T.roomHalfZ + 0.6 - 0.08 - K.d / 2;   // 뒷벽 안쪽에 붙인다
+    return new THREE.Vector3(x, 0, z);
+  }
+
+  _nameTexture(name) {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 80;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff7fa'; g.fillRect(0, 0, 256, 80);
+    g.strokeStyle = '#d97b9a'; g.lineWidth = 6; g.strokeRect(3, 3, 250, 74);
+    g.fillStyle = '#5a3a48'; g.font = 'bold 40px "Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(String(name || '').slice(0, 6), 128, 42);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+
+  /** 속이 빈 집 — 앞면에 문이 뚫려 있어 자는 모습이 보인다. 지붕은 아이마다 다른 색. */
+  _makeKennel(p, color, count) {
+    const { w, h, d, roof } = kennelDims(count);
+    const g = new THREE.Group();
+    const wallC = 0xfdf3f6, floorC = 0xf3d9df, t = 0.05;
+    this._box(w, t, d, 0, t / 2, 0, floorC, g);                       // 바닥
+    this._box(w, h, t, 0, h / 2, d / 2 - t / 2, wallC, g);            // 뒷벽
+    this._box(t, h, d, -w / 2 + t / 2, h / 2, 0, wallC, g);           // 옆벽
+    this._box(t, h, d, w / 2 - t / 2, h / 2, 0, wallC, g);
+    // 앞벽 — 문을 뚫어 둔다 (양옆 기둥 + 위 인방)
+    const doorW = 0.62, doorH = 0.70, post = (w - doorW) / 2;
+    this._box(post, h, t, -w / 2 + post / 2, h / 2, -d / 2 + t / 2, wallC, g);
+    this._box(post, h, t, w / 2 - post / 2, h / 2, -d / 2 + t / 2, wallC, g);
+    this._box(doorW, h - doorH, t, 0, doorH + (h - doorH) / 2, -d / 2 + t / 2, wallC, g);
+    // 문틀 — 아치 느낌으로 둥근 띠
+    const arch = new THREE.Mesh(new THREE.TorusGeometry(doorW / 2, 0.025, 8, 24, Math.PI), this._mat(color, 0.5));
+    arch.position.set(0, doorH - doorW / 2 + 0.02, -d / 2 - 0.01); g.add(arch);
+    // 지붕 — 삼각기둥
+    const shape = new THREE.Shape();
+    shape.moveTo(-w / 2 - 0.08, 0); shape.lineTo(w / 2 + 0.08, 0); shape.lineTo(0, roof); shape.closePath();
+    const roofGeo = new THREE.ExtrudeGeometry(shape, { depth: d + 0.16, bevelEnabled: false });
+    roofGeo.translate(0, 0, -(d + 0.16) / 2);
+    const roofM = new THREE.Mesh(roofGeo, this._mat(color, 0.7));
+    roofM.position.y = h; roofM.castShadow = true; g.add(roofM);
+    // 이름표 — 문 위
+    const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.13),
+      new THREE.MeshBasicMaterial({ map: this._nameTexture(p.name) }));
+    plate.position.set(0, h - 0.10, -d / 2 - 0.015); plate.rotation.y = Math.PI; g.add(plate);
+    g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    return g;
+  }
+
+  _syncKennels(s) {
+    const living = s.pets.filter(p => !p.lost);
+    const alive = new Set(living.map(p => p.id));
+    for (const [id, k] of [...this.kennels]) {
+      if (!alive.has(id)) { this.kennelRoot.remove(k.g); this.kennels.delete(id); }
+    }
+    living.forEach((p, slot) => {
+      let k = this.kennels.get(p.id);
+      if (!k || k.slot !== slot || k.count !== living.length || k.name !== p.name) {
+        if (k) this.kennelRoot.remove(k.g);
+        const pos = this.kennelPos(slot, living.length);
+        const g = this._makeKennel(p, KENNEL_COLORS[slot % KENNEL_COLORS.length], living.length);
+        g.position.copy(pos);
+        this.kennelRoot.add(g);
+        k = { g, slot, count: living.length, name: p.name,
+          spot: new THREE.Vector3(pos.x, 0, pos.z + 0.05),           // 안쪽, 눕는 자리
+          door: new THREE.Vector3(pos.x, 0, pos.z - kennelDims(living.length).d / 2 - 0.45) };  // 문 앞
+        this.kennels.set(p.id, k);
+      }
+    });
+  }
+
+  /** 그 아이가 자는 자리(제 개집 안). 개집이 아직 없으면 방 가운데. */
+  sleepSpot(petId) {
+    const k = this.kennels.get(petId);
+    return k ? k.spot : new THREE.Vector3(0, 0, 0);
   }
 
   // ── 저장 내용에 맞추기 ──────────────────────────────────
 
   sync(s, dt) {
+    this._syncKennels(s);
     this._syncPets(s, dt);
     this._syncPoops(s);
     this._syncDolls(s);
@@ -459,13 +552,20 @@ export class Room {
 
     const spot =
       kind === ACT.eat ? this.spots.bowl :
-        kind === ACT.sleep ? this.spots.cushion :
+        kind === ACT.sleep ? this.sleepSpot(petId) :
           this.spots.front;
 
     const secs = kind === ACT.eat ? 6 : kind === ACT.play ? 7 : kind === ACT.pat ? 4 : kind === ACT.away ? 5 : 0;
 
+    // 자다 깨면 개집 문 앞으로 나와서 움직인다 — 안 그러면 벽을 뚫고 나간다
+    if (e.act === ACT.sleep && kind !== ACT.sleep) {
+      const k = this.kennels.get(petId);
+      if (k) e.g.position.set(k.door.x, 0, k.door.z);
+    }
+
     e.act = kind;
     e.actSpot = spot.clone();
+    e.via = kind === ACT.sleep ? this._kennelDoor(petId) : null;   // 개집은 문으로 들어간다
     e.actUntil = secs > 0 ? performance.now() / 1000 + secs : Infinity;
     e.arrived = false;
     e.onArrive = onArrive || null;
@@ -473,6 +573,11 @@ export class Room {
     // 잠깐 자리를 비우는 행동은 모습을 감춘다
     this._setHidden(e, kind === ACT.away);
     if (kind === ACT.away && onArrive) { e.onArrive = null; onArrive(); }
+  }
+
+  _kennelDoor(petId) {
+    const k = this.kennels.get(petId);
+    return k ? k.door.clone() : null;
   }
 
   _setHidden(e, hide) {
@@ -489,12 +594,23 @@ export class Room {
     if (e.act !== ACT.none && now >= e.actUntil) {
       e.act = ACT.none; e.nextRetarget = 0; this._setHidden(e, false);
     }
-    // 자면 방석으로
-    if (p.asleep && e.act !== ACT.sleep) { e.act = ACT.sleep; e.actSpot = this.spots.cushion.clone(); e.actUntil = Infinity; }
-    if (!p.asleep && e.act === ACT.sleep) { e.act = ACT.none; e.nextRetarget = 0; }
+    // 자면 제 개집으로 — 문 앞을 거쳐 안으로 들어간다
+    if (p.asleep && e.act !== ACT.sleep) {
+      e.act = ACT.sleep; e.actSpot = this.sleepSpot(p.id).clone(); e.via = this._kennelDoor(p.id); e.actUntil = Infinity; e.arrived = false;
+    }
+    if (!p.asleep && e.act === ACT.sleep) {
+      e.act = ACT.none; e.via = null; e.nextRetarget = 0;
+      // 깨면 개집 밖으로 한 걸음 나온다
+      const k = this.kennels.get(p.id);
+      if (k) e.g.position.set(k.door.x, 0, k.door.z);
+    }
 
     if (e.act !== ACT.none && e.actSpot) {
-      e.target.copy(e.actSpot);
+      if (e.via) {
+        const dv = new THREE.Vector3().subVectors(e.via, e.g.position); dv.y = 0;
+        if (dv.length() < 0.12) e.via = null; else e.target.copy(e.via);
+      }
+      if (!e.via) e.target.copy(e.actSpot);
     } else if (now >= e.nextRetarget) {
       e.nextRetarget = now + 2.5 + Math.random() * 3.5;
       e.target.set(
@@ -502,9 +618,11 @@ export class Room {
         (Math.random() * 2 - 1) * (T.roomHalfZ - 0.6));
     }
 
-    const still = p.asleep || p.illness >= Illness.Sick;
     const flat = new THREE.Vector3().subVectors(e.target, e.g.position); flat.y = 0;
     const dist = flat.length();
+    // 자는 아이도 개집까지는 걸어간다(눕는 것은 도착한 뒤). 아프면 그 자리에 엎드린다.
+    const lying = p.asleep && (e.arrived || dist <= 0.08);
+    const still = lying || (p.illness >= Illness.Sick && !p.asleep);
 
     if (!still && dist > 0.08) {
       const vigor = 0.5 + (p.mood / 100) * 0.9;
@@ -533,9 +651,15 @@ export class Room {
       }
     }
 
-    // 자세 — 자면 옆으로 눕고, 아프면 낮게 엎드린다
-    const wantRoll = p.asleep ? 1.25 : 0;
+    // 자세 — 개집에 들어가 자면 옆으로 눕고, 아프면 낮게 엎드린다
+    const wantRoll = lying ? 1.25 : 0;
     e.g.rotation.z += (wantRoll - e.g.rotation.z) * Math.min(1, dt * 3);
+    // 옆으로 누우면 몸이 발치를 축으로 한쪽으로 쏠린다 — 그만큼 되밀어 개집 한가운데 눕게 한다
+    if (lying && e.actSpot) {
+      const a = HEIGHT[p.stage] * 0.45 * Math.sin(e.g.rotation.z);
+      e.g.position.x = e.actSpot.x + a * Math.cos(e.g.rotation.y);
+      e.g.position.z = e.actSpot.z - a * Math.sin(e.g.rotation.y);
+    }
     if (p.illness >= Illness.Sick && !p.asleep) e.g.position.y = -0.02;
   }
 
