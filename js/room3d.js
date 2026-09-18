@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1789549667';
-import { breedOf } from './data.js?v=1789549667';
-import { nightDepth } from './sim.js?v=1789549667';
+import { T, Stage, Illness } from './tuning.js?v=1789727588';
+import { breedOf } from './data.js?v=1789727588';
+import { nightDepth } from './sim.js?v=1789727588';
 
 // 강아지가 행동할 때 찾아가는 자리
 export const ACT = { none: 0, eat: 1, play: 2, pat: 3, sleep: 4, away: 5 };
@@ -478,7 +478,8 @@ export class Room {
   }
 
   _syncKennels(s) {
-    const living = s.pets.filter(p => !p.lost);
+    // 밖에 나간 아이의 개집도 남긴다 — 개집까지 치우면 "없어졌다"로 읽힌다. 돌아올 자리다.
+    const living = s.pets;
     const alive = new Set(living.map(p => p.id));
     for (const [id, k] of [...this.kennels]) {
       if (!alive.has(id)) { this.kennelRoot.remove(k.g); this.kennels.delete(id); }

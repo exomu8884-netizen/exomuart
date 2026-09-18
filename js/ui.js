@@ -1,18 +1,18 @@
 // 화면 — 위쪽 띠, 아래쪽 판, 덮는 창들.
 // 열 때 새로 그리고 닫을 때 지운다. 상태가 남지 않아 헷갈릴 일이 없다.
 
-import { T, Stage, Illness, won } from './tuning.js?v=1789549667';
-import { BREEDS, FOODS, breedOf, foodOf, temperName, temperStory, stageName } from './data.js?v=1789549667';
+import { T, Stage, Illness, won } from './tuning.js?v=1789727588';
+import { BREEDS, FOODS, breedOf, foodOf, temperName, temperStory, stageName } from './data.js?v=1789727588';
 import {
   findPet, livingCount, mealsOf, atHome, totalMeals,
-} from './save.js?v=1789549667';
-import * as sim from './sim.js?v=1789549667';
-import * as act from './actions.js?v=1789549667';
-import * as breed from './breeding.js?v=1789549667';
-import * as dolls from './dolls.js?v=1789549667';
-import * as ev from './events.js?v=1789549667';
-import sfx from './sfx.js?v=1789549667';
-import { josa } from './josa.js?v=1789549667';
+} from './save.js?v=1789727588';
+import * as sim from './sim.js?v=1789727588';
+import * as act from './actions.js?v=1789727588';
+import * as breed from './breeding.js?v=1789727588';
+import * as dolls from './dolls.js?v=1789727588';
+import * as ev from './events.js?v=1789727588';
+import sfx from './sfx.js?v=1789727588';
+import { josa } from './josa.js?v=1789727588';
 
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => {
@@ -160,7 +160,11 @@ export class UI {
 
   _noteFor(p, now) {
     if (p.dead) return '곁을 떠났습니다.';
-    if (p.lost) return '집에 없습니다. 돌아오기를 기다리는 중입니다.';
+    if (p.lost) {
+      const mins = Math.max(1, Math.ceil((p.lostReturnAt - now) / 60));
+      const when = mins >= 60 ? `${Math.floor(mins / 60)}시간 ${mins % 60}분` : `${mins}분`;
+      return `집에 없습니다. 없어진 게 아닙니다 — 늦어도 ${when} 뒤에는 제 발로 돌아옵니다. 개집은 그대로 둡니다.`;
+    }
     if (p.pregnantDue > 0) {
       const h = Math.ceil(sim.dogHoursBetween(now, p.pregnantDue) / 24);
       return `새끼를 뱄습니다. 개의 ${h}일쯤 뒤에 낳습니다.`;

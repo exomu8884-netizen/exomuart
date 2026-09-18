@@ -1,9 +1,9 @@
 // 나머지 이벤트 — 즐거운 일, 가족(짝·출산·대 잇기), 인형, 나이, 곤란한 일.
 // events.js 의 표에 밀어 넣는다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1789549667';
-import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1789549667';
-import { CATALOG, okChoice } from './events.js?v=1789549667';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1789727588';
+import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1789727588';
+import { CATALOG, okChoice } from './events.js?v=1789727588';
 
 let L = null;
 export function linkExtra(lib) { L = lib; }
@@ -459,7 +459,7 @@ export function buildExtraEvents(sfx) {
           p.lost = true; p.lostSince = t;
           p.lostReturnAt = t + L.realSecondsFor(T.lostReturnMinHours + rnd() * (T.lostReturnMaxHours - T.lostReturnMinHours));
           play('sad');
-          return '못 들은 척 모퉁이를 돌았습니다. 안 보입니다.';
+          return '못 들은 척 모퉁이를 돌았습니다. 안 보입니다.\n하루 이틀 안에 제 발로 돌아옵니다. 개집은 그대로 둡니다.';
         }),
         {
           label: '간식을 흔든다 (간식 1개)',

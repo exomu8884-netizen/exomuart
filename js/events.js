@@ -1,12 +1,12 @@
 // 이벤트 엔진 + 표.
 // 여기에 줄을 추가하면 게임에 이벤트가 는다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1789549667';
-import { foodOf } from './data.js?v=1789549667';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1789727588';
+import { foodOf } from './data.js?v=1789727588';
 import {
   findPet, atHome, cooldownOf, stampCooldown, pendingCountFor,
   addMeals, takeMeal, mealsOf, totalMeals, livingCount, uid,
-} from './save.js?v=1789549667';
+} from './save.js?v=1789727588';
 
 // 순환 참조를 피하려고 필요한 것만 늦게 가져온다
 let L = null;
@@ -165,7 +165,7 @@ const CATALOG = [
       p.lostReturnAt = now + L.realSecondsFor(
         T.lostReturnMinHours + rnd() * (T.lostReturnMaxHours - T.lostReturnMinHours));
     },
-    body: (s, p) => `문이 열린 사이에 ${p.name}이(가) 나갔습니다.\n집에 없습니다.`,
+    body: (s, p) => `문이 열린 사이에 ${p.name}이(가) 나갔습니다.\n집에 없습니다. 하루 이틀 안에 제 발로 돌아옵니다.`,
     choices: () => [
       {
         label: `찾으러 나간다 (${won(T.searchPrice)})`, cost: T.searchPrice,
