@@ -1,0 +1,56 @@
+{
+  "_note": "areaCode 는 한국관광공사 TourAPI 의 지역코드입니다. sigunguCode 는 build/fetch_regions.py 가 areaCode2 응답으로 채웁니다(현재 null). 앱의 시군구 선택은 name 으로 동작하므로 null 이어도 무방하며, TourAPI 매칭 단계에서만 필요합니다.",
+  "sido": [
+    { "areaCode": 1, "name": "서울특별시", "short": "서울", "sigungu": [
+      {"name":"종로구","code":null},{"name":"중구","code":null},{"name":"용산구","code":null},{"name":"성동구","code":null},{"name":"광진구","code":null},{"name":"동대문구","code":null},{"name":"중랑구","code":null},{"name":"성북구","code":null},{"name":"강북구","code":null},{"name":"도봉구","code":null},{"name":"노원구","code":null},{"name":"은평구","code":null},{"name":"서대문구","code":null},{"name":"마포구","code":null},{"name":"양천구","code":null},{"name":"강서구","code":null},{"name":"구로구","code":null},{"name":"금천구","code":null},{"name":"영등포구","code":null},{"name":"동작구","code":null},{"name":"관악구","code":null},{"name":"서초구","code":null},{"name":"강남구","code":null},{"name":"송파구","code":null},{"name":"강동구","code":null}
+    ]},
+    { "areaCode": 2, "name": "인천광역시", "short": "인천", "sigungu": [
+      {"name":"중구","code":null},{"name":"동구","code":null},{"name":"미추홀구","code":null},{"name":"연수구","code":null},{"name":"남동구","code":null},{"name":"부평구","code":null},{"name":"계양구","code":null},{"name":"서구","code":null},{"name":"강화군","code":null},{"name":"옹진군","code":null}
+    ]},
+    { "areaCode": 3, "name": "대전광역시", "short": "대전", "sigungu": [
+      {"name":"동구","code":null},{"name":"중구","code":null},{"name":"서구","code":null},{"name":"유성구","code":null},{"name":"대덕구","code":null}
+    ]},
+    { "areaCode": 4, "name": "대구광역시", "short": "대구", "sigungu": [
+      {"name":"중구","code":null},{"name":"동구","code":null},{"name":"서구","code":null},{"name":"남구","code":null},{"name":"북구","code":null},{"name":"수성구","code":null},{"name":"달서구","code":null},{"name":"달성군","code":null},{"name":"군위군","code":null}
+    ]},
+    { "areaCode": 5, "name": "광주광역시", "short": "광주", "sigungu": [
+      {"name":"동구","code":null},{"name":"서구","code":null},{"name":"남구","code":null},{"name":"북구","code":null},{"name":"광산구","code":null}
+    ]},
+    { "areaCode": 6, "name": "부산광역시", "short": "부산", "sigungu": [
+      {"name":"중구","code":null},{"name":"서구","code":null},{"name":"동구","code":null},{"name":"영도구","code":null},{"name":"부산진구","code":null},{"name":"동래구","code":null},{"name":"남구","code":null},{"name":"북구","code":null},{"name":"해운대구","code":null},{"name":"사하구","code":null},{"name":"금정구","code":null},{"name":"강서구","code":null},{"name":"연제구","code":null},{"name":"수영구","code":null},{"name":"사상구","code":null},{"name":"기장군","code":null}
+    ]},
+    { "areaCode": 7, "name": "울산광역시", "short": "울산", "sigungu": [
+      {"name":"중구","code":null},{"name":"남구","code":null},{"name":"동구","code":null},{"name":"북구","code":null},{"name":"울주군","code":null}
+    ]},
+    { "areaCode": 8, "name": "세종특별자치시", "short": "세종", "sigungu": [
+      {"name":"세종시","code":null}
+    ]},
+    { "areaCode": 31, "name": "경기도", "short": "경기", "sigungu": [
+      {"name":"수원시","code":null},{"name":"성남시","code":null},{"name":"의정부시","code":null},{"name":"안양시","code":null},{"name":"부천시","code":null},{"name":"광명시","code":null},{"name":"평택시","code":null},{"name":"동두천시","code":null},{"name":"안산시","code":null},{"name":"고양시","code":null},{"name":"과천시","code":null},{"name":"구리시","code":null},{"name":"남양주시","code":null},{"name":"오산시","code":null},{"name":"시흥시","code":null},{"name":"군포시","code":null},{"name":"의왕시","code":null},{"name":"하남시","code":null},{"name":"용인시","code":null},{"name":"파주시","code":null},{"name":"이천시","code":null},{"name":"안성시","code":null},{"name":"김포시","code":null},{"name":"화성시","code":null},{"name":"광주시","code":null},{"name":"양주시","code":null},{"name":"포천시","code":null},{"name":"여주시","code":null},{"name":"연천군","code":null},{"name":"가평군","code":null},{"name":"양평군","code":null}
+    ]},
+    { "areaCode": 32, "name": "강원특별자치도", "short": "강원", "sigungu": [
+      {"name":"춘천시","code":null},{"name":"원주시","code":null},{"name":"강릉시","code":null},{"name":"동해시","code":null},{"name":"태백시","code":null},{"name":"속초시","code":null},{"name":"삼척시","code":null},{"name":"홍천군","code":null},{"name":"횡성군","code":null},{"name":"영월군","code":null},{"name":"평창군","code":null},{"name":"정선군","code":null},{"name":"철원군","code":null},{"name":"화천군","code":null},{"name":"양구군","code":null},{"name":"인제군","code":null},{"name":"고성군","code":null},{"name":"양양군","code":null}
+    ]},
+    { "areaCode": 33, "name": "충청북도", "short": "충북", "sigungu": [
+      {"name":"청주시","code":null},{"name":"충주시","code":null},{"name":"제천시","code":null},{"name":"보은군","code":null},{"name":"옥천군","code":null},{"name":"영동군","code":null},{"name":"증평군","code":null},{"name":"진천군","code":null},{"name":"괴산군","code":null},{"name":"음성군","code":null},{"name":"단양군","code":null}
+    ]},
+    { "areaCode": 34, "name": "충청남도", "short": "충남", "sigungu": [
+      {"name":"천안시","code":null},{"name":"공주시","code":null},{"name":"보령시","code":null},{"name":"아산시","code":null},{"name":"서산시","code":null},{"name":"논산시","code":null},{"name":"계룡시","code":null},{"name":"당진시","code":null},{"name":"금산군","code":null},{"name":"부여군","code":null},{"name":"서천군","code":null},{"name":"청양군","code":null},{"name":"홍성군","code":null},{"name":"예산군","code":null},{"name":"태안군","code":null}
+    ]},
+    { "areaCode": 35, "name": "경상북도", "short": "경북", "sigungu": [
+      {"name":"포항시","code":null},{"name":"경주시","code":null},{"name":"김천시","code":null},{"name":"안동시","code":null},{"name":"구미시","code":null},{"name":"영주시","code":null},{"name":"영천시","code":null},{"name":"상주시","code":null},{"name":"문경시","code":null},{"name":"경산시","code":null},{"name":"의성군","code":null},{"name":"청송군","code":null},{"name":"영양군","code":null},{"name":"영덕군","code":null},{"name":"청도군","code":null},{"name":"고령군","code":null},{"name":"성주군","code":null},{"name":"칠곡군","code":null},{"name":"예천군","code":null},{"name":"봉화군","code":null},{"name":"울진군","code":null},{"name":"울릉군","code":null}
+    ]},
+    { "areaCode": 36, "name": "경상남도", "short": "경남", "sigungu": [
+      {"name":"창원시","code":null},{"name":"진주시","code":null},{"name":"통영시","code":null},{"name":"사천시","code":null},{"name":"김해시","code":null},{"name":"밀양시","code":null},{"name":"거제시","code":null},{"name":"양산시","code":null},{"name":"의령군","code":null},{"name":"함안군","code":null},{"name":"창녕군","code":null},{"name":"고성군","code":null},{"name":"남해군","code":null},{"name":"하동군","code":null},{"name":"산청군","code":null},{"name":"함양군","code":null},{"name":"거창군","code":null},{"name":"합천군","code":null}
+    ]},
+    { "areaCode": 37, "name": "전북특별자치도", "short": "전북", "sigungu": [
+      {"name":"전주시","code":null},{"name":"군산시","code":null},{"name":"익산시","code":null},{"name":"정읍시","code":null},{"name":"남원시","code":null},{"name":"김제시","code":null},{"name":"완주군","code":null},{"name":"진안군","code":null},{"name":"무주군","code":null},{"name":"장수군","code":null},{"name":"임실군","code":null},{"name":"순창군","code":null},{"name":"고창군","code":null},{"name":"부안군","code":null}
+    ]},
+    { "areaCode": 38, "name": "전라남도", "short": "전남", "sigungu": [
+      {"name":"목포시","code":null},{"name":"여수시","code":null},{"name":"순천시","code":null},{"name":"나주시","code":null},{"name":"광양시","code":null},{"name":"담양군","code":null},{"name":"곡성군","code":null},{"name":"구례군","code":null},{"name":"고흥군","code":null},{"name":"보성군","code":null},{"name":"화순군","code":null},{"name":"장흥군","code":null},{"name":"강진군","code":null},{"name":"해남군","code":null},{"name":"영암군","code":null},{"name":"무안군","code":null},{"name":"함평군","code":null},{"name":"영광군","code":null},{"name":"장성군","code":null},{"name":"완도군","code":null},{"name":"진도군","code":null},{"name":"신안군","code":null}
+    ]},
+    { "areaCode": 39, "name": "제주특별자치도", "short": "제주", "sigungu": [
+      {"name":"제주시","code":null},{"name":"서귀포시","code":null}
+    ]}
+  ]
+}
