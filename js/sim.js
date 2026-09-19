@@ -5,12 +5,12 @@
 //  · 돌봄 시계 — 켜 놓았을 때만 배속대로, 꺼 둔 동안은 훨씬 느리다.
 // 그리고 꺼 둔 동안에는 죽지 않는다. 자고 일어나니 떠나 있는 일은 없어야 한다.
 
-import { T, rate, Stage, Illness, clamp, won } from './tuning.js?v=1789727588';
-import { breedOf, temperName, temperStory, AXIS } from './data.js?v=1789727588';
-import { findPet, hasInCollection, uid } from './save.js?v=1789727588';
-import { stepDolls } from './dolls.js?v=1789727588';
-import { stepPregnancy } from './breeding.js?v=1789727588';
-import { rollEvents, pushEvent } from './events.js?v=1789727588';
+import { T, rate, Stage, Illness, clamp, won } from './tuning.js?v=1789816218';
+import { breedOf, temperName, temperStory, AXIS } from './data.js?v=1789816218';
+import { findPet, hasInCollection, uid } from './save.js?v=1789816218';
+import { stepDolls } from './dolls.js?v=1789816218';
+import { stepPregnancy } from './breeding.js?v=1789816218';
+import { rollEvents, pushEvent } from './events.js?v=1789816218';
 
 // ── 시간 환산 ─────────────────────────────────────────────
 
@@ -185,7 +185,8 @@ function stepPet(s, p, ageH, careH, illH, end, offline, rep) {
   if (p.lost) {
     p.satiety = clamp(p.satiety - rate.satiety * 0.4 * careH);
     p.mood = clamp(p.mood - rate.mood * 0.4 * careH);
-    if (end >= p.lostReturnAt) {
+    // 돌아올 시각이 비었거나(옛 저장) 배속 탓에 너무 멀면 현실 시간 상한으로 끊는다
+    if (!(p.lostReturnAt > 0) || end >= lostReturnDeadline(p)) {
       bringHome(p, false);
       pushEvent(s, p, 'came_back', end, 0, rep);
       say(rep, p.id, 'home', `${p.name}이(가) 돌아왔습니다.`);
@@ -240,6 +241,12 @@ function stepPet(s, p, ageH, careH, illH, end, offline, rep) {
   stepPregnancy(s, p, end, rep);
   advanceGrowth(s, p, ageH, end, rep);
   rollEvents(s, p, end, careH, rep);
+}
+
+/** 실제로 돌아오는 시각 — 정해진 시각과 현실 상한 중 이른 쪽 */
+export function lostReturnDeadline(p) {
+  const cap = (p.lostSince > 0 ? p.lostSince : 0) + T.lostReturnMaxRealHours * 3600;
+  return p.lostReturnAt > 0 ? Math.min(p.lostReturnAt, cap) : cap;
 }
 
 export function bringHome(p, foundBySearch) {

@@ -161,6 +161,8 @@ export const T = {
   maxPendingEvents: 3,
   lostReturnMinHours: 20,
   lostReturnMaxHours: 40,
+  /** 배속이 느려도(1배면 개의 40시간 = 현실 40시간) 현실로는 이 안에 돌아온다 */
+  lostReturnMaxRealHours: 4,
   searchSuccessChance: 0.7,
 
   // ── 방 ──────────────────────────────────────────────────
