@@ -1,18 +1,18 @@
 // 화면 — 위쪽 띠, 아래쪽 판, 덮는 창들.
 // 열 때 새로 그리고 닫을 때 지운다. 상태가 남지 않아 헷갈릴 일이 없다.
 
-import { T, Stage, Illness, won } from './tuning.js?v=1789816218';
-import { BREEDS, FOODS, breedOf, foodOf, temperName, temperStory, stageName } from './data.js?v=1789816218';
+import { T, Stage, Illness, won } from './tuning.js?v=1791623614';
+import { BREEDS, FOODS, breedOf, foodOf, temperName, temperStory, stageName } from './data.js?v=1791623614';
 import {
   findPet, livingCount, mealsOf, atHome, totalMeals,
-} from './save.js?v=1789816218';
-import * as sim from './sim.js?v=1789816218';
-import * as act from './actions.js?v=1789816218';
-import * as breed from './breeding.js?v=1789816218';
-import * as dolls from './dolls.js?v=1789816218';
-import * as ev from './events.js?v=1789816218';
-import sfx from './sfx.js?v=1789816218';
-import { josa } from './josa.js?v=1789816218';
+} from './save.js?v=1791623614';
+import * as sim from './sim.js?v=1791623614';
+import * as act from './actions.js?v=1791623614';
+import * as breed from './breeding.js?v=1791623614';
+import * as dolls from './dolls.js?v=1791623614';
+import * as ev from './events.js?v=1791623614';
+import sfx from './sfx.js?v=1791623614';
+import { josa } from './josa.js?v=1791623614';
 
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => {

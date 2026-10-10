@@ -1,12 +1,12 @@
 // 이벤트 엔진 + 표.
 // 여기에 줄을 추가하면 게임에 이벤트가 는다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1789816218';
-import { foodOf } from './data.js?v=1789816218';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1791623614';
+import { foodOf } from './data.js?v=1791623614';
 import {
   findPet, atHome, cooldownOf, stampCooldown, pendingCountFor,
   addMeals, takeMeal, mealsOf, totalMeals, livingCount, uid,
-} from './save.js?v=1789816218';
+} from './save.js?v=1791623614';
 
 // 순환 참조를 피하려고 필요한 것만 늦게 가져온다
 let L = null;
@@ -21,7 +21,8 @@ const okChoice = (label, apply) => ({ label, apply: apply || (() => null) });
 export const eventById = (id) => CATALOG.find(e => e.id === id) || null;
 
 function canFire(s, p, def, now) {
-  if (pendingCountFor(s, p.id) >= T.maxPendingEvents) return false;
+  // 받은 편지함이 차도 중요한 알림(병·출산 같은 forced)은 막지 않는다
+  if (def.kind !== 'forced' && pendingCountFor(s, p.id) >= T.maxPendingEvents) return false;
   if (s.inbox.some(e => e.eventId === def.id && e.petId === p.id)) return false;
 
   const last = cooldownOf(s, def.id, p.id);
