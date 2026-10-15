@@ -1,18 +1,18 @@
 // 화면 — 위쪽 띠, 아래쪽 판, 덮는 창들.
 // 열 때 새로 그리고 닫을 때 지운다. 상태가 남지 않아 헷갈릴 일이 없다.
 
-import { T, Stage, Illness, won } from './tuning.js?v=1791623614';
-import { BREEDS, FOODS, breedOf, foodOf, temperName, temperStory, stageName } from './data.js?v=1791623614';
+import { T, Stage, Illness, won } from './tuning.js?v=1792030104';
+import { BREEDS, FOODS, breedOf, foodOf, temperName, temperStory, stageName } from './data.js?v=1792030104';
 import {
-  findPet, livingCount, mealsOf, atHome, totalMeals,
-} from './save.js?v=1791623614';
-import * as sim from './sim.js?v=1791623614';
-import * as act from './actions.js?v=1791623614';
-import * as breed from './breeding.js?v=1791623614';
-import * as dolls from './dolls.js?v=1791623614';
-import * as ev from './events.js?v=1791623614';
-import sfx from './sfx.js?v=1791623614';
-import { josa } from './josa.js?v=1791623614';
+  findPet, livingCount, mealsOf, atHome, totalMeals, exportSave, importSave,
+} from './save.js?v=1792030104';
+import * as sim from './sim.js?v=1792030104';
+import * as act from './actions.js?v=1792030104';
+import * as breed from './breeding.js?v=1792030104';
+import * as dolls from './dolls.js?v=1792030104';
+import * as ev from './events.js?v=1792030104';
+import sfx from './sfx.js?v=1792030104';
+import { josa } from './josa.js?v=1792030104';
 
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => {
@@ -313,6 +313,38 @@ export class UI {
     const body = this._full('분양가게');
     body.appendChild(el('p', 'small', `자리 ${livingCount(s)}/${s.slots} · 가진 돈 ${won(s.money)}`));
 
+    // 실수로 보낸 아이가 있으면 새 아이보다 먼저 보여 준다
+    const back = breed.reclaimable(s);
+    if (back.length) {
+      body.appendChild(el('h2', null, '보낸 아이'));
+      body.appendChild(el('p', 'small', '실수로 보냈다면 다시 데려올 수 있습니다. 받은 돈을 돌려주면 됩니다.'));
+      for (const item of back) {
+        const bd = breedOf(item.breedId);
+        const card = el('div', 'item');
+        card.appendChild(el('h3', null, item.name));
+        card.appendChild(el('div', 'desc',
+          `${item.temperament ? temperName(item.temperament) + ' ' : ''}${bd ? bd.name : ''}`));
+        card.appendChild(el('p', null, item.exact
+          ? '보낸 그대로 돌아옵니다. 나이도 기분도 그때와 같습니다.'
+          : '도감에 남은 기록으로 데려옵니다. 이름과 성격은 그대로지만, 그때의 몸 상태까지는 남아 있지 않습니다.'));
+        card.appendChild(el('div', 'price', `${won(item.price)}을 돌려줍니다`));
+
+        const noRoom = livingCount(s) >= s.slots;
+        const noMoney = s.money < item.price;
+        this._btn(card, noRoom ? '자리가 없습니다' : noMoney ? '돈이 모자랍니다' : '데려온다', 'pink', () => {
+          const r = breed.reclaim(s, item.key, this.game.now);
+          sfx.play(r.ok ? 'ding' : 'dong');
+          if (r.ok && r.pet) this.game.select(r.pet.id);
+          this.game.save();
+          this.close();
+          this.toast(r.message);
+          this.refresh();
+        }, noRoom || noMoney);
+        body.appendChild(card);
+      }
+      body.appendChild(el('h2', null, '새로 데려오기'));
+    }
+
     const free = act.isFirstAdoption(s);
     for (const b of BREEDS) {
       const card = el('div', 'item');
@@ -529,18 +561,28 @@ export class UI {
     const price = breed.adoptOutPrice(s, p);
     const c = this._card('좋은 집으로 보내기');
     const q = el('p');
-    q.innerHTML = `${josa(`${p.name}을(를)`)} 다른 집으로 보냅니다.\n\n${won(price)}을 받습니다.\n<span class="warnline">되돌릴 수 없습니다.</span>`;
+    q.innerHTML = `${josa(`${p.name}을(를)`)} 다른 집으로 보냅니다.\n\n${won(price)}을 받습니다.\n`
+      + `<span class="warnline">실수였다면 분양가게에서 ${won(price)}을 돌려주고 다시 데려올 수 있습니다.</span>`;
     c.appendChild(q);
 
     this._btn(c, '그냥 둔다', 'primary', () => this.close());
     this._btn(c, '보낸다', 'ghost', () => {
       const r = breed.sendAway(s, p);
       sfx.play(r.ok ? 'coin' : 'dong');
-      if (r.ok) this.game.selectFirst();
+      if (!r.ok) { this.close(); this.toast(r.message || '지금은 보낼 수 없습니다.'); return; }
+      this.game.selectFirst();
       this.game.save();
-      this.close();
-      this.toast(r.message || '지금은 보낼 수 없습니다.');
+      this.sentReport(r.message);
     });
+  }
+
+  /** 보낸 뒤 — 손이 미끄러졌을 수 있다. 되찾는 길을 그 자리에서 보여 준다. */
+  sentReport(message) {
+    this.refresh();
+    const c = this._card('보냈습니다');
+    c.appendChild(el('p', null, message));
+    this._btn(c, '알겠습니다', 'primary', () => { this.close(); this.refresh(); });
+    this._btn(c, '아니다, 다시 데려온다', '', () => this.shop());
   }
 
   // ── 이벤트 창 ───────────────────────────────────────────
@@ -658,6 +700,18 @@ export class UI {
     c.appendChild(row);
     c.appendChild(el('p', 'small', '바꿔도 지금까지 산 시간은 그대로입니다. 앞으로만 빨라지거나 느려집니다.'));
 
+    // ── 저장 옮기기 ──
+    c.appendChild(el('h2', null, '저장 백업'));
+    c.appendChild(el('p', 'small',
+      '저장은 이 브라우저 안에만 있습니다. 폰을 바꾸거나 브라우저 기록을 지우면 그동안 키운 아이가 사라집니다.'
+      + ' 가끔 파일로 빼 두면 그대로 되돌릴 수 있습니다.'));
+    this._btn(c, '파일로 내려받기', '', () => {
+      const name = exportSave(s);
+      sfx.play('ding');
+      this.toast(`${name} 으로 내려받았습니다.`);
+    });
+    this._btn(c, '파일에서 불러오기', '', () => this.importPicker());
+
     c.appendChild(el('p', 'warnline', '아래는 되돌릴 수 없습니다.'));
     this._btn(c, '처음부터 다시 시작', 'ghost', () => this.confirmWipe());
     this._btn(c, '닫기', 'ghost', () => this.close());
@@ -668,6 +722,27 @@ export class UI {
     const life = (T.puppyHours + T.juniorHours + T.adultHours + T.seniorHours) / scale / 24;
     const per = perDogDay >= 1 ? `현실 ${perDogDay.toFixed(1)}시간` : `현실 ${Math.round(perDogDay * 60)}분`;
     return `개의 하루 = ${per} · 14살까지 현실 ${Math.round(life)}일`;
+  }
+
+  /** 내려받아 둔 파일을 다시 넣는다 */
+  importPicker() {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'application/json,.json';
+    inp.onchange = () => {
+      const f = inp.files && inp.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const r = importSave(String(reader.result || ''));
+        sfx.play(r.ok ? 'ding' : 'dong');
+        if (r.ok) { this.game.useState(r.data); this.close(); }
+        this.toast(r.message);
+      };
+      reader.onerror = () => this.toast('파일을 읽지 못했습니다.');
+      reader.readAsText(f);
+    };
+    inp.click();
   }
 
   confirmWipe() {

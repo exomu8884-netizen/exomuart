@@ -1,12 +1,12 @@
 // 짝을 맺고, 새끼를 낳고, 분양을 보낸다.
 // 이 한 바퀴가 돌아야 게임이 끝나지 않는다 — 용돈 말고 두 번째 수입원이다.
 
-import { T, Stage, clamp, won } from './tuning.js?v=1791623614';
-import { PUPPY_NAMES } from './data.js?v=1791623614';
-import { atHome, livingCount, hasInCollection } from './save.js?v=1791623614';
-import { realSecondsFor } from './sim.js?v=1791623614';
-import { newPet } from './actions.js?v=1791623614';
-import { pushEvent } from './events.js?v=1791623614';
+import { T, Stage, clamp, won } from './tuning.js?v=1792030104';
+import { PUPPY_NAMES } from './data.js?v=1792030104';
+import { atHome, livingCount, hasInCollection, nowUnix } from './save.js?v=1792030104';
+import { realSecondsFor } from './sim.js?v=1792030104';
+import { newPet } from './actions.js?v=1792030104';
+import { pushEvent } from './events.js?v=1792030104';
 
 /** 집에 없는 이름으로 하나 고른다 */
 export function pickName(s) {
@@ -148,7 +148,7 @@ export function adoptOutPrice(s, p) {
   return base;
 }
 
-/** 정든 아이를 좋은 집으로 보낸다. 되돌릴 수 없다. */
+/** 정든 아이를 좋은 집으로 보낸다. 실수였으면 되찾을 수 있게 기록을 남긴다. */
 export function sendAway(s, p) {
   if (p.dead) return { ok: false, message: '' };
   if (p.lost) return { ok: false, message: `${p.name}은(는) 집에 없습니다.` };
@@ -162,9 +162,112 @@ export function sendAway(s, p) {
   const price = adoptOutPrice(s, p);
   s.pets.splice(i, 1);
   s.money += price;
+  rememberSent(s, p, price);
+  forgetPet(s, p.id);
 
   return {
     ok: true,
     message: `${p.name}을(를) 좋은 집으로 보냈습니다.\n${won(price)}을 받았습니다. 잘 지낼 겁니다.`,
+  };
+}
+
+// ── 되찾기 ────────────────────────────────────────────────
+// 실수로 보내는 일이 생긴다. 한 번 누르면 끝이라 더 그렇다.
+// 그래서 보낸 아이를 그대로 적어 두고, 받은 돈을 돌려주면 되찾을 수 있게 한다.
+
+/** 보낸 아이를 그대로 적어 둔다 */
+function rememberSent(s, p, price) {
+  if (!Array.isArray(s.sentAway)) s.sentAway = [];
+  s.sentAway.unshift({ at: nowUnix(), price, pet: JSON.parse(JSON.stringify(p)) });
+  if (s.sentAway.length > T.sentAwayMemory) s.sentAway.length = T.sentAwayMemory;
+}
+
+/**
+ * 집을 떠난 아이의 편지와 쿨다운을 치운다.
+ * 남겨 두면 주인 없는 편지가 편지함 맨 앞에 앉아, 글도 선택지도 없는 창이 떠 게임이 막힌다.
+ */
+function forgetPet(s, petId) {
+  s.inbox = s.inbox.filter(e => e.petId !== petId);
+  s.cooldowns = s.cooldowns.filter(c => c.petId !== petId);
+}
+
+/**
+ * 되찾을 수 있는 아이들.
+ * - 적어 둔 기록이 있으면 그때 그대로 돌아온다.
+ * - 이 기능이 생기기 전에 보낸 아이는 기록이 없다. 도감에 남아 있으면 거기 적힌 대로 다시 데려온다.
+ *   (집을 떠나는 길은 분양뿐이다. 죽은 아이는 목록에 그대로 남으므로 여기 섞이지 않는다.)
+ */
+export function reclaimable(s) {
+  const out = [];
+  const known = new Set(s.pets.map(p => p.name));
+
+  for (const e of (s.sentAway || [])) {
+    if (!e || !e.pet) continue;
+    out.push({
+      key: e.pet.id, name: e.pet.name, breedId: e.pet.breedId,
+      temperament: e.pet.temperament, price: e.price || 0, exact: true, at: e.at,
+    });
+  }
+
+  for (const c of (s.collection || [])) {
+    if (!c.petName || known.has(c.petName)) continue;
+    if (out.some(x => x.name === c.petName)) continue;
+    out.push({
+      key: 'book:' + c.breedId + ':' + c.temperament, name: c.petName, breedId: c.breedId,
+      temperament: c.temperament, price: T.adoptOutAdult, exact: false, at: c.at,
+    });
+  }
+  return out;
+}
+
+/** 떠나 있던 시간만큼 시각을 밀어 준다 — 그래야 돌아온 아이가 갑자기 늙거나 똥을 쏟지 않는다 */
+function shiftTimes(p, dt) {
+  if (!(dt > 0)) return;
+  for (const k of ['adoptedAt', 'stageEnteredAt', 'lastPlayAt', 'lastPatAt', 'lastWalkAt',
+    'illnessSince', 'prescriptionUntil', 'lostSince', 'lostReturnAt']) {
+    if (p[k] > 0) p[k] += dt;
+  }
+  if (Array.isArray(p.poopDue)) p.poopDue = p.poopDue.map(t => t + dt);
+}
+
+/** 보낸 아이를 다시 데려온다 */
+export function reclaim(s, key, now) {
+  const item = reclaimable(s).find(x => x.key === key);
+  if (!item) return { ok: false, message: '그 아이는 기록에 없습니다.' };
+  if (livingCount(s) >= s.slots) return { ok: false, message: '자리가 없습니다. 집을 넓히고 데려오세요.' };
+  if (s.money < item.price) return { ok: false, message: `${won(item.price)}이 있어야 데려올 수 있습니다.` };
+
+  s.money -= item.price;
+
+  const i = (s.sentAway || []).findIndex(e => e.pet && e.pet.id === key);
+  if (i >= 0) {
+    const e = s.sentAway[i];
+    const p = e.pet;
+    shiftTimes(p, now - (e.at || now));
+    s.pets.push(p);
+    s.sentAway.splice(i, 1);
+    return {
+      ok: true, pet: p,
+      message: `${p.name}이(가) 돌아왔습니다.
+그 집에서 며칠 지내다 왔습니다. 나이도 기분도 보낼 때와 같습니다.`,
+    };
+  }
+
+  // 도감 기록으로 다시 데려온다 — 이름과 성격은 그대로, 나이는 성견의 처음으로 맞춘다
+  const c = (s.collection || []).find(x => 'book:' + x.breedId + ':' + x.temperament === key);
+  const p = newPet({ breedId: item.breedId, name: item.name, now, ageOffsetDays: 2 * 365 });
+  p.stage = Stage.Adult;
+  p.stageEnteredAt = now;
+  p.temperament = item.temperament || '';
+  if (c) {
+    p.feedCount = c.feedCount || 0;
+    p.playCount = c.playCount || 0;
+    p.walkCount = c.walkCount || 0;
+  }
+  s.pets.push(p);
+  return {
+    ok: true, pet: p,
+    message: `${p.name}이(가) 돌아왔습니다.
+이름과 성격은 그대로입니다. 다만 그때의 몸 상태까지는 남아 있지 않아, 두 살 성견으로 다시 시작합니다.`,
   };
 }

@@ -121,6 +121,8 @@ export const T = {
   adoptOutJunior: 65000,
   adoptOutAdult: 95000,
   rareTemperamentBonus: 25000,
+  /** 보낸 아이를 몇 마리까지 적어 두는가 — 실수로 보냈을 때 되찾을 수 있게 */
+  sentAwayMemory: 5,
 
   // ── 인형 ────────────────────────────────────────────────
   shelfSlots: 6,
