@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>댐 아래 장이 선다 — 연천 전곡장과 한탄강댐</title>
+<meta name="description" content="한탄강댐이 잠기지 않게 지켜 낸 논에서 난 것을, 닷새에 한 번 서는 전곡장에서 사 들고 댐 앞에 서는 당일 코스. 계절별 모습과 전곡장 장날(끝자리 4·9일)을 찾아보세요.">
+<meta name="theme-color" content="#2f5d50">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="댐 아래 장이 선다">
+<meta property="og:title" content="댐 아래 장이 선다 — 연천 전곡장과 한탄강댐">
+<meta property="og:description" content="닷새에 한 번만 열리는 당일 코스. 계절별 모습과 장날(끝자리 4·9일)을 찾아보세요.">
+<meta property="og:url" content="https://exomu.art/dam/">
+<style>
+:root{
+  --bg:#f7f4ee; --card:#fff; --ink:#1d201f; --dim:#5d6260; --line:#e2ddd3;
+  --accent:#2f5d50; --accent-soft:#e8f0ec; --warn:#b4531f;
+  --radius:14px;
+}
+:root[data-season="spring"]{ --accent:#5b8c3a; --accent-soft:#eaf2e2; }
+:root[data-season="summer"]{ --accent:#1f6f8b; --accent-soft:#e4f0f4; }
+:root[data-season="autumn"]{ --accent:#a8521c; --accent-soft:#f6eadf; }
+:root[data-season="winter"]{ --accent:#44618a; --accent-soft:#e8edf5; }
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#15181a; --card:#1e2325; --ink:#eceae4; --dim:#a3aaa7; --line:#323a3c; --accent-soft:#232d2a; }
+  :root[data-season="spring"]{ --accent:#8dc163; --accent-soft:#222b1f; }
+  :root[data-season="summer"]{ --accent:#64b6d1; --accent-soft:#1b2a30; }
+  :root[data-season="autumn"]{ --accent:#dd9159; --accent-soft:#2d2219; }
+  :root[data-season="winter"]{ --accent:#8fa9d3; --accent-soft:#1f2634; }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  font-size:16px; line-height:1.72; word-break:keep-all; overflow-wrap:anywhere;
+}
+.wrap{max-width:720px; margin:0 auto; padding:0 16px 56px}
+h1,h2,h3{line-height:1.35; margin:0}
+a{color:var(--accent)}
+
+/* 머리 */
+header.hero{
+  background:var(--accent); color:#fff; padding:28px 16px 24px; margin-bottom:18px;
+}
+header.hero .inner{max-width:720px; margin:0 auto}
+.kicker{font-size:13px; opacity:.85; letter-spacing:.02em; margin:0 0 8px}
+h1{font-size:30px; letter-spacing:-.02em}
+.sub{margin:10px 0 0; font-size:15px; opacity:.92}
+.hero-facts{display:flex; flex-wrap:wrap; gap:6px; margin-top:16px}
+.hero-facts span{
+  background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.25);
+  border-radius:999px; padding:3px 10px; font-size:12.5px;
+}
+
+/* 계절 단추 */
+.seasonbar{position:sticky; top:0; z-index:5; background:var(--bg); padding:10px 0 8px; border-bottom:1px solid var(--line)}
+.seasonbar .row{display:grid; grid-template-columns:repeat(4,1fr); gap:6px}
+.seasonbar button{
+  font:inherit; font-size:15px; cursor:pointer; padding:10px 0;
+  background:var(--card); color:var(--dim);
+  border:1px solid var(--line); border-radius:10px;
+}
+.seasonbar button b{display:block; font-size:11px; font-weight:400; opacity:.75}
+.seasonbar button[aria-selected="true"]{
+  background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700;
+}
+.seasonbar button[aria-selected="true"] b{opacity:.85}
+
+section{margin-top:28px}
+h2{font-size:20px; display:flex; align-items:center; gap:8px}
+h2::before{content:""; width:4px; height:18px; background:var(--accent); border-radius:2px; flex:none}
+.lead{color:var(--dim); font-size:14.5px; margin:8px 0 0}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-top:12px}
+.card h3{font-size:16px}
+
+/* 계절 내용 */
+.season-head{background:var(--accent-soft); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-top:12px}
+.season-head .big{font-size:18px; font-weight:700; margin:0}
+.season-head p{margin:6px 0 0; font-size:14.5px; color:var(--dim)}
+dl.spots{margin:12px 0 0; display:grid; gap:10px}
+dl.spots>div{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px}
+dl.spots dt{font-size:12.5px; color:var(--accent); font-weight:700; letter-spacing:.02em}
+dl.spots dd{margin:2px 0 0; font-size:15px}
+.note{margin-top:12px; font-size:13.5px; color:var(--dim); background:var(--accent-soft); border-radius:12px; padding:10px 14px}
+
+/* 장날 찾기 */
+.finder .pick{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px}
+.finder select{
+  font:inherit; font-size:16px; padding:9px 10px; border-radius:10px;
+  border:1px solid var(--line); background:var(--card); color:var(--ink); min-width:96px;
+}
+.finder .today{margin-top:14px; font-size:15px; background:var(--accent); color:#fff; border-radius:12px; padding:12px 14px}
+.finder .today b{font-size:17px}
+ul.days{list-style:none; margin:14px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); gap:8px}
+ul.days li{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 6px; text-align:center}
+ul.days li .d{font-size:19px; font-weight:700; display:block}
+ul.days li .w{font-size:12.5px; color:var(--dim)}
+ul.days li.weekend{border-color:var(--accent); background:var(--accent-soft)}
+ul.days li.weekend .w{color:var(--accent); font-weight:700}
+ul.days li.past{opacity:.42}
+
+/* 코스 */
+ol.course{list-style:none; margin:12px 0 0; padding:0}
+ol.course li{display:grid; grid-template-columns:58px 1fr; gap:12px; padding:12px 0; border-top:1px solid var(--line)}
+ol.course li:first-child{border-top:0}
+ol.course .t{font-size:14px; font-weight:700; color:var(--accent); padding-top:2px}
+ol.course .n{font-size:16px; font-weight:700}
+ol.course .m{font-size:13.5px; color:var(--dim); margin-top:2px}
+ol.course li.last{background:var(--accent-soft); border-radius:12px; padding:12px 10px; border-top:0; margin-top:6px}
+
+/* 연표 */
+ul.tl{list-style:none; margin:12px 0 0; padding:0 0 0 18px; border-left:2px solid var(--line)}
+ul.tl li{position:relative; padding:0 0 16px 14px}
+ul.tl li::before{content:""; position:absolute; left:-25px; top:8px; width:10px; height:10px; border-radius:50%; background:var(--accent)}
+ul.tl .y{font-size:13px; font-weight:700; color:var(--accent)}
+ul.tl .h{font-size:15.5px; font-weight:700}
+ul.tl .b{font-size:14px; color:var(--dim)}
+
+/* 흐름 */
+ol.flow{list-style:none; margin:12px 0 0; padding:0; display:grid; gap:8px}
+ol.flow li{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 14px; font-size:15px}
+ol.flow li span{display:block; font-size:13.5px; color:var(--dim)}
+
+footer{margin-top:36px; padding-top:18px; border-top:1px solid var(--line); font-size:13px; color:var(--dim)}
+footer p{margin:6px 0}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="inner">
+    <p class="kicker">댐잇프로젝트 로컬여행기획공모전 4기 · 자유전선</p>
+    <h1>댐 아래 장이 선다</h1>
+    <p class="sub">한탄강댐이 잠기지 않게 지켜 낸 논에서 난 것을, 닷새에 한 번 서는 전곡장에서 사 들고 댐 앞에 서는 당일 코스입니다.</p>
+    <div class="hero-facts">
+      <span>경기도 연천</span><span>장날 끝자리 4·9일</span><span>서울 6호선 역촌역 왕복</span><span>09:30~19:00</span><span>총 179km</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <nav class="seasonbar" aria-label="계절 고르기">
+    <div class="row" id="seasonRow" role="tablist">
+      <button role="tab" data-s="spring" aria-selected="false">봄<b>3~5월</b></button>
+      <button role="tab" data-s="summer" aria-selected="false">여름<b>6~8월</b></button>
+      <button role="tab" data-s="autumn" aria-selected="false">가을<b>9~11월</b></button>
+      <button role="tab" data-s="winter" aria-selected="false">겨울<b>12~2월</b></button>
+    </div>
+  </nav>
+
+  <section id="season">
+    <h2>이 철에는 이렇게 보입니다</h2>
+    <p class="lead">호로고루 → 전곡장 → 푸르내마을 → 재인폭포 → 한탄강댐. 자리와 시각은 고정이고, 자리마다 철이 다르게 보입니다. 댐은 어느 계절이든 마지막입니다.</p>
+
+    <div class="season-head">
+      <p class="big" id="sTitle"></p>
+      <p id="sLine"></p>
+    </div>
+
+    <dl class="spots">
+      <div><dt>장에 나오는 것</dt><dd id="sMarket"></dd></div>
+      <div><dt>푸르내마을 계절 체험 · 80분</dt><dd id="sVillage"></dd></div>
+      <div><dt>호로고루</dt><dd id="sHoro"></dd></div>
+      <div><dt>재인폭포 · 출렁다리</dt><dd id="sFall"></dd></div>
+    </dl>
+
+    <p class="note" id="sNote"></p>
+  </section>
+
+  <section class="finder">
+    <h2>전곡장 장날 찾기</h2>
+    <p class="lead">전곡장은 끝자리 <b>4일과 9일</b>에 섭니다. 닷새에 한 번이라 날짜를 먼저 맞춰야 하는 코스입니다. 상설 상가 78개에, 장날이면 노점 70여 개가 더 붙습니다.</p>
+
+    <div class="today" id="nextDay"></div>
+
+    <div class="pick">
+      <label for="yearSel" class="sr">연도</label>
+      <select id="yearSel"></select>
+      <label for="monthSel" class="sr">월</label>
+      <select id="monthSel"></select>
+    </div>
+
+    <ul class="days" id="dayList"></ul>
+    <p class="note">테두리가 진한 날이 토·일요일입니다. 장날은 계절과 무관하게 끝자리 4·9일입니다.</p>
+  </section>
+
+  <section>
+    <h2>하루 순서</h2>
+    <p class="lead">25인승 전세버스로 서울 6호선 역촌역에서 출발해 같은 자리로 돌아옵니다. 구간 거리와 시간은 도로망 경로계산(OSRM)으로 실측한 값입니다. 아래는 2026년 10월 24일(토) 기준입니다.</p>
+    <ol class="course">
+      <li><div class="t">09:30</div><div><div class="n">역촌역 출발</div><div class="m">서울 6호선 역촌역 앞 · 09:20 집결 · 58.1km, 1시간 50분을 잡음</div></div></li>
+      <li><div class="t">11:20</div><div><div class="n">호로고루 <small>40분</small></div><div class="m">장남면 원당리 · 임진강 절벽 위 고구려 성. 해설사의 집 상주 해설(10:00~17:00)</div></div></li>
+      <li><div class="t">12:30</div><div><div class="n">전곡5일장 — 점심·장보기 <small>60분</small></div><div class="m">전곡읍 전곡리 · 24.5km, 28분. 시장 식당에서 점심을 먹고 좌판에서 장을 봅니다</div></div></li>
+      <li><div class="t">13:45</div><div><div class="n">푸르내마을 — 계절 체험 <small>80분</small></div><div class="m">청산면 청연로 · 6.1km, 10분. 체험만 합니다. 철마다 다른 프로그램</div></div></li>
+      <li><div class="t">15:20</div><div><div class="n">재인폭포 · 출렁다리 <small>50분</small></div><div class="m">연천읍 고문리 · 8.6km, 13분. 협곡 아래까지 내려갔다 옵니다. 입장료 5,000원 중 3,000원이 연천사랑상품권으로 환급</div></div></li>
+      <li class="last"><div class="t">16:20</div><div><div class="n">한탄강댐 물문화관 · 전망대 <small>40분</small></div><div class="m">연천읍 현문로508번길 · 3.2km, 6분. <b>하루의 마지막 자리</b>입니다. 17:00 마감에 맞춥니다</div></div></li>
+      <li><div class="t">17:10</div><div><div class="n">역촌역으로 돌아갑니다</div><div class="m">78.5km, 1시간 50분 · 19:00 도착</div></div></li>
+    </ol>
+    <p class="note">총 주행 179km · 이동 4시간 50분 + 체류 4시간 30분 = 9시간 30분. 계절이 바뀌어도 자리가 같아 거리는 그대로입니다.</p>
+  </section>
+
+  <section>
+    <h2>왜 전곡장인가</h2>
+    <p class="lead">「댐 아래 장」은 비유가 아닙니다. 이 장은 1996년에 실제로 물에 잠겼습니다. 한탄강이 임진강과 만나기 직전, 강 바로 옆 읍내입니다. 시장에서 한탄강까지 걸어서 10분입니다.</p>
+    <ul class="tl">
+      <li><div class="y">1963</div><div class="h">전곡시장 개설</div><div class="b">한탄강 옆 읍내에 장이 서기 시작합니다.</div></li>
+      <li><div class="y">1996. 7. 26</div><div class="h">한탄강 범람, 전곡읍 시가지 침수</div><div class="b">집중호우로 연천댐이 무너지고 한탄강이 읍내로 들어왔습니다. 지금 좌판이 선 자리까지 물이 왔습니다.</div></li>
+      <li><div class="y">1999. 8</div><div class="h">다시 침수</div><div class="b">태풍 올가 — 연천·동두천·포천 대규모 수해.</div></li>
+      <li><div class="y">2016. 11</div><div class="h">한탄강댐 운영 시작</div><div class="b">1999년 임진강 수해방지 대책으로 추진. 홍수조절 전용, 총저수용량 2억 7천만 톤.</div></li>
+      <li><div class="y">닷새에 한 번</div><div class="h">그 장이 다시 섭니다</div><div class="b">그 장에서 산 것을 들고 그 댐 앞에 서는 것이 이 코스입니다.</div></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>장터 좌판은 댐이 한 일의 결과물입니다</h2>
+    <p class="lead">한탄강댐은 평상시 물을 담지 않고 그대로 흘려보내는 홍수조절 전용댐입니다. 하는 일은 하나입니다 — 큰비가 올 때만 물을 붙잡아 하류를 잠기지 않게 하는 것.</p>
+    <ol class="flow">
+      <li>① 큰비가 온다<span>유역에 물이 몰립니다.</span></li>
+      <li>② 댐이 붙잡는다<span>비어 있던 저수 공간에 가둡니다.</span></li>
+      <li>③ 논이 살아남는다<span>하류 연천 들판이 잠기지 않습니다.</span></li>
+      <li>④ 장에 나온다<span>그 논에서 난 쌀·콩이 닷새 뒤 좌판에 오릅니다.</span></li>
+    </ol>
+    <div class="card">
+      <h3>이 코스는 그 순서를 거꾸로 걷습니다</h3>
+      <p style="margin:6px 0 0; font-size:15px">좌판에서 출발해 마을과 강을 지나 마지막에 댐 앞에 섭니다. 댐을 경치로 들르는 것이 아니라, 아침에 산 쌀이 왜 여기 있는지를 하루의 결론으로 듣는 자리입니다. 막아 낸 물난리는 일어나지 않은 일이라 기록이 남지 않습니다. 댐이 가장 잘 작동한 해에 대한 기사가 제일 적습니다. 그 기록이 손에 든 장바구니입니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>알아 두실 것</h2>
+    <div class="card">
+      <h3>걷는 자리</h3>
+      <p style="margin:6px 0 0; font-size:15px">호로고루 성 위까지 오르막이 조금, 재인폭포 협곡 아래까지 계단이 좀 있습니다. 무리하지 않으셔도 됩니다 — 재인폭포는 위 전망대와 출렁다리만 보셔도 충분합니다. 화장실은 자리마다 있습니다.</p>
+    </div>
+    <div class="card">
+      <h3>사러 가는 여행입니다</h3>
+      <p style="margin:6px 0 0; font-size:15px">이 코스에서 참가자는 구경하는 사람이 아니라 사는 사람입니다. 장터에서 점심을 먹고 장바구니를 채운 뒤, 그것을 들고 마을과 강을 지나 댐 앞에 섭니다. 점심·장보기·체험비는 외부 업체가 아니라 시장과 마을에 직접 지불합니다.</p>
+    </div>
+    <div class="card">
+      <h3>팸투어</h3>
+      <p style="margin:6px 0 0; font-size:15px">2026년 10월 24일(토) 전곡장이 서는 날에 10명과 함께 하루를 걷습니다. 참가자 모집은 마감되었습니다. 우천 시 예비일은 11월 4일(수, 전곡장)입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>자유전선</b> · 홍훈표 · 댐잇프로젝트 로컬여행기획공모전 4기</p>
+    <p>출처 — 경기도의 생활 「전곡시장」 · 한강홍수통제소 수문조사연보(1996) · K-water 한탄강댐 건설사업 · 농촌체험휴양마을 포털 웰촌 「푸르내마을」 등록 정보. 구간 거리·시간은 오픈스트리트맵 도로망 경로계산(OSRM) 실측값입니다.</p>
+    <p>마을 체험 프로그램은 마을과 협의해 확정하며, 그날 하는 것은 달라질 수 있습니다.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SEASONS = {
+    spring: {
+      name: "봄", months: "3~5월",
+      line: "해빙 뒤 물소리가 가장 큰 철입니다. 성 위에서 임진강 신록과 봄 들판이 보입니다.",
+      market: "냉이 · 달래 · 모종",
+      village: "딸기잼 만들기 · 쑥효소 담그기 · 나만의 컵 만들기",
+      horo: "성 위 봄 들판, 임진강 신록",
+      fall: "해빙 뒤 물소리",
+      note: "5월에는 전곡리 구석기축제가 열립니다. 출발을 09:00으로 당기는 날은 봄 들판을 보는 연강큰물터 15분을 재인폭포 앞에 넣을 수 있습니다."
+    },
+    summer: {
+      name: "여름", months: "6~8월",
+      line: "홍수기입니다. 댐이 실제로 일하는 계절이고, 폭포 수량도 가장 많습니다.",
+      market: "참외 · 옥수수 · 감자",
+      village: "감자 수확 · 오이피클 만들기 · 대추토마토 수확",
+      horo: "해바라기 만개 (7월)",
+      fall: "수량 최대, 물보라가 섭니다",
+      note: "큰비가 올 때만 물을 붙잡는 댐이라, 이 코스에서 이야기하는 일이 바로 지금 일어나는 철입니다."
+    },
+    autumn: {
+      name: "가을", months: "9~11월",
+      line: "햇쌀이 좌판에 오르는 철입니다. 아침에 산 쌀이 자란 들판을 오후에 지나갑니다.",
+      market: "햇쌀 · 잡곡 · 사과",
+      village: "고구마 피자 · 포도 따기 · 인삼고추장 담그기",
+      horo: "성 위 노을, 억새",
+      fall: "협곡 단풍",
+      note: "2026년 10월 24일(토) 팸투어가 이 철의 기준안입니다. 출발을 09:00으로 당기는 날은 댑싸리가 선 연강큰물터 15분을 재인폭포 앞에 넣을 수 있습니다."
+    },
+    winter: {
+      name: "겨울", months: "12~2월",
+      line: "폭포가 통째로 얼어붙습니다. 댐 위에 서리가 앉고 임진강에 두루미가 옵니다.",
+      market: "곶감 · 건어물 · 김장거리",
+      village: "김장김치 담그기 · 강정 만들기 · 썰매 타기",
+      horo: "눈 덮인 성벽",
+      fall: "얼어붙은 빙폭",
+      note: "댐 위 서리와 임진강 두루미가 이 철에만 보이는 것입니다."
+    }
+  };
+
+  var WD = ["일","월","화","수","목","금","토"];
+
+  function seasonOfMonth(m){
+    if (m >= 3 && m <= 5) return "spring";
+    if (m >= 6 && m <= 8) return "summer";
+    if (m >= 9 && m <= 11) return "autumn";
+    return "winter";
+  }
+
+  function text(id, v){ document.getElementById(id).textContent = v; }
+
+  function showSeason(key){
+    var s = SEASONS[key];
+    if (!s) return;
+    document.documentElement.setAttribute("data-season", key);
+    text("sTitle", s.name + " · " + s.months);
+    text("sLine", s.line);
+    text("sMarket", s.market);
+    text("sVillage", s.village);
+    text("sHoro", s.horo);
+    text("sFall", s.fall);
+    text("sNote", s.note);
+    var btns = document.querySelectorAll("#seasonRow button");
+    for (var i = 0; i < btns.length; i++){
+      btns[i].setAttribute("aria-selected", btns[i].getAttribute("data-s") === key ? "true" : "false");
+    }
+  }
+
+  document.getElementById("seasonRow").addEventListener("click", function(e){
+    var b = e.target.closest ? e.target.closest("button") : null;
+    if (b) showSeason(b.getAttribute("data-s"));
+  });
+
+  /* ---- 장날: 끝자리 4·9일 ---- */
+
+  function daysInMonth(y, m){ return new Date(y, m, 0).getDate(); }
+
+  function marketDays(y, m){
+    var last = daysInMonth(y, m), out = [], d;
+    for (d = 1; d <= last; d++){
+      var t = d % 10;
+      if (t === 4 || t === 9) out.push(d);
+    }
+    return out;
+  }
+
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  function nextMarketDay(){
+    var y = today.getFullYear(), m = today.getMonth() + 1, i, list;
+    for (i = 0; i < 3; i++){
+      list = marketDays(y, m);
+      for (var j = 0; j < list.length; j++){
+        var dt = new Date(y, m - 1, list[j]);
+        if (dt >= today) return dt;
+      }
+      m++; if (m > 12){ m = 1; y++; }
+    }
+    return null;
+  }
+
+  function renderNext(){
+    var d = nextMarketDay(), el = document.getElementById("nextDay");
+    if (!d){ el.textContent = ""; return; }
+    var diff = Math.round((d - today) / 86400000);
+    var when = diff === 0 ? "오늘입니다" : (diff === 1 ? "내일입니다" : diff + "일 뒤입니다");
+    el.innerHTML = "다음 장날은 <b>" + d.getFullYear() + "년 " + (d.getMonth() + 1) + "월 " +
+      d.getDate() + "일 (" + WD[d.getDay()] + ")</b> — " + when + ".";
+  }
+
+  function renderMonth(){
+    var y = parseInt(document.getElementById("yearSel").value, 10);
+    var m = parseInt(document.getElementById("monthSel").value, 10);
+    var list = marketDays(y, m), ul = document.getElementById("dayList"), html = "";
+    for (var i = 0; i < list.length; i++){
+      var dt = new Date(y, m - 1, list[i]), w = dt.getDay(), cls = [];
+      if (w === 0 || w === 6) cls.push("weekend");
+      if (dt < today) cls.push("past");
+      html += '<li class="' + cls.join(" ") + '"><span class="d">' + list[i] +
+              '</span><span class="w">' + WD[w] + "</span></li>";
+    }
+    ul.innerHTML = html;
+    showSeason(seasonOfMonth(m));
+  }
+
+  (function initPickers(){
+    var ySel = document.getElementById("yearSel"), mSel = document.getElementById("monthSel");
+    var y0 = today.getFullYear(), i, o;
+    for (i = y0; i <= y0 + 2; i++){
+      o = document.createElement("option"); o.value = i; o.textContent = i + "년";
+      ySel.appendChild(o);
+    }
+    for (i = 1; i <= 12; i++){
+      o = document.createElement("option"); o.value = i; o.textContent = i + "월";
+      mSel.appendChild(o);
+    }
+    ySel.value = y0;
+    mSel.value = today.getMonth() + 1;
+    ySel.addEventListener("change", renderMonth);
+    mSel.addEventListener("change", renderMonth);
+  })();
+
+  renderNext();
+  renderMonth();
+})();
+</script>
+</body>
+</html>
