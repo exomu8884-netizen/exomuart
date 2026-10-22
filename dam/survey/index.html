@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>댐 아래 장이 선다 — 참가자 설문</title>
+<meta name="description" content="2026년 10월 24일 「댐 아래 장이 선다」 팸투어 참가자 설문입니다. 이름은 묻지 않습니다.">
+<meta name="theme-color" content="#a8521c">
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --bg:#f7f4ee; --card:#fff; --ink:#1d201f; --dim:#5d6260; --line:#e2ddd3;
+  --accent:#a8521c; --accent-soft:#f6eadf;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#15181a; --card:#1e2325; --ink:#eceae4; --dim:#a3aaa7; --line:#323a3c;
+         --accent:#dd9159; --accent-soft:#2d2219; }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  font-size:16px; line-height:1.7; word-break:keep-all; overflow-wrap:anywhere;
+}
+.wrap{max-width:640px; margin:0 auto; padding:0 16px 60px}
+header{background:var(--accent); color:#fff; padding:24px 16px}
+header .in{max-width:640px; margin:0 auto}
+header p.k{margin:0 0 6px; font-size:13px; opacity:.85}
+header h1{margin:0; font-size:24px; line-height:1.35}
+header p.s{margin:10px 0 0; font-size:14.5px; opacity:.94}
+
+.q{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-top:14px}
+.q .n{font-size:12.5px; font-weight:700; color:var(--accent); letter-spacing:.04em}
+.q .t{font-size:16.5px; font-weight:700; margin-top:2px}
+.q .h{font-size:13.5px; color:var(--dim); margin-top:4px}
+.opts{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.opts.col{flex-direction:column; gap:7px}
+.opt{display:block}
+.opt input{position:absolute; opacity:0; width:0; height:0}
+.opt span{
+  display:block; border:1px solid var(--line); background:var(--bg);
+  border-radius:10px; padding:9px 13px; font-size:15px; cursor:pointer; user-select:none;
+}
+.opt input:checked + span{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700}
+.opt input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
+.scale{display:grid; grid-template-columns:repeat(5,1fr); gap:7px; margin-top:12px}
+.scale .opt span{text-align:center; padding:11px 0; font-size:16px}
+.scalelab{display:flex; justify-content:space-between; font-size:12.5px; color:var(--dim); margin-top:8px}
+.grid-row{margin-top:12px}
+.grid-row .lab{font-size:14.5px; font-weight:700; margin-bottom:6px}
+.grid-row .opts{margin-top:0; display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.grid-row .opt span{text-align:center; padding:8px 0; font-size:14px}
+textarea{
+  width:100%; margin-top:12px; font:inherit; font-size:16px; padding:11px;
+  border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--ink);
+  min-height:84px; resize:vertical;
+}
+.sub{display:grid; gap:14px; margin-top:12px}
+.sub .lab{font-size:14.5px; font-weight:700}
+
+.actions{margin-top:22px}
+button.go{
+  width:100%; font:inherit; font-size:17px; font-weight:700; cursor:pointer;
+  background:var(--accent); color:#fff; border:0; border-radius:12px; padding:15px;
+}
+button.go[disabled]{opacity:.5}
+.warn{margin-top:10px; font-size:14px; color:var(--accent); font-weight:700; display:none}
+.warn.on{display:block}
+
+#done{display:none}
+#done.on{display:block}
+#form.off{display:none}
+.result{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-top:14px}
+.result h2{margin:0; font-size:18px}
+.result p{font-size:14.5px; color:var(--dim)}
+pre.code{
+  white-space:pre-wrap; background:var(--bg); border:1px solid var(--line);
+  border-radius:10px; padding:12px; font-size:13px; line-height:1.6; margin:12px 0 0;
+  font-family:ui-monospace,Menlo,Consolas,monospace; max-height:40vh; overflow:auto;
+}
+.btns{display:grid; gap:8px; margin-top:12px}
+.btns button{font:inherit; font-size:16px; font-weight:700; cursor:pointer; border-radius:11px; padding:13px; border:1px solid var(--accent)}
+.btns .primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+.btns .ghost{background:var(--card); color:var(--accent)}
+.toast{font-size:14px; color:var(--accent); font-weight:700; min-height:22px; margin-top:8px}
+footer{margin-top:30px; font-size:13px; color:var(--dim)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="in">
+    <p class="k">2026. 10. 24(토) 팸투어</p>
+    <h1>「댐 아래 장이 선다」<br>참가자 설문</h1>
+    <p class="s">이름도 연락처도 묻지 않습니다. 열 문항, 3분이면 끝납니다. 답해 주신 것은 결과보고와 다음 코스를 고치는 데만 씁니다.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <form id="form"></form>
+
+  <div class="actions" id="actions">
+    <button class="go" type="button" id="goBtn">다 적었습니다</button>
+    <p class="warn" id="warn"></p>
+  </div>
+
+  <div id="done">
+    <div class="result">
+      <h2>다 됐습니다. 마지막 한 번만 눌러 주십시오.</h2>
+      <p>아래 단추를 누르면 카카오톡이나 문자 보내는 창이 열립니다. 진행자(홍훈표)에게 그대로 보내 주시면 끝입니다.</p>
+      <div class="btns">
+        <button class="primary" type="button" id="shareBtn">카톡·문자로 보내기</button>
+        <button class="ghost" type="button" id="copyBtn">글자만 복사하기</button>
+      </div>
+      <p class="toast" id="toast"></p>
+      <pre class="code" id="code"></pre>
+      <p>보내기가 안 되면 「글자만 복사하기」를 누르신 뒤 카카오톡에 붙여 넣으셔도 됩니다.</p>
+    </div>
+  </div>
+
+  <footer>자유전선 · 홍훈표 · 댐잇프로젝트 로컬여행기획공모전 4기</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var PLACES = ["호로고루","전곡5일장","재인폭포","한탄강댐","댑싸리밭"];
+
+  var Q = [
+    { id:"만족", kind:"scale", t:"오늘 하루, 전체적으로 어떠셨습니까?",
+      h:"1은 별로, 10은 아주 좋았다입니다.", lo:"별로였다", hi:"아주 좋았다" },
+
+    { id:"좋았던자리", kind:"one", t:"가장 좋았던 자리 하나를 고르신다면?",
+      o:PLACES },
+
+    { id:"시간", kind:"grid", t:"자리마다 머문 시간이 어땠습니까?",
+      h:"다섯 자리 모두 골라 주십시오.", rows:PLACES, o:["짧았다","적당했다","길었다"] },
+
+    { id:"댐이하는일", kind:"text", t:"오늘 들으신 것 중, 한탄강댐이 하는 일을 한 문장으로 적어 주신다면?",
+      h:"정답을 맞히는 칸이 아닙니다. 기억나시는 대로 적어 주십시오.", opt:true },
+
+    { id:"내돈이면", kind:"one", t:"지원 한도 3만원 말고, 내 돈이었다면 전곡장에서 얼마쯤 쓰셨을 것 같습니까?",
+      h:"상품으로 만들 때 참고만 합니다. 답은 익명으로 모입니다.",
+      o:["안 산다","1만원 이하","1~3만원","3~5만원","5만원 이상"], col:true },
+
+    { id:"하루길이", kind:"one", t:"09:30 출발 · 19:00 도착, 하루 길이가 어땠습니까?",
+      o:["짧다","적당하다","길다"] },
+
+    { id:"다시온다면", kind:"many", t:"다른 철에 또 오신다면 어느 때입니까?",
+      h:"여러 개 고르셔도 됩니다.",
+      o:["봄(3~5월)","여름(6~8월)","가을(9~11월)","겨울(12~2월)","다시 올 생각 없다"], col:true },
+
+    { id:"유료라면", kind:"one", t:"이 코스가 유료 상품이라면 1인 얼마까지 내시겠습니까?",
+      o:["3만원 이하","3~5만원","5~8만원","8~10만원","10만원 이상","돈 내고는 안 간다"], col:true },
+
+    { id:"고칠것", kind:"text", t:"불편하셨던 것, 빠졌으면 하는 것, 더 있었으면 하는 것을 적어 주십시오.",
+      h:"짧아도 됩니다. 다음 코스에서 고칩니다.", opt:true },
+
+    { id:"끝", kind:"last", t:"마지막입니다.",
+      age:["20대","30대","40대","50대 이상"],
+      area:["서울 서북권(은평·서대문·마포)","그 밖 서울","경기·인천","그 밖"] }
+  ];
+
+  var form = document.getElementById("form"), html = "";
+
+  function optHTML(name, v, type){
+    return '<label class="opt"><input type="' + type + '" name="' + name + '" value="' + v + '">' +
+           "<span>" + v + "</span></label>";
+  }
+
+  Q.forEach(function(q, i){
+    html += '<section class="q" data-id="' + q.id + '" data-kind="' + q.kind + '">';
+    html += '<div class="n">문 ' + (i + 1) + "</div>";
+    html += '<div class="t">' + q.t + "</div>";
+    if (q.h) html += '<div class="h">' + q.h + "</div>";
+
+    if (q.kind === "scale"){
+      html += '<div class="scale">';
+      for (var n = 1; n <= 10; n++) html += optHTML(q.id, n, "radio");
+      html += "</div>";
+      html += '<div class="scalelab"><span>' + q.lo + "</span><span>" + q.hi + "</span></div>";
+
+    } else if (q.kind === "one" || q.kind === "many"){
+      var type = q.kind === "one" ? "radio" : "checkbox";
+      html += '<div class="opts' + (q.col ? " col" : "") + '">';
+      q.o.forEach(function(v){ html += optHTML(q.id, v, type); });
+      html += "</div>";
+
+    } else if (q.kind === "grid"){
+      q.rows.forEach(function(r){
+        html += '<div class="grid-row" data-row="' + r + '"><div class="lab">' + r + '</div><div class="opts">';
+        q.o.forEach(function(v){ html += optHTML(q.id + "_" + r, v, "radio"); });
+        html += "</div></div>";
+      });
+
+    } else if (q.kind === "text"){
+      html += '<textarea name="' + q.id + '" rows="3"></textarea>';
+
+    } else if (q.kind === "last"){
+      html += '<div class="sub">';
+      html += '<div><div class="lab">연령대</div><div class="opts">';
+      q.age.forEach(function(v){ html += optHTML("연령", v, "radio"); });
+      html += "</div></div>";
+      html += '<div><div class="lab">사시는 곳</div><div class="opts col">';
+      q.area.forEach(function(v){ html += optHTML("사는곳", v, "radio"); });
+      html += "</div></div></div>";
+    }
+    html += "</section>";
+  });
+  form.innerHTML = html;
+
+  function val(name){
+    var el = form.querySelector('[name="' + name + '"]:checked');
+    return el ? el.value : "";
+  }
+  function vals(name){
+    var els = form.querySelectorAll('[name="' + name + '"]:checked'), out = [];
+    for (var i = 0; i < els.length; i++) out.push(els[i].value);
+    return out;
+  }
+  function textv(name){
+    var el = form.querySelector('textarea[name="' + name + '"]');
+    return el ? el.value.replace(/[\r\n]+/g, " ").trim() : "";
+  }
+
+  function collect(){
+    var miss = [], lines = [], i;
+
+    function need(label, v){ if (!v) miss.push(label); return v; }
+
+    lines.push("만족=" + need("문1 만족도", val("만족")));
+    lines.push("좋았던자리=" + need("문2 가장 좋았던 자리", val("좋았던자리")));
+
+    var times = [], gm = 0;
+    for (i = 0; i < PLACES.length; i++){
+      var v = val("시간_" + PLACES[i]);
+      if (!v) gm++;
+      times.push(PLACES[i] + ":" + (v || "-"));
+    }
+    if (gm) miss.push("문3 머문 시간 " + gm + "곳");
+    lines.push("시간=" + times.join("|"));
+
+    lines.push("댐이하는일=" + textv("댐이하는일"));
+    lines.push("내돈이면=" + need("문5 장에서 쓸 돈", val("내돈이면")));
+    lines.push("하루길이=" + need("문6 하루 길이", val("하루길이")));
+
+    var again = vals("다시온다면");
+    if (!again.length) miss.push("문7 다시 온다면");
+    lines.push("다시온다면=" + again.join("|"));
+
+    lines.push("유료라면=" + need("문8 유료라면", val("유료라면")));
+    lines.push("고칠것=" + textv("고칠것"));
+    lines.push("연령=" + need("문10 연령대", val("연령")));
+    lines.push("사는곳=" + need("문10 사시는 곳", val("사는곳")));
+
+    return { miss: miss, lines: lines };
+  }
+
+  function makeId(){
+    var s = "", c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", i;
+    for (i = 0; i < 4; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+    return s;
+  }
+
+  var payload = "";
+
+  document.getElementById("goBtn").addEventListener("click", function(){
+    var r = collect(), warn = document.getElementById("warn");
+    if (r.miss.length){
+      warn.textContent = "아직 안 고르신 것이 있습니다 — " + r.miss.join(", ") + ".";
+      warn.classList.add("on");
+      var first = form.querySelector(".q input:not(:checked)");
+      if (first) first.closest(".q").scrollIntoView({behavior:"smooth", block:"center"});
+      return;
+    }
+    warn.classList.remove("on");
+    payload = "댐아래장이선다 설문 " + makeId() + "\n" + r.lines.join("\n");
+    document.getElementById("code").textContent = payload;
+    document.getElementById("form").classList.add("off");
+    document.getElementById("actions").style.display = "none";
+    document.getElementById("done").classList.add("on");
+    document.getElementById("done").scrollIntoView({behavior:"smooth", block:"start"});
+  });
+
+  function toast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    setTimeout(function(){ if (t.textContent === msg) t.textContent = ""; }, 4000);
+  }
+
+  document.getElementById("shareBtn").addEventListener("click", function(){
+    if (navigator.share){
+      navigator.share({ text: payload }).catch(function(){});
+    } else {
+      copy();
+      toast("이 기기에서는 보내기 창이 안 열립니다. 글자를 복사했으니 카카오톡에 붙여 넣어 주십시오.");
+    }
+  });
+
+  function copy(){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(payload).then(function(){ toast("복사했습니다."); }, fallback);
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = payload; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast("복사했습니다."); }
+      catch(e){ toast("복사가 안 됩니다. 아래 글자를 길게 눌러 직접 복사해 주십시오."); }
+      document.body.removeChild(ta);
+    }
+  }
+  document.getElementById("copyBtn").addEventListener("click", copy);
+})();
+</script>
+</body>
+</html>
