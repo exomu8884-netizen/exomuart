@@ -1,0 +1,5 @@
+# 올린 사진 폴더에서 프로그램 파일이 실행되지 않게 막음
+Options -Indexes
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|sh|htaccess)$">
+  Require all denied
+</FilesMatch>
