@@ -1,7 +1,0 @@
-# 서버에서 생기는 데이터(비밀번호·저장 내용·올린 사진)는 저장소에 넣지 않음
-data/admin.json
-data/content.json
-data/login_attempts.json
-data/*.tmp
-data/backup/*.json
-uploads/*/
