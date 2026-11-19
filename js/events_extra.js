@@ -1,15 +1,19 @@
 // 나머지 이벤트 — 즐거운 일, 가족(짝·출산·대 잇기), 인형, 나이, 곤란한 일.
 // events.js 의 표에 밀어 넣는다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1792030104';
-import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1792030104';
-import { CATALOG, okChoice } from './events.js?v=1792030104';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795071479';
+import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1795071479';
+import { CATALOG, okChoice } from './events.js?v=1795071479';
+import { outfitOf } from './data.js?v=1795071479';
 
 let L = null;
 export function linkExtra(lib) { L = lib; }
 
 const add = clamp;
 const rnd = Math.random;
+
+/** 입은 옷이 이 일에 쓸모가 있는가 (warm · rain · photo) */
+const wearing = (p, key) => { const o = outfitOf(p.outfit); return !!(o && o[key]); };
 
 /** 선택지가 하나뿐인 "좋은 일"을 짧게 적기 위한 도구 */
 const nice = (id, title, chance, cooldown, when, body, label, apply) =>
@@ -619,8 +623,14 @@ export function buildExtraEvents(sfx) {
     },
     {
       id: 'walk_sudden_rain', title: '소나기가 쏟아집니다', kind: 'walk', cooldown: 48,
-      body: (s, p) => `하늘이 갑자기 어두워지더니 비가 쏟아집니다.\n${p.name}이(가) 처마 밑으로 파고듭니다.`,
-      choices: () => [
+      body: (s, p) => wearing(p, 'rain')
+        ? `하늘이 갑자기 어두워지더니 비가 쏟아집니다.\n우비를 입은 ${p.name}은(는) 아랑곳하지 않습니다.`
+        : `하늘이 갑자기 어두워지더니 비가 쏟아집니다.\n${p.name}이(가) 처마 밑으로 파고듭니다.`,
+      choices: (s, p) => [
+        ...(wearing(p, 'rain') ? [okChoice('모자를 씌우고 계속 걷는다', (s2, p2) => {
+          p2.mood = add(p2.mood + 14); p2.social = add(p2.social + 6); p2.outHours = (p2.outHours || 0) + 0.5;
+          return '빗소리 속을 둘이 걸었습니다. 발만 조금 젖었습니다.';
+        })] : []),
         okChoice('그치길 기다린다', (s, p) => {
           p.mood = add(p.mood + 6); p.energy = add(p.energy - 6); p.outHours = (p.outHours || 0) + 0.5;
           return '처마 밑에서 한참 같이 앉아 있었습니다.';
@@ -761,13 +771,24 @@ export function buildExtraEvents(sfx) {
     },
     {
       id: 'cold_snap', title: '한파가 왔습니다', kind: 'ambient', chance: 0.005, cooldown: 120,
-      when: (s, p) => atHome(p) && p.stage !== Stage.Adult,
+      when: (s, p) => atHome(p) && p.stage !== Stage.Adult && !wearing(p, 'warm'),
       body: (s, p) => `아침에 창에 성에가 꼈습니다.\n${p.name}이(가) 몸을 동그랗게 말고 떱니다.`,
-      choices: () => [
-        {
-          label: `옷을 사 입힌다 (${won(25000)})`, cost: 25000,
-          apply: (s, p) => { p.health = add(p.health + 10); p.mood = add(p.mood + 6); play('coin'); return '처음엔 굳어 있더니 금세 익숙해졌습니다.'; },
-        },
+      choices: (s, p) => [
+        // 옷장에 조끼가 있으면 꺼내 입히고, 없으면 사서 입힌다. 둘 다 진짜로 입는다.
+        (s.closet || []).includes('vest')
+          ? okChoice('니트 조끼를 꺼내 입힌다', (s2, p2) => {
+            p2.outfit = 'vest'; p2.health = add(p2.health + 10); p2.mood = add(p2.mood + 6); play('ding');
+            return '조끼를 입히니 금세 몸이 풀렸습니다.';
+          })
+          : {
+            label: `니트 조끼를 사 입힌다 (${won(25000)})`, cost: 25000,
+            apply: (s2, p2) => {
+              if (!Array.isArray(s2.closet)) s2.closet = [];
+              if (!s2.closet.includes('vest')) s2.closet.push('vest');
+              p2.outfit = 'vest'; p2.health = add(p2.health + 10); p2.mood = add(p2.mood + 6); play('coin');
+              return '처음엔 굳어 있더니 금세 익숙해졌습니다.';
+            },
+          },
         okChoice('담요를 깔아 준다', (s, p) => { p.health = add(p.health + 5); p.mood = add(p.mood + 8); return '담요 위에서 안 내려옵니다.'; }),
         okChoice('그냥 둔다', (s, p, e, t) => {
           p.health = add(p.health - 12);
@@ -813,8 +834,13 @@ export function buildExtraEvents(sfx) {
         {
           label: `한 장 내 본다 (${won(10000)})`, cost: 10000,
           apply: (s, p) => {
-            const win = rnd() < 0.3 + p.mood / 400;
-            if (win) { s.money += 150000; play('coin'); return `${p.name} 사진이 뽑혔습니다. 상금 150,000원이 들어왔습니다.`; }
+            const dressed = outfitOf(p.outfit);
+            const win = rnd() < 0.3 + p.mood / 400 + (dressed ? dressed.photo || 0 : 0);
+            if (win) {
+              s.money += 150000; play('coin');
+              return `${p.name} 사진이 뽑혔습니다. 상금 150,000원이 들어왔습니다.`
+                + (dressed ? `\n${dressed.name} 차림이 눈에 띄었답니다.` : '');
+            }
             p.mood = add(p.mood + 6);
             return '떨어졌습니다. 그래도 사진은 잘 나왔습니다.';
           },

@@ -1,12 +1,12 @@
 // 짝을 맺고, 새끼를 낳고, 분양을 보낸다.
 // 이 한 바퀴가 돌아야 게임이 끝나지 않는다 — 용돈 말고 두 번째 수입원이다.
 
-import { T, Stage, clamp, won } from './tuning.js?v=1792030104';
-import { PUPPY_NAMES } from './data.js?v=1792030104';
-import { atHome, livingCount, hasInCollection, nowUnix } from './save.js?v=1792030104';
-import { realSecondsFor } from './sim.js?v=1792030104';
-import { newPet } from './actions.js?v=1792030104';
-import { pushEvent } from './events.js?v=1792030104';
+import { T, Stage, clamp, won } from './tuning.js?v=1795071479';
+import { PUPPY_NAMES } from './data.js?v=1795071479';
+import { atHome, livingCount, hasInCollection, nowUnix } from './save.js?v=1795071479';
+import { realSecondsFor } from './sim.js?v=1795071479';
+import { newPet } from './actions.js?v=1795071479';
+import { pushEvent } from './events.js?v=1795071479';
 
 /** 집에 없는 이름으로 하나 고른다 */
 export function pickName(s) {

@@ -1,11 +1,11 @@
 // 유저가 누르는 것들. 시간은 sim.js 가 흘리고, 여기서는 그 순간의 변화만 준다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1792030104';
-import { foodOf, breedOf } from './data.js?v=1792030104';
-import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1792030104';
-import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1792030104';
-import { rollWalkEvent } from './events.js?v=1792030104';
-import * as dolls from './dolls.js?v=1792030104';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795071479';
+import { foodOf, breedOf, outfitOf } from './data.js?v=1795071479';
+import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1795071479';
+import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1795071479';
+import { rollWalkEvent } from './events.js?v=1795071479';
+import * as dolls from './dolls.js?v=1795071479';
 
 export const ok = (message = null) => ({ ok: true, message });
 export const no = (message) => ({ ok: false, message });
@@ -316,6 +316,48 @@ export function buySlot(s) {
   return ok(`자리를 늘렸습니다. 이제 ${s.slots}마리까지 키울 수 있습니다.`);
 }
 
+// ── 옷 ────────────────────────────────────────────────────
+
+export const hasOutfit = (s, id) => (s.closet || []).includes(id);
+
+export function buyOutfit(s, id) {
+  const o = outfitOf(id);
+  if (!o) return no('그런 옷이 없습니다.');
+  if (!Array.isArray(s.closet)) s.closet = [];
+  if (s.closet.includes(id)) return no(`${o.name}은(는) 이미 있습니다.`);
+  if (s.money < o.price) return no('돈이 모자랍니다.');
+  s.money -= o.price;
+  s.closet.push(id);
+  return ok(`${o.name}을(를) 샀습니다.`);
+}
+
+/** 입힌다. id 가 비면 벗긴다. 옷은 한 벌뿐이라 다른 아이가 입고 있으면 그 아이가 벗는다. */
+export function wearOutfit(s, p, id) {
+  if (!p) return no('입힐 아이가 없습니다.');
+  if (p.dead) return no('');
+  if (p.lost) return no(`${p.name}은(는) 집에 없습니다.`);
+
+  if (!id) {
+    if (!p.outfit) return no(`${p.name}은(는) 아무것도 안 입고 있습니다.`);
+    const was = outfitOf(p.outfit);
+    p.outfit = '';
+    return ok(`${was ? was.name : '옷'}을(를) 벗겼습니다.`);
+  }
+
+  const o = outfitOf(id);
+  if (!o || !hasOutfit(s, id)) return no('그런 옷이 없습니다.');
+  if (p.outfit === id) return no(`${p.name}이(가) 이미 입고 있습니다.`);
+
+  let moved = '';
+  const other = s.pets.find(x => x !== p && !x.dead && x.outfit === id);
+  if (other) { other.outfit = ''; moved = `
+${other.name}이(가) 입고 있던 것을 벗겼습니다.`; }
+
+  p.outfit = id;
+  p.mood = clamp(p.mood + (o.mood || 0));
+  return ok(`${p.name}에게 ${o.name}을(를) 입혔습니다.${moved}`);
+}
+
 // ── 분양 ──────────────────────────────────────────────────
 
 /** 첫 아이는 공짜다. 돈이 없어 게임이 시작조차 안 되면 안 된다. */
@@ -367,6 +409,7 @@ export function newPet({ breedId, name, now, ageOffsetDays, bornHere = false, pa
     lastFoodId: '', sameFoodStreak: 0,
     lastPlayAt: 0, playStreak: 0, lastPatAt: 0, patStreak: 0, lastWalkAt: 0,
 
+    outfit: '',
     female: Math.random() < 0.5,
     pregnantDue: 0, mateName: '', mateBreedId: '', litterSize: 0,
     bornHere, parentNote,

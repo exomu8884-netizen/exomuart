@@ -3,8 +3,8 @@
 // 현실 시간은 저장해 둔 lastSeen(UTC 초)과 기기 시계의 차이로 잰다.
 // 서버를 안 쓰므로 기기 시계를 앞으로 돌리면 시간이 건너뛴다. 뒤로 돌리면 그냥 멈춘다.
 
-import { T } from './tuning.js?v=1792030104';
-import { addToShelf } from './dolls.js?v=1792030104';
+import { T } from './tuning.js?v=1795071479';
+import { addToShelf } from './dolls.js?v=1795071479';
 
 const KEY = 'dulli_save_v1';
 
@@ -39,6 +39,7 @@ export function newGame() {
     inbox: [],
     cooldowns: [],
     dolls: [],
+    closet: [],     // 사 둔 옷. 한 벌씩만 가진다
     sentAway: [],   // 보낸 아이를 적어 둔다 — 되찾을 수 있게
 
     warningAccepted: false,
@@ -76,7 +77,7 @@ export function wipe() {
 
 /** 옛 저장이나 손상된 저장에서 빈 곳을 메운다. */
 function repair(s) {
-  const lists = ['pets', 'poops', 'pantry', 'collection', 'inbox', 'cooldowns', 'dolls', 'sentAway'];
+  const lists = ['pets', 'poops', 'pantry', 'collection', 'inbox', 'cooldowns', 'dolls', 'sentAway', 'closet'];
   for (const k of lists) if (!Array.isArray(s[k])) s[k] = [];
 
   for (const p of s.pets) {
@@ -84,6 +85,7 @@ function repair(s) {
     if (p.temperament == null) p.temperament = '';
     if (!p.name) p.name = '이름 없음';
     if (!(p.ageOffsetDays > 0)) p.ageOffsetDays = T.adoptedAgeDays;
+    if (typeof p.outfit !== 'string') p.outfit = '';
   }
 
   if (!(s.slots >= 1)) s.slots = T.startingSlots;

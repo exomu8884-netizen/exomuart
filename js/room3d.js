@@ -4,9 +4,22 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1792030104';
-import { breedOf } from './data.js?v=1792030104';
-import { nightDepth } from './sim.js?v=1792030104';
+import { T, Stage, Illness } from './tuning.js?v=1795071479';
+import { breedOf, outfitOf } from './data.js?v=1795071479';
+import { nightDepth } from './sim.js?v=1795071479';
+
+// 옷이 붙는 뼈.
+// Root → Spine_0(몸통) → Spine_1(어깨·목, 여기서 머리와 앞다리가 갈린다) → Head_0(머리)
+// 모델 안 이름은 'tripo::Spine_0' 이지만, three.js 가 읽으면서 쌍점을 떼어 낸다.
+const OUTFIT_BONE = { body: 'tripoSpine_0', neck: 'tripoSpine_1', head: 'tripoHead_0' };
+
+// 뼈는 몸 한가운데 박혀 있고, 털이 두툼해서 옷을 그대로 두면 몸속에 묻힌다.
+// 자리(off)와 크기(scale)는 성견 기준으로 눈으로 맞춘 값이다. 단계에 따라 같이 줄어든다.
+const OUTFIT_FIT = {
+  body: { off: [0, 0.28, -0.04] },
+  neck: { off: [0, 0.32, 0.12] },
+  head: { off: [0, 0.44, 0.02] },
+};
 
 // 강아지가 행동할 때 찾아가는 자리
 export const ACT = { none: 0, eat: 1, play: 2, pat: 3, sleep: 4, away: 5 };
@@ -234,10 +247,10 @@ export class Room {
 
   _makeDog(p) {
     const g = new THREE.Group();
-    let mixer = null, action = null;
+    let mixer = null, action = null, model = null;
 
     if (this.dogProto) {
-      const model = skeletonClone(this.dogProto);
+      model = skeletonClone(this.dogProto);
       // 키를 단계에 맞춘다
       const box = new THREE.Box3().setFromObject(model);
       const h = Math.max(1e-4, box.max.y - box.min.y);
@@ -291,7 +304,7 @@ export class Room {
     hit.userData.petId = p.id;
     g.add(hit);
 
-    return { g, mixer, action };
+    return { g, mixer, action, model };
   }
 
   // ── 예쁜 인형 ───────────────────────────────────────────
@@ -532,7 +545,7 @@ export class Room {
         if (e) this.petRoot.remove(e.g);
         const made = this._makeDog(p);
         e = {
-          g: made.g, mixer: made.mixer, action: made.action,
+          g: made.g, mixer: made.mixer, action: made.action, model: made.model,
           stage: p.stage, dead: p.dead,
           target: new THREE.Vector3(0, 0, 0), nextRetarget: 0,
           act: ACT.none, actSpot: null, actUntil: 0, onArrive: null, arrived: false,
@@ -541,9 +554,110 @@ export class Room {
         this.petRoot.add(e.g);
         this.pets.set(p.id, e);
       }
+      this._syncOutfit(e, p);
       this._movePet(s, p, e, dt);
       i++;
     }
+  }
+
+  // ── 옷 ──────────────────────────────────────────────────
+  // 옷은 뼈에 붙인다. 그래야 걷거나 고개를 들 때 같이 움직인다.
+  // 뼈마다 제 축이 제각각이라, 붙일 때 한 번 '몸 기준' 자세로 되돌려 두고
+  // 그다음부터는 뼈를 따라가게 둔다.
+
+  _syncOutfit(e, p) {
+    const id = p.outfit || '';
+    if (e.outfitId === id) return;
+    e.outfitId = id;
+
+    if (e.outfit) {
+      e.outfit.parent && e.outfit.parent.remove(e.outfit);
+      e.outfit.traverse(o => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
+      e.outfit = null;
+    }
+    const o = id && outfitOf(id);
+    if (!o || !e.model) return;                      // 모델이 아직 없으면 입힐 몸이 없다
+
+    const bone = e.model.getObjectByName(OUTFIT_BONE[o.slot]);
+    if (!bone) return;
+
+    const anchor = new THREE.Group();
+    anchor.matrixAutoUpdate = false;
+    bone.add(anchor);
+    bone.updateWorldMatrix(true, false);
+    e.g.updateWorldMatrix(true, false);
+    // 지금 자세에서 '뼈 안의 몸 기준 좌표계'를 구해 고정한다.
+    // 자리는 뼈 그대로 두고(옮기면 발밑으로 간다) 방향과 크기만 몸 기준으로 되돌린다.
+    const rel = new THREE.Matrix4().copy(bone.matrixWorld).invert().multiply(e.g.matrixWorld);
+    const q = new THREE.Quaternion(), sc = new THREE.Vector3();
+    rel.decompose(new THREE.Vector3(), q, sc);
+    anchor.matrix.compose(new THREE.Vector3(), q, sc);
+
+    const fit = OUTFIT_FIT[o.slot];
+    const k = HEIGHT[p.stage];
+    const wrap = new THREE.Group();
+    wrap.scale.setScalar(k);
+    wrap.position.set(fit.off[0] * k, fit.off[1] * k, fit.off[2] * k);
+    wrap.add(this._makeOutfit(id));
+    anchor.add(wrap);
+
+    e.outfit = anchor;
+  }
+
+  /**
+   * 옷 한 벌. 다 자란 아이(키 1.0) 기준으로 그린다 — +Y 위, +Z 앞.
+   * 포메라니안은 털이 두툼해서, 몸에 딱 맞춰 그리면 털에 묻혀 안 보인다. 한 겹 크게 잡는다.
+   */
+  _makeOutfit(id) {
+    const g = new THREE.Group();
+    const put = (geo, mat, pos = [0, 0, 0], rot = [0, 0, 0], sc = [1, 1, 1]) => {
+      const m = new THREE.Mesh(geo, mat);
+      m.position.set(...pos); m.rotation.set(...rot); m.scale.set(...sc);
+      m.castShadow = true;
+      g.add(m);
+      return m;
+    };
+    const cloth = (c, r = 0.9) => { const m = this._mat(c, r); m.side = THREE.DoubleSide; return m; };
+
+    if (id === 'bandana') {
+      put(new THREE.TorusGeometry(0.30, 0.035, 8, 20), this._mat(0xf4c430));            // 목에 두른 띠
+      put(new THREE.ConeGeometry(0.26, 0.40, 3), cloth(0xffd23f),                       // 앞으로 늘어진 천
+        [0, -0.19, 0.10], [Math.PI, 0, Math.PI]);
+      return g;
+    }
+    if (id === 'bowtie') {
+      const main = this._mat(0x8d2167);
+      put(new THREE.TorusGeometry(0.31, 0.030, 8, 20), main);
+      for (const x of [-0.15, 0.15])
+        put(new THREE.SphereGeometry(0.155, 12, 10), main, [x, -0.16, 0.13], [0, 0, 0], [1.0, 0.75, 0.32]);
+      put(new THREE.SphereGeometry(0.07, 10, 8), this._mat(0xb63f91), [0, -0.16, 0.16], [0, 0, 0], [0.8, 1, 0.7]);
+      return g;
+    }
+    // 등에 덮는 꼴로 만든다. 털이 둥글어서 통으로 두르면 튜브를 낀 것처럼 보인다.
+    // 반통은 theta 를 π/2 에서 π 만큼 돌려야 등(위쪽)을 덮는다.
+    if (id === 'vest') {
+      const trim = this._mat(0x8ea9db);
+      put(new THREE.CylinderGeometry(0.36, 0.345, 0.62, 18, 1, true, Math.PI / 2, Math.PI),
+        cloth(0x162a5c, 0.95), [0, 0, 0], [Math.PI / 2, 0, 0]);
+      put(new THREE.TorusGeometry(0.36, 0.032, 6, 18, Math.PI), trim, [0, 0, 0.31]);    // 목둘레 테두리
+      put(new THREE.TorusGeometry(0.345, 0.032, 6, 18, Math.PI), trim, [0, 0, -0.31]);  // 밑단 테두리
+      return g;
+    }
+    if (id === 'raincoat') {
+      put(new THREE.CylinderGeometry(0.40, 0.37, 0.72, 18, 1, true, Math.PI / 2, Math.PI),
+        cloth(0xffcc19), [0, 0, -0.04], [Math.PI / 2, 0, 0]);
+      put(new THREE.TorusGeometry(0.37, 0.022, 6, 18, Math.PI), this._mat(0xf29b11), [0, 0, -0.40]);
+      put(new THREE.SphereGeometry(0.22, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2), cloth(0xffcc19),
+        [0, 0.06, 0.30], [-0.7, 0, 0]);                                                 // 목 뒤에 접힌 모자
+      return g;
+    }
+    if (id === 'santa') {
+      put(new THREE.ConeGeometry(0.26, 0.52, 18, 1, true), cloth(0xc92332), [0, 0.28, -0.05], [-0.22, 0, 0]);
+      put(new THREE.TorusGeometry(0.26, 0.055, 8, 20), this._mat(0xfff8e8), [0, 0.03, 0], [Math.PI / 2, 0, 0]);
+      put(new THREE.SphereGeometry(0.08, 12, 10), this._mat(0xfff8e8), [0, 0.52, -0.17]);
+      return g;
+    }
+    return g;
   }
 
   /** 어떤 아이에게 행동을 시킨다. 도착하면 onArrive 를 부른다. */

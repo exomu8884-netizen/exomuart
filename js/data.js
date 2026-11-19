@@ -15,6 +15,35 @@ export const BREEDS = [
   },
 ];
 
+// ── 옷 ────────────────────────────────────────────────────
+// 한 벌씩만 가집니다. 입히면 뼈에 붙어 걷는 대로 같이 움직입니다.
+// slot 은 붙는 자리입니다 — neck(목) · body(가슴) · head(머리).
+
+export const OUTFITS = [
+  {
+    id: 'bandana', name: '노란 반다나', slot: 'neck', price: 12000,
+    blurb: '목에 두릅니다. 사진이 잘 나옵니다.', mood: 4, photo: 0.06,
+  },
+  {
+    id: 'bowtie', name: '나비넥타이', slot: 'neck', price: 18000,
+    blurb: '차려입은 티가 납니다.', mood: 5, photo: 0.12,
+  },
+  {
+    id: 'vest', name: '니트 조끼', slot: 'body', price: 25000,
+    blurb: '도톰합니다. 추운 날 떨지 않습니다.', mood: 3, warm: true,
+  },
+  {
+    id: 'raincoat', name: '노란 우비', slot: 'body', price: 30000,
+    blurb: '등을 덮습니다. 비를 맞아도 덜 젖습니다.', mood: 2, rain: true,
+  },
+  {
+    id: 'santa', name: '산타 모자', slot: 'head', price: 15000,
+    blurb: '겨울에 한 번쯤. 쓰면 다들 웃습니다.', mood: 8, photo: 0.10,
+  },
+];
+
+export const outfitOf = (id) => OUTFITS.find(o => o.id === id) || null;
+
 export const breedOf = (id) => BREEDS.find(b => b.id === id) || BREEDS[0];
 
 // ── 성격 ──────────────────────────────────────────────────
