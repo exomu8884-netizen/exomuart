@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1795082655';
-import { breedOf, outfitOf } from './data.js?v=1795082655';
-import { nightDepth } from './sim.js?v=1795082655';
+import { T, Stage, Illness } from './tuning.js?v=1795083327';
+import { breedOf, outfitOf } from './data.js?v=1795083327';
+import { nightDepth } from './sim.js?v=1795083327';
 
 // 옷이 붙는 뼈.
 // Root → Spine_0(몸통) → Spine_1(어깨·목, 여기서 머리와 앞다리가 갈린다) → Head_0(머리)
@@ -16,9 +16,9 @@ const OUTFIT_BONE = { body: 'tripoSpine_0', neck: 'tripoSpine_1', head: 'tripoHe
 // 뼈는 몸 한가운데 박혀 있고, 털이 두툼해서 옷을 그대로 두면 몸속에 묻힌다.
 // 자리(off)와 크기(scale)는 성견 기준으로 눈으로 맞춘 값이다. 단계에 따라 같이 줄어든다.
 const OUTFIT_FIT = {
-  body: { off: [0, 0.28, -0.04] },
-  neck: { off: [0, 0.32, 0.12] },
-  head: { off: [0, 0.44, 0.02] },
+  body: { scale: 1.35, off: [0, 0.12, -0.22] },
+  neck: { scale: 1.00, off: [0, 0.32, 0.12] },
+  head: { scale: 1.00, off: [0, 0.44, 0.02] },
 };
 
 // 강아지가 행동할 때 찾아가는 자리
@@ -581,23 +581,36 @@ export class Room {
     const bone = e.model.getObjectByName(OUTFIT_BONE[o.slot]);
     if (!bone) return;
 
+    // 뼈 안에 '몸 기준 좌표계'를 만들어 고정한다.
+    // 지금 자세로 재면 안 된다 — 자는 아이에게 입히면 그 자세가 그대로 박혀,
+    // 일어선 뒤에 옷만 허공에 뜬다. 자세와 상관없는 바인드 포즈(뼈를 처음 묶은 자세)로 잡는다.
+    let skin = null;
+    e.model.traverse(o => { if (!skin && o.isSkinnedMesh) skin = o; });
+    const i = skin ? skin.skeleton.bones.indexOf(bone) : -1;
+    if (!skin || i < 0) return;
+
+    // 뼈가 처음 묶였을 때의 방향·배율만 되돌린다. 자리는 뼈 그대로 둔다 —
+    // 원점까지 옮기면 옷이 발밑으로 내려간다.
+    const bind = new THREE.Matrix4().copy(skin.skeleton.boneInverses[i]).invert();
+    const q = new THREE.Quaternion(), sc = new THREE.Vector3();
+    bind.decompose(new THREE.Vector3(), q, sc);
+
     const anchor = new THREE.Group();
     anchor.matrixAutoUpdate = false;
     bone.add(anchor);
-    bone.updateWorldMatrix(true, false);
-    e.g.updateWorldMatrix(true, false);
-    // 지금 자세에서 '뼈 안의 몸 기준 좌표계'를 구해 고정한다.
-    // 자리는 뼈 그대로 두고(옮기면 발밑으로 간다) 방향과 크기만 몸 기준으로 되돌린다.
-    const rel = new THREE.Matrix4().copy(bone.matrixWorld).invert().multiply(e.g.matrixWorld);
-    const q = new THREE.Quaternion(), sc = new THREE.Vector3();
-    rel.decompose(new THREE.Vector3(), q, sc);
-    anchor.matrix.compose(new THREE.Vector3(), q, sc);
+    anchor.matrix.compose(new THREE.Vector3(), q.invert(),
+      new THREE.Vector3(1 / sc.x, 1 / sc.y, 1 / sc.z));
 
+    // 여기서부터는 모델 자체의 단위다. 모델에 걸린 배율(단계별 크기 + 새끼의 통통함)이
+    // 그대로 옷에도 걸리므로, 방 기준으로 그린 치수를 그 배율로 나눠 둔다.
+    // 치수는 다 자란 아이(키 1.0) 기준으로 적어 둔다.
+    // u 는 그 치수를 모델 단위로 바꾸는 값 — 모델에 걸린 배율(단계별 크기, 새끼의 통통함)이
+    // 다시 곱해지므로, 옷은 아이 크기를 저절로 따라간다.
     const fit = OUTFIT_FIT[o.slot];
-    const k = HEIGHT[p.stage];
+    const u = HEIGHT[p.stage] / (e.model.scale.y || 1);
     const wrap = new THREE.Group();
-    wrap.scale.setScalar(k);
-    wrap.position.set(fit.off[0] * k, fit.off[1] * k, fit.off[2] * k);
+    wrap.scale.setScalar(fit.scale * u);
+    wrap.position.set(fit.off[0] * u, fit.off[1] * u, fit.off[2] * u);
     wrap.add(this._makeOutfit(id));
     anchor.add(wrap);
 

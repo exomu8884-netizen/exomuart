@@ -1,11 +1,11 @@
 // 유저가 누르는 것들. 시간은 sim.js 가 흘리고, 여기서는 그 순간의 변화만 준다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795082655';
-import { foodOf, breedOf, outfitOf } from './data.js?v=1795082655';
-import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1795082655';
-import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1795082655';
-import { rollWalkEvent } from './events.js?v=1795082655';
-import * as dolls from './dolls.js?v=1795082655';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795083327';
+import { foodOf, breedOf, outfitOf } from './data.js?v=1795083327';
+import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1795083327';
+import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1795083327';
+import { rollWalkEvent } from './events.js?v=1795083327';
+import * as dolls from './dolls.js?v=1795083327';
 
 export const ok = (message = null) => ({ ok: true, message });
 export const no = (message) => ({ ok: false, message });
