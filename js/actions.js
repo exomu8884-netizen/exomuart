@@ -1,11 +1,11 @@
 // 유저가 누르는 것들. 시간은 sim.js 가 흘리고, 여기서는 그 순간의 변화만 준다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795086114';
-import { foodOf, breedOf, outfitOf } from './data.js?v=1795086114';
-import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1795086114';
-import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1795086114';
-import { rollWalkEvent } from './events.js?v=1795086114';
-import * as dolls from './dolls.js?v=1795086114';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795086502';
+import { foodOf, breedOf, outfitOf } from './data.js?v=1795086502';
+import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1795086502';
+import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1795086502';
+import { rollWalkEvent } from './events.js?v=1795086502';
+import * as dolls from './dolls.js?v=1795086502';
 
 export const ok = (message = null) => ({ ok: true, message });
 export const no = (message) => ({ ok: false, message });
@@ -353,10 +353,12 @@ export function wearOutfit(s, p, id) {
 
   let moved = '';
   const other = s.pets.find(x => x !== p && !x.dead && outfitAt(x, o.slot) === id);
-  if (other) { other.wear[o.slot] = ''; moved = `\n${other.name}이(가) 입고 있던 것을 벗겼습니다.`; }
+  if (other) { other.wear[o.slot] = ''; if (other.wearAt) delete other.wearAt[o.slot]; moved = `\n${other.name}이(가) 입고 있던 것을 벗겼습니다.`; }
 
   const before = outfitOf(p.wear[o.slot]);
   p.wear[o.slot] = id;
+  if (!p.wearAt) p.wearAt = {};
+  p.wearAt[o.slot] = s.dogClockHours;
   p.mood = clamp(p.mood + (o.mood || 0));
   return ok(`${p.name}에게 ${before ? before.name + ' 대신 ' : ''}${o.name}을(를) 입혔습니다.${moved}`);
 }
@@ -367,6 +369,7 @@ export function takeOffOutfit(s, p, slot) {
   if (!id) return no('벗길 옷이 없습니다.');
   const o = outfitOf(id);
   p.wear[slot] = '';
+  if (p.wearAt) delete p.wearAt[slot];
   return ok(`${o ? o.name : '옷'}을(를) 벗겼습니다.`);
 }
 
@@ -422,6 +425,7 @@ export function newPet({ breedId, name, now, ageOffsetDays, bornHere = false, pa
     lastPlayAt: 0, playStreak: 0, lastPatAt: 0, patStreak: 0, lastWalkAt: 0,
 
     wear: {},        // 자리별로 입은 옷 — { neck, body, head }
+    wearAt: {},      // 그 옷을 입힌 때 (개의 시계)
     female: Math.random() < 0.5,
     pregnantDue: 0, mateName: '', mateBreedId: '', litterSize: 0,
     bornHere, parentNote,

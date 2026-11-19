@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1795086114';
-import { breedOf, outfitOf } from './data.js?v=1795086114';
-import { nightDepth } from './sim.js?v=1795086114';
+import { T, Stage, Illness } from './tuning.js?v=1795086502';
+import { breedOf, outfitOf } from './data.js?v=1795086502';
+import { nightDepth } from './sim.js?v=1795086502';
 
 // 옷.
 // 원통이나 고깔을 몸에 얹으면 어떻게 해도 겉돈다 — 털이 둥글어서 묻히거나 통처럼 보인다.
@@ -16,7 +16,7 @@ const OUTFIT_SPEC = {
   bandana: { wrap: [0.575, 0.735], color: 0xf4c430, extra: 'scarf', bone: 'neck' },
   bowtie: { wrap: [0.585, 0.725], color: 0x8d2167, extra: 'bow', bone: 'neck' },
   vest: { wrap: [0.30, 0.66], color: 0x1b3168, trim: 0x8ea9db },
-  raincoat: { wrap: [0.24, 0.68], color: 0xffcc19, trim: 0xf29b11 },
+  raincoat: { wrap: [0.24, 0.68], color: 0xffcc19, trim: 0xf29b11, smooth: true },
   santa: { extra: 'hat', bone: 'head' },
 };
 
@@ -598,7 +598,7 @@ export class Room {
       const spec = OUTFIT_SPEC[id];
       if (!spec) continue;
       if (spec.wrap) {
-        const cloth = this._makeWrap(skin, spec.wrap, spec.color);
+        const cloth = this._makeWrap(skin, spec.wrap, spec.color, spec.smooth);
         if (cloth) { skin.parent.add(cloth); parts.push(cloth); }
       }
       if (spec.extra) {
@@ -630,7 +630,7 @@ export class Room {
     return tex;
   }
 
-  _makeWrap(skin, range, color) {
+  _makeWrap(skin, range, color, smooth) {
     const geo = skin.geometry;
     const pos = geo.attributes.position, nor = geo.attributes.normal, uv = geo.attributes.uv;
     const si = geo.attributes.skinIndex, sw = geo.attributes.skinWeight;
@@ -754,21 +754,22 @@ export class Room {
       return m;
     };
 
-    const base = this._mat(color, 1.0);
+    // 고무옷(우비)은 매끈하게, 나머지는 털실 짜임에 보풀 한 겹
+    const base = this._mat(color, smooth ? 0.42 : 1.0);
     base.side = THREE.DoubleSide;
-    base.bumpMap = tex;
-    base.bumpScale = 0.035;
-
-    const fuzz = this._mat(color, 1.0);
-    fuzz.side = THREE.DoubleSide;
-    fuzz.alphaMap = tex;
-    fuzz.transparent = true;
-    fuzz.alphaTest = 0.45;
-    fuzz.depthWrite = false;
+    if (!smooth) { base.bumpMap = tex; base.bumpScale = 0.035; }
 
     const group = new THREE.Group();
     group.add(layer(0, base));
-    group.add(layer(0.006, fuzz));
+    if (!smooth) {
+      const fuzz = this._mat(color, 1.0);
+      fuzz.side = THREE.DoubleSide;
+      fuzz.alphaMap = tex;
+      fuzz.transparent = true;
+      fuzz.alphaTest = 0.45;
+      fuzz.depthWrite = false;
+      group.add(layer(0.006, fuzz));
+    }
     return group;
   }
 

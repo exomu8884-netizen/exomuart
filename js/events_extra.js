@@ -1,10 +1,10 @@
 // 나머지 이벤트 — 즐거운 일, 가족(짝·출산·대 잇기), 인형, 나이, 곤란한 일.
 // events.js 의 표에 밀어 넣는다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795086114';
-import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1795086114';
-import { CATALOG, okChoice } from './events.js?v=1795086114';
-import { outfitOf } from './data.js?v=1795086114';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795086502';
+import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1795086502';
+import { CATALOG, okChoice } from './events.js?v=1795086502';
+import { outfitOf } from './data.js?v=1795086502';
 
 let L = null;
 export function linkExtra(lib) { L = lib; }
@@ -16,6 +16,19 @@ const rnd = Math.random;
 const worn = (p) => ['body', 'neck', 'head']
   .map(k => outfitOf(((p && p.wear) || {})[k])).filter(Boolean);
 const wearing = (p, key) => worn(p).some(o => o[key]);
+
+/** 그 자리의 옷을 입은 지 몇 (개의) 시간 됐나 */
+const wearHours = (s, p, k) => {
+  const at = ((p && p.wearAt) || {})[k];
+  return at == null ? 0 : Math.max(0, (s.dogClockHours || 0) - at);
+};
+/** 입은 지 lo~hi 시간 된 옷 하나 (가장 오래된 것부터) */
+const wornAged = (s, p, lo, hi) => ['body', 'neck', 'head']
+  .map(k => ({ slot: k, o: outfitOf(((p && p.wear) || {})[k]), h: wearHours(s, p, k) }))
+  .filter(x => x.o && x.h >= lo && (hi == null || x.h <= hi))
+  .sort((a, b) => b.h - a.h)[0] || null;
+/** 옷을 벗긴다 */
+const strip = (p, slot) => { if (p.wear) p.wear[slot] = ''; if (p.wearAt) delete p.wearAt[slot]; };
 
 /** 선택지가 하나뿐인 "좋은 일"을 짧게 적기 위한 도구 */
 const nice = (id, title, chance, cooldown, when, body, label, apply) =>
@@ -896,6 +909,90 @@ export function buildExtraEvents(sfx) {
           },
         },
         okChoice('나중에 간다'),
+      ],
+    },
+
+    // ── 옷 ──────────────────────────────────────────────
+    {
+      id: 'outfit_stuffy', title: '옷을 답답해 합니다', kind: 'ambient', chance: 0.018, cooldown: 72,
+      when: (s, p) => atHome(p) && !p.asleep && !!wornAged(s, p, 72),
+      body: (s, p) => {
+        const x = wornAged(s, p, 72);
+        const days = Math.max(1, Math.floor((x ? x.h : 0) / 24));
+        return `${p.name}이(가) 자꾸 몸을 비틉니다.\n${x ? x.o.name : '옷'}을(를) 입은 지 개의 ${days}일째입니다.`;
+      },
+      choices: (s, p) => {
+        const x = wornAged(s, p, 72);
+        return [
+          okChoice('벗겨 준다', (s2, p2) => {
+            if (x) strip(p2, x.slot);
+            p2.mood = add(p2.mood + 14); p2.clean = add(p2.clean + 4);
+            play('pop');
+            return `${x ? x.o.name : '옷'}을(를) 벗기자 바닥에 벌렁 눕습니다.`;
+          }),
+          okChoice('조금만 더 둔다', (s2, p2) => {
+            p2.mood = add(p2.mood - 10);
+            if (rnd() < 0.4 && x) { strip(p2, x.slot); return '한참 뒤척이더니 제가 벗어 버렸습니다.'; }
+            return '못마땅한 얼굴로 돌아앉았습니다.';
+          }),
+        ];
+      },
+    },
+    {
+      id: 'outfit_chew', title: '옷을 물어뜯고 있습니다', kind: 'ambient', chance: 0.01, cooldown: 96,
+      when: (s, p) => atHome(p) && !p.asleep && p.stage <= Stage.Junior && !!wornAged(s, p, 10),
+      body: (s, p) => {
+        const x = wornAged(s, p, 10);
+        return `${p.name}이(가) ${x ? x.o.name : '옷'}을(를) 물고 늘어집니다.\n벗으려는 건지 노는 건지 모르겠습니다.`;
+      },
+      choices: (s, p) => {
+        const x = wornAged(s, p, 10);
+        return [
+          okChoice('벗겨 준다', (s2, p2) => {
+            if (x) strip(p2, x.slot);
+            p2.mood = add(p2.mood + 10);
+            return '벗기자마자 입에 물고 한 바퀴 돌았습니다.';
+          }),
+          okChoice('안 된다고 한다', (s2, p2) => {
+            p2.mood = add(p2.mood - 6); p2.social = add(p2.social + 4);
+            play('dong');
+            return '눈치를 보더니 놓습니다. 대신 발로 긁습니다.';
+          }),
+        ];
+      },
+    },
+    nice('outfit_show', '새 옷을 뽐냅니다', 0.03, 36,
+      (s, p) => atHome(p) && !p.asleep && !!wornAged(s, p, 0, 5),
+      (s, p) => {
+        const x = wornAged(s, p, 0, 5);
+        return `${x ? x.o.name : '새 옷'}을(를) 입은 ${p.name}이(가) 방을 한 바퀴 돕니다.\n걸음이 평소보다 큽니다.`;
+      },
+      '예쁘다고 해 준다',
+      (s, p) => { p.mood = add(p.mood + 12); p.social = add(p.social + 6); play('tail'); return '알아듣는 것처럼 가슴을 폅니다.'; }),
+    nice('outfit_twisted', '옷이 말려 올라갔습니다', 0.012, 60,
+      (s, p) => atHome(p) && !p.asleep && !!wornAged(s, p, 6),
+      (s, p) => {
+        const x = wornAged(s, p, 6);
+        return `뒹굴다가 ${x ? x.o.name : '옷'}이(가) 한쪽으로 말렸습니다.\n${p.name}은(는) 모르는 눈치입니다.`;
+      },
+      '바로잡아 준다',
+      (s, p) => { p.mood = add(p.mood + 6); p.clean = add(p.clean + 3); return '매무새를 잡아 주니 가만히 서 있습니다.'; }),
+    {
+      id: 'walk_outfit_praise', title: '옷을 칭찬받았습니다', kind: 'walk', cooldown: 60,
+      when: (s, p) => worn(p).length > 0,
+      body: (s, p) => {
+        const list = worn(p).map(o => o.name).join(' · ');
+        return `지나가던 사람이 걸음을 멈춥니다.\n「어머, 옷 좀 봐.」 ${list} 차림을 한참 봅니다.`;
+      },
+      choices: () => [
+        okChoice('고맙다고 한다', (s, p) => {
+          p.social = add(p.social + 10); p.mood = add(p.mood + 10);
+          return '사진도 한 장 찍어 갔습니다.';
+        }),
+        okChoice('쑥스러워 지나간다', (s, p) => {
+          p.mood = add(p.mood + 5);
+          return '뒤에서 계속 쳐다보는 게 느껴졌습니다.';
+        }),
       ],
     },
   ];
