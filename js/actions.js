@@ -1,11 +1,11 @@
 // 유저가 누르는 것들. 시간은 sim.js 가 흘리고, 여기서는 그 순간의 변화만 준다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795085153';
-import { foodOf, breedOf, outfitOf } from './data.js?v=1795085153';
-import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1795085153';
-import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1795085153';
-import { rollWalkEvent } from './events.js?v=1795085153';
-import * as dolls from './dolls.js?v=1795085153';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795086114';
+import { foodOf, breedOf, outfitOf } from './data.js?v=1795086114';
+import { mealsOf, takeMeal, addMeals, livingCount, uid, nowUnix } from './save.js?v=1795086114';
+import { realSecondsFor, dogHoursBetween, setIllness } from './sim.js?v=1795086114';
+import { rollWalkEvent } from './events.js?v=1795086114';
+import * as dolls from './dolls.js?v=1795086114';
 
 export const ok = (message = null) => ({ ok: true, message });
 export const no = (message) => ({ ok: false, message });
@@ -331,31 +331,43 @@ export function buyOutfit(s, id) {
   return ok(`${o.name}을(를) 샀습니다.`);
 }
 
-/** 입힌다. id 가 비면 벗긴다. 옷은 한 벌뿐이라 다른 아이가 입고 있으면 그 아이가 벗는다. */
+// 옷은 자리마다 한 벌씩 입는다 — 목(반다나·넥타이) · 몸(조끼·우비) · 머리(모자).
+// 그래서 모자를 쓴 채로 조끼를 입을 수 있다.
+
+export const outfitAt = (p, slot) => ((p && p.wear) || {})[slot] || '';
+export const wornIds = (p) => ['body', 'neck', 'head'].map(k => outfitAt(p, k)).filter(Boolean);
+export const wornList = (p) => wornIds(p).map(outfitOf).filter(Boolean);
+/** 입은 옷 중에 이 쓸모(warm·rain·photo)를 가진 게 있는가 */
+export const isWearing = (p, key) => wornList(p).some(o => o[key]);
+
+/** 입힌다. 같은 자리에 다른 옷이 있으면 갈아입는다. 옷은 한 벌뿐이라 남이 입고 있으면 그 아이가 벗는다. */
 export function wearOutfit(s, p, id) {
   if (!p) return no('입힐 아이가 없습니다.');
   if (p.dead) return no('');
   if (p.lost) return no(`${p.name}은(는) 집에 없습니다.`);
 
-  if (!id) {
-    if (!p.outfit) return no(`${p.name}은(는) 아무것도 안 입고 있습니다.`);
-    const was = outfitOf(p.outfit);
-    p.outfit = '';
-    return ok(`${was ? was.name : '옷'}을(를) 벗겼습니다.`);
-  }
-
   const o = outfitOf(id);
   if (!o || !hasOutfit(s, id)) return no('그런 옷이 없습니다.');
-  if (p.outfit === id) return no(`${p.name}이(가) 이미 입고 있습니다.`);
+  if (!p.wear) p.wear = {};
+  if (p.wear[o.slot] === id) return no(`${p.name}이(가) 이미 입고 있습니다.`);
 
   let moved = '';
-  const other = s.pets.find(x => x !== p && !x.dead && x.outfit === id);
-  if (other) { other.outfit = ''; moved = `
-${other.name}이(가) 입고 있던 것을 벗겼습니다.`; }
+  const other = s.pets.find(x => x !== p && !x.dead && outfitAt(x, o.slot) === id);
+  if (other) { other.wear[o.slot] = ''; moved = `\n${other.name}이(가) 입고 있던 것을 벗겼습니다.`; }
 
-  p.outfit = id;
+  const before = outfitOf(p.wear[o.slot]);
+  p.wear[o.slot] = id;
   p.mood = clamp(p.mood + (o.mood || 0));
-  return ok(`${p.name}에게 ${o.name}을(를) 입혔습니다.${moved}`);
+  return ok(`${p.name}에게 ${before ? before.name + ' 대신 ' : ''}${o.name}을(를) 입혔습니다.${moved}`);
+}
+
+/** 그 자리에 입은 옷을 벗긴다 */
+export function takeOffOutfit(s, p, slot) {
+  const id = outfitAt(p, slot);
+  if (!id) return no('벗길 옷이 없습니다.');
+  const o = outfitOf(id);
+  p.wear[slot] = '';
+  return ok(`${o ? o.name : '옷'}을(를) 벗겼습니다.`);
 }
 
 // ── 분양 ──────────────────────────────────────────────────
@@ -409,7 +421,7 @@ export function newPet({ breedId, name, now, ageOffsetDays, bornHere = false, pa
     lastFoodId: '', sameFoodStreak: 0,
     lastPlayAt: 0, playStreak: 0, lastPatAt: 0, patStreak: 0, lastWalkAt: 0,
 
-    outfit: '',
+    wear: {},        // 자리별로 입은 옷 — { neck, body, head }
     female: Math.random() < 0.5,
     pregnantDue: 0, mateName: '', mateBreedId: '', litterSize: 0,
     bornHere, parentNote,

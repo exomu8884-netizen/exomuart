@@ -3,8 +3,9 @@
 // 현실 시간은 저장해 둔 lastSeen(UTC 초)과 기기 시계의 차이로 잰다.
 // 서버를 안 쓰므로 기기 시계를 앞으로 돌리면 시간이 건너뛴다. 뒤로 돌리면 그냥 멈춘다.
 
-import { T } from './tuning.js?v=1795085153';
-import { addToShelf } from './dolls.js?v=1795085153';
+import { T } from './tuning.js?v=1795086114';
+import { outfitOf } from './data.js?v=1795086114';
+import { addToShelf } from './dolls.js?v=1795086114';
 
 const KEY = 'dulli_save_v1';
 
@@ -85,7 +86,13 @@ function repair(s) {
     if (p.temperament == null) p.temperament = '';
     if (!p.name) p.name = '이름 없음';
     if (!(p.ageOffsetDays > 0)) p.ageOffsetDays = T.adoptedAgeDays;
-    if (typeof p.outfit !== 'string') p.outfit = '';
+    // 옷은 자리(목·몸·머리)마다 한 벌씩 입는다. 예전 저장은 한 벌만 있었다.
+    if (!p.wear || typeof p.wear !== 'object') p.wear = {};
+    if (typeof p.outfit === 'string' && p.outfit) {
+      const o = outfitOf(p.outfit);
+      if (o && !p.wear[o.slot]) p.wear[o.slot] = p.outfit;
+      p.outfit = '';
+    }
   }
 
   if (!(s.slots >= 1)) s.slots = T.startingSlots;

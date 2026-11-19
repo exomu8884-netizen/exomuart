@@ -4,17 +4,17 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1795085153';
-import { breedOf, outfitOf } from './data.js?v=1795085153';
-import { nightDepth } from './sim.js?v=1795085153';
+import { T, Stage, Illness } from './tuning.js?v=1795086114';
+import { breedOf, outfitOf } from './data.js?v=1795086114';
+import { nightDepth } from './sim.js?v=1795086114';
 
 // 옷.
 // 원통이나 고깔을 몸에 얹으면 어떻게 해도 겉돈다 — 털이 둥글어서 묻히거나 통처럼 보인다.
 // 그래서 옷감은 '몸의 겉면을 그대로 떠서' 만든다. 같은 뼈대에 묶으므로 모양도 움직임도 몸을 따라간다.
 // wrap 은 덮을 자리다. 몸을 꼬리(0)에서 코(1)까지로 보고 그 사이 구간을 적는다.
 const OUTFIT_SPEC = {
-  bandana: { wrap: [0.60, 0.70], color: 0xf4c430, extra: 'scarf', bone: 'neck' },
-  bowtie: { wrap: [0.62, 0.69], color: 0x8d2167, extra: 'bow', bone: 'neck' },
+  bandana: { wrap: [0.575, 0.735], color: 0xf4c430, extra: 'scarf', bone: 'neck' },
+  bowtie: { wrap: [0.585, 0.725], color: 0x8d2167, extra: 'bow', bone: 'neck' },
   vest: { wrap: [0.30, 0.66], color: 0x1b3168, trim: 0x8ea9db },
   raincoat: { wrap: [0.24, 0.68], color: 0xffcc19, trim: 0xf29b11 },
   santa: { extra: 'hat', bone: 'head' },
@@ -575,47 +575,67 @@ export class Room {
   // ── 옷 ──────────────────────────────────────────────────
 
   _syncOutfit(e, p) {
-    const id = p.outfit || '';
-    if (e.outfitId === id) return;
-    e.outfitId = id;
+    // 자리마다 한 벌씩. 몸 → 목 → 머리 순으로 입힌다.
+    const w = p.wear || {};
+    const ids = ['body', 'neck', 'head'].map(k => w[k]).filter(Boolean);
+    const key = ids.join('|');
+    if (e.outfitKey === key) return;
+    e.outfitKey = key;
 
     for (const part of (e.outfit || [])) {
       part.parent && part.parent.remove(part);
       part.traverse(o => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
     }
     e.outfit = null;
-
-    const spec = id && OUTFIT_SPEC[id];
-    if (!spec || !e.model) return;
+    if (!ids.length || !e.model) return;
 
     let skin = null;
     e.model.traverse(o => { if (!skin && o.isSkinnedMesh) skin = o; });
     if (!skin) return;
 
     const parts = [];
-    if (spec.wrap) {
-      const cloth = this._makeWrap(skin, spec.wrap, spec.color);
-      if (cloth) { skin.parent.add(cloth); parts.push(cloth); }
-    }
-    if (spec.extra) {
-      const anchor = this._boneAnchor(e, p, skin, spec.bone, EXTRA_FIT[spec.extra].off);
-      // 장식은 anchor 안쪽(크기·자리를 맞춰 둔 칸)에 넣어야 한다
-      if (anchor) { anchor.children[0].add(this._makeExtra(spec.extra, spec.color)); parts.push(anchor); }
+    for (const id of ids) {
+      const spec = OUTFIT_SPEC[id];
+      if (!spec) continue;
+      if (spec.wrap) {
+        const cloth = this._makeWrap(skin, spec.wrap, spec.color);
+        if (cloth) { skin.parent.add(cloth); parts.push(cloth); }
+      }
+      if (spec.extra) {
+        const anchor = this._boneAnchor(e, p, skin, spec.bone, EXTRA_FIT[spec.extra].off);
+        // 장식은 anchor 안쪽(크기·자리를 맞춰 둔 칸)에 넣어야 한다
+        if (anchor) { anchor.children[0].add(this._makeExtra(spec.extra, spec.color)); parts.push(anchor); }
+      }
     }
     if (parts.length) e.outfit = parts;
   }
 
-  /**
-   * 몸의 겉면을 그대로 떠서 옷감을 만든다.
-   * 겉면을 베꼈으니 모양이 몸에 딱 맞고, 같은 뼈대에 묶으니 움직임도 똑같이 따라간다.
-   * range 는 덮을 자리 — 몸을 꼬리(0)에서 코(1)까지로 보고 그 사이 구간을 적는다.
-   */
+  /** 털실 느낌을 내는 자잘한 무늬. 한 번 만들어 두고 옷마다 돌려 쓴다. */
+  _furTexture() {
+    if (this._furTex) return this._furTex;
+    const c = document.createElement('canvas');
+    c.width = c.height = 128;
+    const x = c.getContext('2d');
+    x.fillStyle = '#000';
+    x.fillRect(0, 0, 128, 128);
+    for (let i = 0; i < 5200; i++) {
+      const g = 130 + Math.floor(Math.random() * 125);
+      x.fillStyle = `rgb(${g},${g},${g})`;
+      x.fillRect(Math.random() * 128, Math.random() * 128, 1.25, 1.25);
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(22, 22);
+    this._furTex = tex;
+    return tex;
+  }
+
   _makeWrap(skin, range, color) {
     const geo = skin.geometry;
-    const pos = geo.attributes.position, nor = geo.attributes.normal;
+    const pos = geo.attributes.position, nor = geo.attributes.normal, uv = geo.attributes.uv;
     const si = geo.attributes.skinIndex, sw = geo.attributes.skinWeight;
     const idx = geo.index;
-    if (!pos || !nor || !si || !sw || !idx) return null;
+    if (!pos || !nor || !uv || !si || !sw || !idx) return null;
 
     const bones = skin.skeleton.bones;
     const bindPos = (name) => {
@@ -649,10 +669,11 @@ export class Room {
 
     // 삼각형을 통째로 넣고 빼면 경계가 톱니처럼 된다.
     // 경계에 걸친 삼각형은 잘라서 쓴다 — 그래야 밑단이 곧게 떨어진다.
-    const P = [], N = [], SI = [], SW = [], I = [];
+    const P = [], N = [], U = [], SI = [], SW = [], I = [];
     const vert = (i) => ({
       p: new THREE.Vector3().fromBufferAttribute(pos, i),
       n: new THREE.Vector3().fromBufferAttribute(nor, i),
+      u: new THREE.Vector2().fromBufferAttribute(uv, i),
       s: [si.getX(i), si.getY(i), si.getZ(i), si.getW(i),
         sw.getX(i), sw.getY(i), sw.getZ(i), sw.getW(i)],
       t: t[i], w: w[i],
@@ -660,6 +681,7 @@ export class Room {
     const mix = (a, b, r) => ({
       p: a.p.clone().lerp(b.p, r),
       n: a.n.clone().lerp(b.n, r),
+      u: a.u.clone().lerp(b.u, r),
       s: r < 0.5 ? a.s : b.s,          // 뼈 번호는 섞을 수 없다. 가까운 쪽을 따른다
       t: a.t + (b.t - a.t) * r,
       w: a.w + (b.w - a.w) * r,
@@ -679,6 +701,7 @@ export class Room {
       const nn = q.n.clone().normalize();
       P.push(q.p.x + nn.x * WRAP_LIFT, q.p.y + nn.y * WRAP_LIFT, q.p.z + nn.z * WRAP_LIFT);
       N.push(nn.x, nn.y, nn.z);
+      U.push(q.u.x, q.u.y);
       SI.push(q.s[0], q.s[1], q.s[2], q.s[3]);
       SW.push(q.s[4], q.s[5], q.s[6], q.s[7]);
       return P.length / 3 - 1;
@@ -703,23 +726,50 @@ export class Room {
     }
     if (I.length < 60) return null;
 
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
-    g.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
-    g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(SI, 4));
-    g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(SW, 4));
-    g.setIndex(I);
+    // 털옷으로 보이게 — 같은 옷감을 조금씩 띄워 세 겹 올리고, 바깥 두 겹은
+    // 자잘한 무늬로 군데군데 비워 둔다. 가장자리에 보풀이 선다.
+    const tex = this._furTexture();
+    const layer = (lift, mat) => {
+      const q = new Float32Array(P.length);
+      for (let i = 0; i < P.length; i += 3) {
+        q[i] = P[i] + N[i] * lift;
+        q[i + 1] = P[i + 1] + N[i + 1] * lift;
+        q[i + 2] = P[i + 2] + N[i + 2] * lift;
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(q, 3));
+      g.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
+      g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2));
+      g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(SI, 4));
+      g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(SW, 4));
+      g.setIndex(I);
 
-    const mat = this._mat(color, 0.95);
-    mat.side = THREE.DoubleSide;
-    const cloth = new THREE.SkinnedMesh(g, mat);
-    cloth.position.copy(skin.position);
-    cloth.quaternion.copy(skin.quaternion);
-    cloth.scale.copy(skin.scale);
-    cloth.castShadow = true;
-    cloth.frustumCulled = false;
-    cloth.bind(skin.skeleton, skin.bindMatrix);
-    return cloth;
+      const m = new THREE.SkinnedMesh(g, mat);
+      m.position.copy(skin.position);
+      m.quaternion.copy(skin.quaternion);
+      m.scale.copy(skin.scale);
+      m.castShadow = true;
+      m.frustumCulled = false;
+      m.bind(skin.skeleton, skin.bindMatrix);
+      return m;
+    };
+
+    const base = this._mat(color, 1.0);
+    base.side = THREE.DoubleSide;
+    base.bumpMap = tex;
+    base.bumpScale = 0.035;
+
+    const fuzz = this._mat(color, 1.0);
+    fuzz.side = THREE.DoubleSide;
+    fuzz.alphaMap = tex;
+    fuzz.transparent = true;
+    fuzz.alphaTest = 0.45;
+    fuzz.depthWrite = false;
+
+    const group = new THREE.Group();
+    group.add(layer(0, base));
+    group.add(layer(0.006, fuzz));
+    return group;
   }
 
   /**

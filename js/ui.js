@@ -1,18 +1,18 @@
 // 화면 — 위쪽 띠, 아래쪽 판, 덮는 창들.
 // 열 때 새로 그리고 닫을 때 지운다. 상태가 남지 않아 헷갈릴 일이 없다.
 
-import { T, Stage, Illness, won } from './tuning.js?v=1795085153';
-import { BREEDS, FOODS, OUTFITS, breedOf, foodOf, outfitOf, temperName, temperStory, stageName } from './data.js?v=1795085153';
+import { T, Stage, Illness, won } from './tuning.js?v=1795086114';
+import { BREEDS, FOODS, OUTFITS, breedOf, foodOf, outfitOf, temperName, temperStory, stageName } from './data.js?v=1795086114';
 import {
   findPet, livingCount, mealsOf, atHome, totalMeals, exportSave, importSave,
-} from './save.js?v=1795085153';
-import * as sim from './sim.js?v=1795085153';
-import * as act from './actions.js?v=1795085153';
-import * as breed from './breeding.js?v=1795085153';
-import * as dolls from './dolls.js?v=1795085153';
-import * as ev from './events.js?v=1795085153';
-import sfx from './sfx.js?v=1795085153';
-import { josa } from './josa.js?v=1795085153';
+} from './save.js?v=1795086114';
+import * as sim from './sim.js?v=1795086114';
+import * as act from './actions.js?v=1795086114';
+import * as breed from './breeding.js?v=1795086114';
+import * as dolls from './dolls.js?v=1795086114';
+import * as ev from './events.js?v=1795086114';
+import sfx from './sfx.js?v=1795086114';
+import { josa } from './josa.js?v=1795086114';
 
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => {
@@ -132,8 +132,8 @@ export class UI {
     const t = temperName(p.temperament);
     $('petname').innerHTML = `${p.name}<span class="sub">${t ? t + ' ' : ''}${b.name} · ${sim.ageText(p, now)}</span>`;
     // 입고 있는 옷도 한 줄에 같이 적는다
-    const worn = outfitOf(p.outfit);
-    $('petnote').textContent = josa(this._noteFor(p, now) + (worn && !p.lost ? ` · ${worn.name}` : ''));
+    const worn = act.wornList(p).map(o => o.name).join(' · ');
+    $('petnote').textContent = josa(this._noteFor(p, now) + (worn && !p.lost ? ` · ${worn}` : ''));
 
     for (const k in this.barEls) this._setBar(k, p[k]);
 
@@ -440,8 +440,8 @@ export class UI {
 
     for (const o of OUTFITS) {
       const mine = act.hasOutfit(s, o.id);
-      const onMe = who && who.outfit === o.id;
-      const onOther = s.pets.find(x => !x.dead && x.outfit === o.id && x !== who);
+      const onMe = who && act.outfitAt(who, o.slot) === o.id;
+      const onOther = s.pets.find(x => !x.dead && act.outfitAt(x, o.slot) === o.id && x !== who);
 
       const card = el('div', 'item');
       card.appendChild(el('h3', null, o.name + (onMe ? '  (입고 있습니다)' : onOther ? `  (${onOther.name}이(가) 입고 있습니다)` : '')));
@@ -457,7 +457,7 @@ export class UI {
           this.store();
         });
       } else if (onMe) {
-        this._btn(card, '벗긴다', '', () => this._dress(who, ''));
+        this._btn(card, '벗긴다', '', () => this._undress(who, o.slot));
       } else {
         this._btn(card, who ? `${who.name}에게 입힌다` : '입힐 아이가 없습니다', 'pink',
           () => this._dress(who, o.id), !who);
@@ -482,6 +482,15 @@ export class UI {
       });
       body.appendChild(card);
     }
+  }
+
+  _undress(p, slot, back) {
+    const r = act.takeOffOutfit(this.S, p, slot);
+    sfx.play(r.ok ? 'pop' : 'dong');
+    this.toast(r.message);
+    this.game.save();
+    this.refresh();
+    (back || (() => this.store()))();
   }
 
   _dress(p, id, back) {
@@ -510,21 +519,30 @@ export class UI {
       return;
     }
 
-    const worn = outfitOf(p.outfit);
+    const worn = act.wornList(p).map(o => o.name).join(' · ');
     body.appendChild(el('p', 'small', worn
-      ? `지금은 ${worn.name}을(를) 입고 있습니다.`
+      ? `지금 입은 것: ${worn}`
       : `${p.name}은(는) 지금 아무것도 안 입고 있습니다.`));
+    body.appendChild(el('p', 'small', '목·몸·머리에 한 벌씩, 세 가지를 같이 입을 수 있습니다.'));
 
-    for (const o of mine) {
-      const onMe = p.outfit === o.id;
-      const other = s.pets.find(x => !x.dead && x !== p && x.outfit === o.id);
+    for (const [slot, label] of [['neck', '목'], ['body', '몸'], ['head', '머리']]) {
+      const here = mine.filter(o => o.slot === slot);
+      if (!here.length) continue;
+      body.appendChild(el('h2', null, label));
 
-      const card = el('div', 'item');
-      card.appendChild(el('h3', null, o.name + (onMe ? '  (입고 있습니다)' : '')));
-      card.appendChild(el('div', 'desc', other ? `${other.name}이(가) 입고 있습니다` : o.blurb));
-      this._btn(card, onMe ? '벗긴다' : other ? '가져와 입힌다' : '입힌다', onMe ? '' : 'pink',
-        () => this._dress(p, onMe ? '' : o.id, () => this.dressPicker(p)));
-      body.appendChild(card);
+      for (const o of here) {
+        const onMe = act.outfitAt(p, slot) === o.id;
+        const other = s.pets.find(x => !x.dead && x !== p && act.outfitAt(x, slot) === o.id);
+
+        const card = el('div', 'item');
+        card.appendChild(el('h3', null, o.name + (onMe ? '  (입고 있습니다)' : '')));
+        card.appendChild(el('div', 'desc', other ? `${other.name}이(가) 입고 있습니다` : o.blurb));
+        this._btn(card, onMe ? '벗긴다' : other ? '가져와 입힌다' : '입힌다', onMe ? '' : 'pink',
+          () => (onMe
+            ? this._undress(p, slot, () => this.dressPicker(p))
+            : this._dress(p, o.id, () => this.dressPicker(p))));
+        body.appendChild(card);
+      }
     }
 
     const more = el('div', 'item');

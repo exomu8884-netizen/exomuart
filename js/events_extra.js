@@ -1,10 +1,10 @@
 // 나머지 이벤트 — 즐거운 일, 가족(짝·출산·대 잇기), 인형, 나이, 곤란한 일.
 // events.js 의 표에 밀어 넣는다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795085153';
-import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1795085153';
-import { CATALOG, okChoice } from './events.js?v=1795085153';
-import { outfitOf } from './data.js?v=1795085153';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795086114';
+import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1795086114';
+import { CATALOG, okChoice } from './events.js?v=1795086114';
+import { outfitOf } from './data.js?v=1795086114';
 
 let L = null;
 export function linkExtra(lib) { L = lib; }
@@ -12,8 +12,10 @@ export function linkExtra(lib) { L = lib; }
 const add = clamp;
 const rnd = Math.random;
 
-/** 입은 옷이 이 일에 쓸모가 있는가 (warm · rain · photo) */
-const wearing = (p, key) => { const o = outfitOf(p.outfit); return !!(o && o[key]); };
+/** 입은 옷 중에 이 일에 쓸모가 있는 게 있는가 (warm · rain · photo) */
+const worn = (p) => ['body', 'neck', 'head']
+  .map(k => outfitOf(((p && p.wear) || {})[k])).filter(Boolean);
+const wearing = (p, key) => worn(p).some(o => o[key]);
 
 /** 선택지가 하나뿐인 "좋은 일"을 짧게 적기 위한 도구 */
 const nice = (id, title, chance, cooldown, when, body, label, apply) =>
@@ -777,7 +779,8 @@ export function buildExtraEvents(sfx) {
         // 옷장에 조끼가 있으면 꺼내 입히고, 없으면 사서 입힌다. 둘 다 진짜로 입는다.
         (s.closet || []).includes('vest')
           ? okChoice('니트 조끼를 꺼내 입힌다', (s2, p2) => {
-            p2.outfit = 'vest'; p2.health = add(p2.health + 10); p2.mood = add(p2.mood + 6); play('ding');
+            if (!p2.wear) p2.wear = {};
+            p2.wear.body = 'vest'; p2.health = add(p2.health + 10); p2.mood = add(p2.mood + 6); play('ding');
             return '조끼를 입히니 금세 몸이 풀렸습니다.';
           })
           : {
@@ -785,7 +788,8 @@ export function buildExtraEvents(sfx) {
             apply: (s2, p2) => {
               if (!Array.isArray(s2.closet)) s2.closet = [];
               if (!s2.closet.includes('vest')) s2.closet.push('vest');
-              p2.outfit = 'vest'; p2.health = add(p2.health + 10); p2.mood = add(p2.mood + 6); play('coin');
+              if (!p2.wear) p2.wear = {};
+              p2.wear.body = 'vest'; p2.health = add(p2.health + 10); p2.mood = add(p2.mood + 6); play('coin');
               return '처음엔 굳어 있더니 금세 익숙해졌습니다.';
             },
           },
@@ -834,12 +838,12 @@ export function buildExtraEvents(sfx) {
         {
           label: `한 장 내 본다 (${won(10000)})`, cost: 10000,
           apply: (s, p) => {
-            const dressed = outfitOf(p.outfit);
-            const win = rnd() < 0.3 + p.mood / 400 + (dressed ? dressed.photo || 0 : 0);
+            const dressed = worn(p);
+            const win = rnd() < 0.3 + p.mood / 400 + dressed.reduce((a, o) => a + (o.photo || 0), 0);
             if (win) {
               s.money += 150000; play('coin');
               return `${p.name} 사진이 뽑혔습니다. 상금 150,000원이 들어왔습니다.`
-                + (dressed ? `\n${dressed.name} 차림이 눈에 띄었답니다.` : '');
+                + (dressed.length ? `\n${dressed.map(o => o.name).join(' · ')} 차림이 눈에 띄었답니다.` : '');
             }
             p.mood = add(p.mood + 6);
             return '떨어졌습니다. 그래도 사진은 잘 나왔습니다.';
