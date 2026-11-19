@@ -115,6 +115,8 @@ html, body {
 }
 .ab.primary { background: #e8894f; color: #fff; }
 .ab.muted { color: #9b8f95; }
+/* 되돌리기 어려운 일은 한 줄을 통째로 쓰되, 눈에 덜 띄게 둔다 */
+.ab.full { grid-column: span 4; background: #f7eef2; font-weight: 600; }
 /* 아이가 아니라 집에 하는 일 — 둘이 한 줄을 나눠 쓰고 색을 달리한다 */
 .ab.wide { grid-column: span 2; background: #f7e3b8; color: #5a4a2a; }
 .ab:active { transform: translateY(1px); }

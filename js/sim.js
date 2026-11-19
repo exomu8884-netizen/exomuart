@@ -5,12 +5,12 @@
 //  · 돌봄 시계 — 켜 놓았을 때만 배속대로, 꺼 둔 동안은 훨씬 느리다.
 // 그리고 꺼 둔 동안에는 죽지 않는다. 자고 일어나니 떠나 있는 일은 없어야 한다.
 
-import { T, rate, Stage, Illness, clamp, won } from './tuning.js?v=1795071479';
-import { breedOf, temperName, temperStory, AXIS } from './data.js?v=1795071479';
-import { findPet, hasInCollection, uid } from './save.js?v=1795071479';
-import { stepDolls } from './dolls.js?v=1795071479';
-import { stepPregnancy } from './breeding.js?v=1795071479';
-import { rollEvents, pushEvent } from './events.js?v=1795071479';
+import { T, rate, Stage, Illness, clamp, won } from './tuning.js?v=1795082655';
+import { breedOf, temperName, temperStory, AXIS } from './data.js?v=1795082655';
+import { findPet, hasInCollection, uid } from './save.js?v=1795082655';
+import { stepDolls } from './dolls.js?v=1795082655';
+import { stepPregnancy } from './breeding.js?v=1795082655';
+import { rollEvents, pushEvent } from './events.js?v=1795082655';
 
 // ── 시간 환산 ─────────────────────────────────────────────
 

@@ -1,18 +1,18 @@
 // 화면 — 위쪽 띠, 아래쪽 판, 덮는 창들.
 // 열 때 새로 그리고 닫을 때 지운다. 상태가 남지 않아 헷갈릴 일이 없다.
 
-import { T, Stage, Illness, won } from './tuning.js?v=1795071479';
-import { BREEDS, FOODS, OUTFITS, breedOf, foodOf, outfitOf, temperName, temperStory, stageName } from './data.js?v=1795071479';
+import { T, Stage, Illness, won } from './tuning.js?v=1795082655';
+import { BREEDS, FOODS, OUTFITS, breedOf, foodOf, outfitOf, temperName, temperStory, stageName } from './data.js?v=1795082655';
 import {
   findPet, livingCount, mealsOf, atHome, totalMeals, exportSave, importSave,
-} from './save.js?v=1795071479';
-import * as sim from './sim.js?v=1795071479';
-import * as act from './actions.js?v=1795071479';
-import * as breed from './breeding.js?v=1795071479';
-import * as dolls from './dolls.js?v=1795071479';
-import * as ev from './events.js?v=1795071479';
-import sfx from './sfx.js?v=1795071479';
-import { josa } from './josa.js?v=1795071479';
+} from './save.js?v=1795082655';
+import * as sim from './sim.js?v=1795082655';
+import * as act from './actions.js?v=1795082655';
+import * as breed from './breeding.js?v=1795082655';
+import * as dolls from './dolls.js?v=1795082655';
+import * as ev from './events.js?v=1795082655';
+import sfx from './sfx.js?v=1795082655';
+import { josa } from './josa.js?v=1795082655';
 
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => {
@@ -484,13 +484,54 @@ export class UI {
     }
   }
 
-  _dress(p, id) {
+  _dress(p, id, back) {
     const r = act.wearOutfit(this.S, p, id);
     sfx.play(r.ok ? 'ding' : 'dong');
     this.toast(r.message);
     this.game.save();
     this.refresh();
-    this.store();
+    (back || (() => this.store()))();
+  }
+
+  /**
+   * 가진 옷 중에서 골라 입힌다.
+   * 옷이 여러 벌이면 용품점까지 들어가 고르는 게 번거로워서 버튼을 따로 뒀다.
+   */
+  dressPicker(p) {
+    const s = this.S;
+    const mine = (s.closet || []).map(id => outfitOf(id)).filter(Boolean);
+    const body = this._full(`${p.name}의 옷`);
+
+    if (!mine.length) {
+      body.appendChild(el('p', null, '아직 가진 옷이 없습니다.\n용품점에서 한 벌씩 살 수 있습니다.'));
+      const c = el('div', 'item');
+      this._btn(c, '용품점으로', 'pink', () => this.store());
+      body.appendChild(c);
+      return;
+    }
+
+    const worn = outfitOf(p.outfit);
+    body.appendChild(el('p', 'small', worn
+      ? `지금은 ${worn.name}을(를) 입고 있습니다.`
+      : `${p.name}은(는) 지금 아무것도 안 입고 있습니다.`));
+
+    for (const o of mine) {
+      const onMe = p.outfit === o.id;
+      const other = s.pets.find(x => !x.dead && x !== p && x.outfit === o.id);
+
+      const card = el('div', 'item');
+      card.appendChild(el('h3', null, o.name + (onMe ? '  (입고 있습니다)' : '')));
+      card.appendChild(el('div', 'desc', other ? `${other.name}이(가) 입고 있습니다` : o.blurb));
+      this._btn(card, onMe ? '벗긴다' : other ? '가져와 입힌다' : '입힌다', onMe ? '' : 'pink',
+        () => this._dress(p, onMe ? '' : o.id, () => this.dressPicker(p)));
+      body.appendChild(card);
+    }
+
+    const more = el('div', 'item');
+    more.appendChild(el('h3', null, '옷 사러 가기'));
+    more.appendChild(el('div', 'desc', '용품점에서 한 벌씩 더 살 수 있습니다.'));
+    this._btn(more, '용품점으로', '', () => this.store());
+    body.appendChild(more);
   }
 
   // ── 도감 ────────────────────────────────────────────────

@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1795071479';
-import { breedOf, outfitOf } from './data.js?v=1795071479';
-import { nightDepth } from './sim.js?v=1795071479';
+import { T, Stage, Illness } from './tuning.js?v=1795082655';
+import { breedOf, outfitOf } from './data.js?v=1795082655';
+import { nightDepth } from './sim.js?v=1795082655';
 
 // 옷이 붙는 뼈.
 // Root → Spine_0(몸통) → Spine_1(어깨·목, 여기서 머리와 앞다리가 갈린다) → Head_0(머리)
