@@ -4,24 +4,34 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1795084437';
-import { breedOf, outfitOf } from './data.js?v=1795084437';
-import { nightDepth } from './sim.js?v=1795084437';
+import { T, Stage, Illness } from './tuning.js?v=1795085153';
+import { breedOf, outfitOf } from './data.js?v=1795085153';
+import { nightDepth } from './sim.js?v=1795085153';
 
-// 옷이 붙는 뼈.
-// Root → Spine_0(몸통) → Spine_1(어깨·목, 여기서 머리와 앞다리가 갈린다) → Head_0(머리)
-// 모델 안 이름은 'tripo::Spine_0' 이지만, three.js 가 읽으면서 쌍점을 떼어 낸다.
-const OUTFIT_BONE = { body: 'tripoSpine_0', neck: 'tripoSpine_1', head: 'tripoHead_0' };
-
-// 뼈는 몸 한가운데 박혀 있고, 털이 두툼해서 옷을 그대로 두면 몸속에 묻힌다.
-// 자리(off)와 크기(scale)는 성견 기준으로 눈으로 맞춘 값이다. 단계에 따라 같이 줄어든다.
-// x 가 0 이 아닌 것은 이 모델의 뼈대가 몸 한가운데에서 한쪽으로 치우쳐 있어서다.
-// 그대로 두면 옷이 한쪽 옆구리에만 걸린다.
-const OUTFIT_FIT = {
-  body: { scale: 1.00, off: [-0.144, 0.01, 0.06] },
-  neck: { scale: 1.00, off: [-0.080, 0.32, 0.12] },
-  head: { scale: 1.00, off: [-0.048, 0.44, 0.02] },
+// 옷.
+// 원통이나 고깔을 몸에 얹으면 어떻게 해도 겉돈다 — 털이 둥글어서 묻히거나 통처럼 보인다.
+// 그래서 옷감은 '몸의 겉면을 그대로 떠서' 만든다. 같은 뼈대에 묶으므로 모양도 움직임도 몸을 따라간다.
+// wrap 은 덮을 자리다. 몸을 꼬리(0)에서 코(1)까지로 보고 그 사이 구간을 적는다.
+const OUTFIT_SPEC = {
+  bandana: { wrap: [0.60, 0.70], color: 0xf4c430, extra: 'scarf', bone: 'neck' },
+  bowtie: { wrap: [0.62, 0.69], color: 0x8d2167, extra: 'bow', bone: 'neck' },
+  vest: { wrap: [0.30, 0.66], color: 0x1b3168, trim: 0x8ea9db },
+  raincoat: { wrap: [0.24, 0.68], color: 0xffcc19, trim: 0xf29b11 },
+  santa: { extra: 'hat', bone: 'head' },
 };
+
+// 달아 두는 장식(천·나비·모자)이 붙는 뼈
+const OUTFIT_BONE = { body: 'tripoSpine_0', neck: 'tripoSpine_1', head: 'tripoHead_0' };
+const EXTRA_FIT = {
+  scarf: { off: [-0.08, 0.18, 0.20] },
+  bow: { off: [-0.08, 0.26, 0.18] },
+  hat: { off: [-0.048, 0.40, 0.06] },
+};
+
+// 옷감이 털에 묻히지 않게 겉면에서 살짝 띄운다 (모델 단위)
+const WRAP_LIFT = 0.016;
+// 다리·꼬리에 이만큼 넘게 딸린 살은 옷에서 뺀다
+const LIMB_CUT = 0.55;
 
 // 강아지가 행동할 때 찾아가는 자리
 export const ACT = { none: 0, eat: 1, play: 2, pat: 3, sleep: 4, away: 5 };
@@ -563,36 +573,164 @@ export class Room {
   }
 
   // ── 옷 ──────────────────────────────────────────────────
-  // 옷은 뼈에 붙인다. 그래야 걷거나 고개를 들 때 같이 움직인다.
-  // 뼈마다 제 축이 제각각이라, 붙일 때 한 번 '몸 기준' 자세로 되돌려 두고
-  // 그다음부터는 뼈를 따라가게 둔다.
 
   _syncOutfit(e, p) {
     const id = p.outfit || '';
     if (e.outfitId === id) return;
     e.outfitId = id;
 
-    if (e.outfit) {
-      e.outfit.parent && e.outfit.parent.remove(e.outfit);
-      e.outfit.traverse(o => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
-      e.outfit = null;
+    for (const part of (e.outfit || [])) {
+      part.parent && part.parent.remove(part);
+      part.traverse(o => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
     }
-    const o = id && outfitOf(id);
-    if (!o || !e.model) return;                      // 모델이 아직 없으면 입힐 몸이 없다
+    e.outfit = null;
 
-    const bone = e.model.getObjectByName(OUTFIT_BONE[o.slot]);
-    if (!bone) return;
+    const spec = id && OUTFIT_SPEC[id];
+    if (!spec || !e.model) return;
 
-    // 뼈 안에 '몸 기준 좌표계'를 만들어 고정한다.
-    // 지금 자세로 재면 안 된다 — 자는 아이에게 입히면 그 자세가 그대로 박혀,
-    // 일어선 뒤에 옷만 허공에 뜬다. 자세와 상관없는 바인드 포즈(뼈를 처음 묶은 자세)로 잡는다.
     let skin = null;
     e.model.traverse(o => { if (!skin && o.isSkinnedMesh) skin = o; });
-    const i = skin ? skin.skeleton.bones.indexOf(bone) : -1;
-    if (!skin || i < 0) return;
+    if (!skin) return;
 
-    // 뼈가 처음 묶였을 때의 방향·배율만 되돌린다. 자리는 뼈 그대로 둔다 —
-    // 원점까지 옮기면 옷이 발밑으로 내려간다.
+    const parts = [];
+    if (spec.wrap) {
+      const cloth = this._makeWrap(skin, spec.wrap, spec.color);
+      if (cloth) { skin.parent.add(cloth); parts.push(cloth); }
+    }
+    if (spec.extra) {
+      const anchor = this._boneAnchor(e, p, skin, spec.bone, EXTRA_FIT[spec.extra].off);
+      // 장식은 anchor 안쪽(크기·자리를 맞춰 둔 칸)에 넣어야 한다
+      if (anchor) { anchor.children[0].add(this._makeExtra(spec.extra, spec.color)); parts.push(anchor); }
+    }
+    if (parts.length) e.outfit = parts;
+  }
+
+  /**
+   * 몸의 겉면을 그대로 떠서 옷감을 만든다.
+   * 겉면을 베꼈으니 모양이 몸에 딱 맞고, 같은 뼈대에 묶으니 움직임도 똑같이 따라간다.
+   * range 는 덮을 자리 — 몸을 꼬리(0)에서 코(1)까지로 보고 그 사이 구간을 적는다.
+   */
+  _makeWrap(skin, range, color) {
+    const geo = skin.geometry;
+    const pos = geo.attributes.position, nor = geo.attributes.normal;
+    const si = geo.attributes.skinIndex, sw = geo.attributes.skinWeight;
+    const idx = geo.index;
+    if (!pos || !nor || !si || !sw || !idx) return null;
+
+    const bones = skin.skeleton.bones;
+    const bindPos = (name) => {
+      const i = bones.findIndex(b => b.name === name);
+      if (i < 0) return null;
+      return new THREE.Vector3().setFromMatrixPosition(
+        new THREE.Matrix4().copy(skin.skeleton.boneInverses[i]).invert());
+    };
+    const hip = bindPos(OUTFIT_BONE.body), head = bindPos(OUTFIT_BONE.head);
+    if (!hip || !head) return null;
+    const axis = head.clone().sub(hip).normalize();
+
+    // 꼭짓점마다 두 가지를 잰다.
+    // t: 몸의 앞뒤 어디쯤인가 (꼬리 0 → 코 1)
+    // w: 다리·꼬리에 얼마나 딸린 살인가 (옷에서 뺄 자리)
+    const n = pos.count;
+    const t = new Float32Array(n), w = new Float32Array(n);
+    const limb = bones.map(b => /Limb|bone_(6|9|20|21)$/.test(b.name));
+    const v = new THREE.Vector3();
+    let lo = Infinity, hi = -Infinity;
+    for (let i = 0; i < n; i++) {
+      t[i] = v.fromBufferAttribute(pos, i).dot(axis);
+      if (t[i] < lo) lo = t[i];
+      if (t[i] > hi) hi = t[i];
+      let s2 = 0;
+      for (let k = 0; k < 4; k++) if (limb[si.getComponent(i, k)]) s2 += sw.getComponent(i, k);
+      w[i] = s2;
+    }
+    const span = (hi - lo) || 1;
+    for (let i = 0; i < n; i++) t[i] = (t[i] - lo) / span;
+
+    // 삼각형을 통째로 넣고 빼면 경계가 톱니처럼 된다.
+    // 경계에 걸친 삼각형은 잘라서 쓴다 — 그래야 밑단이 곧게 떨어진다.
+    const P = [], N = [], SI = [], SW = [], I = [];
+    const vert = (i) => ({
+      p: new THREE.Vector3().fromBufferAttribute(pos, i),
+      n: new THREE.Vector3().fromBufferAttribute(nor, i),
+      s: [si.getX(i), si.getY(i), si.getZ(i), si.getW(i),
+        sw.getX(i), sw.getY(i), sw.getZ(i), sw.getW(i)],
+      t: t[i], w: w[i],
+    });
+    const mix = (a, b, r) => ({
+      p: a.p.clone().lerp(b.p, r),
+      n: a.n.clone().lerp(b.n, r),
+      s: r < 0.5 ? a.s : b.s,          // 뼈 번호는 섞을 수 없다. 가까운 쪽을 따른다
+      t: a.t + (b.t - a.t) * r,
+      w: a.w + (b.w - a.w) * r,
+    });
+    const clip = (poly, key, limit, above) => {
+      const out = [];
+      for (let i = 0; i < poly.length; i++) {
+        const a = poly[i], b = poly[(i + 1) % poly.length];
+        const ina = above ? a[key] >= limit : a[key] <= limit;
+        const inb = above ? b[key] >= limit : b[key] <= limit;
+        if (ina) out.push(a);
+        if (ina !== inb) out.push(mix(a, b, (limit - a[key]) / (b[key] - a[key])));
+      }
+      return out;
+    };
+    const emit = (q) => {
+      const nn = q.n.clone().normalize();
+      P.push(q.p.x + nn.x * WRAP_LIFT, q.p.y + nn.y * WRAP_LIFT, q.p.z + nn.z * WRAP_LIFT);
+      N.push(nn.x, nn.y, nn.z);
+      SI.push(q.s[0], q.s[1], q.s[2], q.s[3]);
+      SW.push(q.s[4], q.s[5], q.s[6], q.s[7]);
+      return P.length / 3 - 1;
+    };
+
+    for (let f = 0; f < idx.count; f += 3) {
+      const a = idx.getX(f), b = idx.getX(f + 1), c = idx.getX(f + 2);
+      if (t[a] < range[0] && t[b] < range[0] && t[c] < range[0]) continue;
+      if (t[a] > range[1] && t[b] > range[1] && t[c] > range[1]) continue;
+      if (w[a] > LIMB_CUT && w[b] > LIMB_CUT && w[c] > LIMB_CUT) continue;
+
+      let poly = [vert(a), vert(b), vert(c)];
+      poly = clip(poly, 't', range[0], true);
+      if (poly.length < 3) continue;
+      poly = clip(poly, 't', range[1], false);
+      if (poly.length < 3) continue;
+      poly = clip(poly, 'w', LIMB_CUT, false);
+      if (poly.length < 3) continue;
+
+      const ring = poly.map(emit);
+      for (let k = 1; k + 1 < ring.length; k++) I.push(ring[0], ring[k], ring[k + 1]);
+    }
+    if (I.length < 60) return null;
+
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
+    g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(SI, 4));
+    g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(SW, 4));
+    g.setIndex(I);
+
+    const mat = this._mat(color, 0.95);
+    mat.side = THREE.DoubleSide;
+    const cloth = new THREE.SkinnedMesh(g, mat);
+    cloth.position.copy(skin.position);
+    cloth.quaternion.copy(skin.quaternion);
+    cloth.scale.copy(skin.scale);
+    cloth.castShadow = true;
+    cloth.frustumCulled = false;
+    cloth.bind(skin.skeleton, skin.bindMatrix);
+    return cloth;
+  }
+
+  /**
+   * 뼈에 매달 자리를 만든다. 뼈를 처음 묶은 자세를 기준으로 방향과 배율만 되돌리고,
+   * 자리는 뼈 그대로 둔다. 자세가 어떻든 같은 데 붙는다.
+   */
+  _boneAnchor(e, p, skin, slot, off) {
+    const bone = e.model.getObjectByName(OUTFIT_BONE[slot] || OUTFIT_BONE.neck);
+    const i = bone ? skin.skeleton.bones.indexOf(bone) : -1;
+    if (i < 0) return null;
+
     const bind = new THREE.Matrix4().copy(skin.skeleton.boneInverses[i]).invert();
     const q = new THREE.Quaternion(), sc = new THREE.Vector3();
     bind.decompose(new THREE.Vector3(), q, sc);
@@ -603,27 +741,18 @@ export class Room {
     anchor.matrix.compose(new THREE.Vector3(), q.invert(),
       new THREE.Vector3(1 / sc.x, 1 / sc.y, 1 / sc.z));
 
-    // 여기서부터는 모델 자체의 단위다. 모델에 걸린 배율(단계별 크기 + 새끼의 통통함)이
-    // 그대로 옷에도 걸리므로, 방 기준으로 그린 치수를 그 배율로 나눠 둔다.
-    // 치수는 다 자란 아이(키 1.0) 기준으로 적어 둔다.
-    // u 는 그 치수를 모델 단위로 바꾸는 값 — 모델에 걸린 배율(단계별 크기, 새끼의 통통함)이
-    // 다시 곱해지므로, 옷은 아이 크기를 저절로 따라간다.
-    const fit = OUTFIT_FIT[o.slot];
+    // 치수는 다 자란 아이(키 1.0) 기준으로 적어 둔다. 모델에 걸린 배율이 다시 곱해지므로
+    // 옷은 아이 크기를 저절로 따라간다.
     const u = HEIGHT[p.stage] / (e.model.scale.y || 1);
     const wrap = new THREE.Group();
-    wrap.scale.setScalar(fit.scale * u);
-    wrap.position.set(fit.off[0] * u, fit.off[1] * u, fit.off[2] * u);
-    wrap.add(this._makeOutfit(id));
+    wrap.scale.setScalar(u);
+    wrap.position.set(off[0] * u, off[1] * u, off[2] * u);
     anchor.add(wrap);
-
-    e.outfit = anchor;
+    return anchor;
   }
 
-  /**
-   * 옷 한 벌. 다 자란 아이(키 1.0) 기준으로 그린다 — +Y 위, +Z 앞.
-   * 포메라니안은 털이 두툼해서, 몸에 딱 맞춰 그리면 털에 묻혀 안 보인다. 한 겹 크게 잡는다.
-   */
-  _makeOutfit(id) {
+  /** 옷감만으로는 안 되는 장식 — 늘어뜨린 천, 나비, 모자 */
+  _makeExtra(kind, color) {
     const g = new THREE.Group();
     const put = (geo, mat, pos = [0, 0, 0], rot = [0, 0, 0], sc = [1, 1, 1]) => {
       const m = new THREE.Mesh(geo, mat);
@@ -634,45 +763,21 @@ export class Room {
     };
     const cloth = (c, r = 0.9) => { const m = this._mat(c, r); m.side = THREE.DoubleSide; return m; };
 
-    if (id === 'bandana') {
-      put(new THREE.TorusGeometry(0.30, 0.035, 8, 20), this._mat(0xf4c430));            // 목에 두른 띠
-      put(new THREE.ConeGeometry(0.26, 0.40, 3), cloth(0xffd23f),                       // 앞으로 늘어진 천
-        [0, -0.19, 0.10], [Math.PI, 0, Math.PI]);
+    if (kind === 'scarf') {
+      put(new THREE.ConeGeometry(0.17, 0.26, 3), cloth(color), [0, -0.12, 0.02], [Math.PI, 0, Math.PI]);
       return g;
     }
-    if (id === 'bowtie') {
-      const main = this._mat(0x8d2167);
-      put(new THREE.TorusGeometry(0.31, 0.030, 8, 20), main);
-      // 고깔 두 개를 맞대어 놓으면 멀리서도 나비로 읽힌다
-      for (const [x, rz] of [[-0.20, Math.PI / 2], [0.20, -Math.PI / 2]])
-        put(new THREE.ConeGeometry(0.17, 0.26, 4), main, [x, -0.14, 0.17], [0, 0, rz], [1, 1, 0.45]);
-      put(new THREE.SphereGeometry(0.075, 10, 8), this._mat(0xb63f91), [0, -0.14, 0.19], [0, 0, 0], [0.9, 1, 0.7]);
+    if (kind === 'bow') {
+      const main = this._mat(color);
+      for (const [x, rz] of [[-0.14, Math.PI / 2], [0.14, -Math.PI / 2]])
+        put(new THREE.ConeGeometry(0.12, 0.19, 4), main, [x, 0, 0], [0, 0, rz], [1, 1, 0.45]);
+      put(new THREE.SphereGeometry(0.055, 10, 8), this._mat(0xb63f91), [0, 0, 0.02], [0, 0, 0], [0.9, 1, 0.7]);
       return g;
     }
-    // 등에 덮는 꼴로 만든다. 털이 둥글어서 통으로 두르면 튜브를 낀 것처럼 보인다.
-    // 반통은 theta 를 π/2 에서 π 만큼 돌려야 등(위쪽)을 덮는다.
-    if (id === 'vest') {
-      const trim = this._mat(0x8ea9db);
-      put(new THREE.CylinderGeometry(0.40, 0.455, 0.60, 20, 1, true, Math.PI * 0.42, Math.PI * 1.16),
-        cloth(0x162a5c, 0.95), [0, 0, 0], [Math.PI / 2, 0, 0]);
-      // 앞 테두리는 두면 굴렁쇠처럼 보여서 뺐다. 밑단만 남긴다.
-      put(new THREE.TorusGeometry(0.415, 0.026, 6, 20, Math.PI * 1.16), trim,
-        [0, 0, -0.29], [0, 0, Math.PI * 0.42]);                                         // 밑단 테두리
-      return g;
-    }
-    if (id === 'raincoat') {
-      put(new THREE.CylinderGeometry(0.42, 0.475, 0.70, 20, 1, true, Math.PI * 0.40, Math.PI * 1.20),
-        cloth(0xffcc19), [0, 0, -0.04], [Math.PI / 2, 0, 0]);
-      put(new THREE.TorusGeometry(0.435, 0.022, 6, 20, Math.PI * 1.20), this._mat(0xf29b11),
-        [0, 0, -0.37], [0, 0, Math.PI * 0.40]);
-      put(new THREE.SphereGeometry(0.19, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2), cloth(0xffcc19),
-        [0, 0.10, 0.26], [-0.7, 0, 0]);                                                 // 목 뒤에 접힌 모자
-      return g;
-    }
-    if (id === 'santa') {
-      put(new THREE.ConeGeometry(0.26, 0.52, 18, 1, true), cloth(0xc92332), [0, 0.28, -0.05], [-0.22, 0, 0]);
-      put(new THREE.TorusGeometry(0.26, 0.055, 8, 20), this._mat(0xfff8e8), [0, 0.03, 0], [Math.PI / 2, 0, 0]);
-      put(new THREE.SphereGeometry(0.08, 12, 10), this._mat(0xfff8e8), [0, 0.52, -0.17]);
+    if (kind === 'hat') {
+      put(new THREE.ConeGeometry(0.24, 0.46, 18, 1, true), cloth(0xc92332), [0, 0.25, -0.04], [-0.2, 0, 0]);
+      put(new THREE.TorusGeometry(0.24, 0.05, 8, 20), this._mat(0xfff8e8), [0, 0.03, 0], [Math.PI / 2, 0, 0]);
+      put(new THREE.SphereGeometry(0.075, 12, 10), this._mat(0xfff8e8), [0, 0.46, -0.15]);
       return g;
     }
     return g;

@@ -1,16 +1,16 @@
 // 조립. 저장을 읽고, 시간을 흘리고, 화면과 방을 맞춘다.
 
-import { T, Stage } from './tuning.js?v=1795084437';
-import * as save from './save.js?v=1795084437';
-import * as sim from './sim.js?v=1795084437';
-import * as act from './actions.js?v=1795084437';
-import * as breed from './breeding.js?v=1795084437';
-import * as dolls from './dolls.js?v=1795084437';
-import * as ev from './events.js?v=1795084437';
-import { buildExtraEvents, linkExtra } from './events_extra.js?v=1795084437';
-import { Room, ACT } from './room3d.js?v=1795084437';
-import { UI } from './ui.js?v=1795084437';
-import sfx from './sfx.js?v=1795084437';
+import { T, Stage } from './tuning.js?v=1795085153';
+import * as save from './save.js?v=1795085153';
+import * as sim from './sim.js?v=1795085153';
+import * as act from './actions.js?v=1795085153';
+import * as breed from './breeding.js?v=1795085153';
+import * as dolls from './dolls.js?v=1795085153';
+import * as ev from './events.js?v=1795085153';
+import { buildExtraEvents, linkExtra } from './events_extra.js?v=1795085153';
+import { Room, ACT } from './room3d.js?v=1795085153';
+import { UI } from './ui.js?v=1795085153';
+import sfx from './sfx.js?v=1795085153';
 
 // 순환 참조를 피하려고 이벤트 표에 필요한 것만 넘겨 준다
 const LIB = {
