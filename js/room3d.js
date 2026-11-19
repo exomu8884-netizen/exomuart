@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1795083734';
-import { breedOf, outfitOf } from './data.js?v=1795083734';
-import { nightDepth } from './sim.js?v=1795083734';
+import { T, Stage, Illness } from './tuning.js?v=1795084437';
+import { breedOf, outfitOf } from './data.js?v=1795084437';
+import { nightDepth } from './sim.js?v=1795084437';
 
 // 옷이 붙는 뼈.
 // Root → Spine_0(몸통) → Spine_1(어깨·목, 여기서 머리와 앞다리가 갈린다) → Head_0(머리)
@@ -18,7 +18,7 @@ const OUTFIT_BONE = { body: 'tripoSpine_0', neck: 'tripoSpine_1', head: 'tripoHe
 // x 가 0 이 아닌 것은 이 모델의 뼈대가 몸 한가운데에서 한쪽으로 치우쳐 있어서다.
 // 그대로 두면 옷이 한쪽 옆구리에만 걸린다.
 const OUTFIT_FIT = {
-  body: { scale: 1.45, off: [-0.144, 0.02, -0.16] },
+  body: { scale: 1.00, off: [-0.144, 0.01, 0.06] },
   neck: { scale: 1.00, off: [-0.080, 0.32, 0.12] },
   head: { scale: 1.00, off: [-0.048, 0.44, 0.02] },
 };
@@ -653,20 +653,20 @@ export class Room {
     // 반통은 theta 를 π/2 에서 π 만큼 돌려야 등(위쪽)을 덮는다.
     if (id === 'vest') {
       const trim = this._mat(0x8ea9db);
-      put(new THREE.CylinderGeometry(0.345, 0.33, 0.80, 20, 1, true, Math.PI * 0.42, Math.PI * 1.16),
+      put(new THREE.CylinderGeometry(0.40, 0.455, 0.60, 20, 1, true, Math.PI * 0.42, Math.PI * 1.16),
         cloth(0x162a5c, 0.95), [0, 0, 0], [Math.PI / 2, 0, 0]);
       // 앞 테두리는 두면 굴렁쇠처럼 보여서 뺐다. 밑단만 남긴다.
-      put(new THREE.TorusGeometry(0.33, 0.026, 6, 20, Math.PI * 1.16), trim,
-        [0, 0, -0.40], [0, 0, Math.PI * 0.42]);                                         // 밑단 테두리
+      put(new THREE.TorusGeometry(0.415, 0.026, 6, 20, Math.PI * 1.16), trim,
+        [0, 0, -0.29], [0, 0, Math.PI * 0.42]);                                         // 밑단 테두리
       return g;
     }
     if (id === 'raincoat') {
-      put(new THREE.CylinderGeometry(0.375, 0.35, 0.92, 20, 1, true, Math.PI * 0.40, Math.PI * 1.20),
-        cloth(0xffcc19), [0, 0, -0.06], [Math.PI / 2, 0, 0]);
-      put(new THREE.TorusGeometry(0.35, 0.022, 6, 20, Math.PI * 1.20), this._mat(0xf29b11),
-        [0, 0, -0.52], [0, 0, Math.PI * 0.40]);
-      put(new THREE.SphereGeometry(0.22, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2), cloth(0xffcc19),
-        [0, 0.06, 0.30], [-0.7, 0, 0]);                                                 // 목 뒤에 접힌 모자
+      put(new THREE.CylinderGeometry(0.42, 0.475, 0.70, 20, 1, true, Math.PI * 0.40, Math.PI * 1.20),
+        cloth(0xffcc19), [0, 0, -0.04], [Math.PI / 2, 0, 0]);
+      put(new THREE.TorusGeometry(0.435, 0.022, 6, 20, Math.PI * 1.20), this._mat(0xf29b11),
+        [0, 0, -0.37], [0, 0, Math.PI * 0.40]);
+      put(new THREE.SphereGeometry(0.19, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2), cloth(0xffcc19),
+        [0, 0.10, 0.26], [-0.7, 0, 0]);                                                 // 목 뒤에 접힌 모자
       return g;
     }
     if (id === 'santa') {
