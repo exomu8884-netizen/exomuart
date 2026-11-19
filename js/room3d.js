@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clone as skeletonClone } from 'three/addons/utils/SkeletonUtils.js';
 
-import { T, Stage, Illness } from './tuning.js?v=1795083327';
-import { breedOf, outfitOf } from './data.js?v=1795083327';
-import { nightDepth } from './sim.js?v=1795083327';
+import { T, Stage, Illness } from './tuning.js?v=1795083734';
+import { breedOf, outfitOf } from './data.js?v=1795083734';
+import { nightDepth } from './sim.js?v=1795083734';
 
 // 옷이 붙는 뼈.
 // Root → Spine_0(몸통) → Spine_1(어깨·목, 여기서 머리와 앞다리가 갈린다) → Head_0(머리)
@@ -15,10 +15,12 @@ const OUTFIT_BONE = { body: 'tripoSpine_0', neck: 'tripoSpine_1', head: 'tripoHe
 
 // 뼈는 몸 한가운데 박혀 있고, 털이 두툼해서 옷을 그대로 두면 몸속에 묻힌다.
 // 자리(off)와 크기(scale)는 성견 기준으로 눈으로 맞춘 값이다. 단계에 따라 같이 줄어든다.
+// x 가 0 이 아닌 것은 이 모델의 뼈대가 몸 한가운데에서 한쪽으로 치우쳐 있어서다.
+// 그대로 두면 옷이 한쪽 옆구리에만 걸린다.
 const OUTFIT_FIT = {
-  body: { scale: 1.35, off: [0, 0.12, -0.22] },
-  neck: { scale: 1.00, off: [0, 0.32, 0.12] },
-  head: { scale: 1.00, off: [0, 0.44, 0.02] },
+  body: { scale: 1.45, off: [-0.144, 0.02, -0.16] },
+  neck: { scale: 1.00, off: [-0.080, 0.32, 0.12] },
+  head: { scale: 1.00, off: [-0.048, 0.44, 0.02] },
 };
 
 // 강아지가 행동할 때 찾아가는 자리
@@ -641,25 +643,28 @@ export class Room {
     if (id === 'bowtie') {
       const main = this._mat(0x8d2167);
       put(new THREE.TorusGeometry(0.31, 0.030, 8, 20), main);
-      for (const x of [-0.15, 0.15])
-        put(new THREE.SphereGeometry(0.155, 12, 10), main, [x, -0.16, 0.13], [0, 0, 0], [1.0, 0.75, 0.32]);
-      put(new THREE.SphereGeometry(0.07, 10, 8), this._mat(0xb63f91), [0, -0.16, 0.16], [0, 0, 0], [0.8, 1, 0.7]);
+      // 고깔 두 개를 맞대어 놓으면 멀리서도 나비로 읽힌다
+      for (const [x, rz] of [[-0.20, Math.PI / 2], [0.20, -Math.PI / 2]])
+        put(new THREE.ConeGeometry(0.17, 0.26, 4), main, [x, -0.14, 0.17], [0, 0, rz], [1, 1, 0.45]);
+      put(new THREE.SphereGeometry(0.075, 10, 8), this._mat(0xb63f91), [0, -0.14, 0.19], [0, 0, 0], [0.9, 1, 0.7]);
       return g;
     }
     // 등에 덮는 꼴로 만든다. 털이 둥글어서 통으로 두르면 튜브를 낀 것처럼 보인다.
     // 반통은 theta 를 π/2 에서 π 만큼 돌려야 등(위쪽)을 덮는다.
     if (id === 'vest') {
       const trim = this._mat(0x8ea9db);
-      put(new THREE.CylinderGeometry(0.36, 0.345, 0.62, 18, 1, true, Math.PI / 2, Math.PI),
+      put(new THREE.CylinderGeometry(0.345, 0.33, 0.80, 20, 1, true, Math.PI * 0.42, Math.PI * 1.16),
         cloth(0x162a5c, 0.95), [0, 0, 0], [Math.PI / 2, 0, 0]);
-      put(new THREE.TorusGeometry(0.36, 0.032, 6, 18, Math.PI), trim, [0, 0, 0.31]);    // 목둘레 테두리
-      put(new THREE.TorusGeometry(0.345, 0.032, 6, 18, Math.PI), trim, [0, 0, -0.31]);  // 밑단 테두리
+      // 앞 테두리는 두면 굴렁쇠처럼 보여서 뺐다. 밑단만 남긴다.
+      put(new THREE.TorusGeometry(0.33, 0.026, 6, 20, Math.PI * 1.16), trim,
+        [0, 0, -0.40], [0, 0, Math.PI * 0.42]);                                         // 밑단 테두리
       return g;
     }
     if (id === 'raincoat') {
-      put(new THREE.CylinderGeometry(0.40, 0.37, 0.72, 18, 1, true, Math.PI / 2, Math.PI),
-        cloth(0xffcc19), [0, 0, -0.04], [Math.PI / 2, 0, 0]);
-      put(new THREE.TorusGeometry(0.37, 0.022, 6, 18, Math.PI), this._mat(0xf29b11), [0, 0, -0.40]);
+      put(new THREE.CylinderGeometry(0.375, 0.35, 0.92, 20, 1, true, Math.PI * 0.40, Math.PI * 1.20),
+        cloth(0xffcc19), [0, 0, -0.06], [Math.PI / 2, 0, 0]);
+      put(new THREE.TorusGeometry(0.35, 0.022, 6, 20, Math.PI * 1.20), this._mat(0xf29b11),
+        [0, 0, -0.52], [0, 0, Math.PI * 0.40]);
       put(new THREE.SphereGeometry(0.22, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2), cloth(0xffcc19),
         [0, 0.06, 0.30], [-0.7, 0, 0]);                                                 // 목 뒤에 접힌 모자
       return g;

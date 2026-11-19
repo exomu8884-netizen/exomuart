@@ -1,10 +1,10 @@
 // 나머지 이벤트 — 즐거운 일, 가족(짝·출산·대 잇기), 인형, 나이, 곤란한 일.
 // events.js 의 표에 밀어 넣는다.
 
-import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795083327';
-import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1795083327';
-import { CATALOG, okChoice } from './events.js?v=1795083327';
-import { outfitOf } from './data.js?v=1795083327';
+import { T, Stage, Illness, clamp, won } from './tuning.js?v=1795083734';
+import { atHome, livingCount, addMeals, mealsOf, takeMeal, totalMeals } from './save.js?v=1795083734';
+import { CATALOG, okChoice } from './events.js?v=1795083734';
+import { outfitOf } from './data.js?v=1795083734';
 
 let L = null;
 export function linkExtra(lib) { L = lib; }
